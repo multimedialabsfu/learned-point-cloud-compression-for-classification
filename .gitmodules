@@ -1,0 +1,6 @@
+[submodule "submodules/compressai"]
+	path = submodules/compressai
+	url = https://github.com/InterDigitalInc/CompressAI
+[submodule "submodules/compressai-trainer"]
+	path = submodules/compressai-trainer
+	url = https://github.com/InterDigitalInc/CompressAI-Trainer
