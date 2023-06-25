@@ -59,7 +59,7 @@ class BaseClassificationPccModel(CompressionModel):
         return {"strings": [y_strings], "shape": (1,)}
 
     def decompress(self, strings, shape):
-        assert isinstance(strings, list) and len(strings) == 2
+        assert isinstance(strings, list) and len(strings) == 1
         self.outputs = {}
         [y_strings] = strings
         y_out = self.latent_codec["y"].decompress([y_strings], shape)
