@@ -43,7 +43,7 @@ class ClusterPredict(nn.Module):
 
 
 def conv1d_group_seq(num_channels, groups):
-    assert len(groups) == len(num_channels) - 1
+    assert len(groups) == len(num_channels) - 1 or len(num_channels) == 0
     xs = []
     for i in range(len(num_channels) - 1):
         xs.append(nn.Conv1d(num_channels[i], num_channels[i + 1], 1, groups=groups[i]))
@@ -57,7 +57,7 @@ def conv1d_group_seq(num_channels, groups):
 
 def pointnet_g_a_simple(num_channels, groups=None, gain=GAIN):
     if groups is None:
-        groups = {"pointwise": [1] * len(num_channels["pointwise"]) - 1}
+        groups = {"pointwise": [1] * (len(num_channels["pointwise"]) - 1)}
     num_channels_g_a = [
         *num_channels["pointwise"],
         *num_channels["mixer"][1:],
