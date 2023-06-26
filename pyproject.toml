@@ -17,6 +17,7 @@ packages = [{include = "src"}]
 python = ">=3.8.0,<3.12"
 accelerate = "0.15.0"
 aim = "^3.16.0"
+bjontegaard = "^1.2.0"
 catalyst = "22.04"
 hydra-core = "^1.2"
 matplotlib = "^3.4.3"

@@ -336,6 +336,23 @@ html5lib = ["html5lib"]
 lxml = ["lxml"]
 
 [[package]]
+name = "bjontegaard"
+version = "1.2.0"
+description = "Calculate the Bjonteegard-Delta metric with different interpolation methods"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "bjontegaard-1.2.0-py3-none-any.whl", hash = "sha256:f8024d8f8b3d7f9c3b55afaad6b070eb7482aa84822c5c433cbda6e84fd87c5c"},
+    {file = "bjontegaard-1.2.0.tar.gz", hash = "sha256:57cb7c7770c8086d3abf196b1216078f92ed955aeef47afeb64eaa1e9cab5bb6"},
+]
+
+[package.dependencies]
+matplotlib = "*"
+numpy = "*"
+scipy = "*"
+
+[[package]]
 name = "black"
 version = "23.3.0"
 description = "The uncompromising code formatter."
@@ -3040,4 +3057,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.0,<3.12"
-content-hash = "534ccc5fde141f1838fa81fe3aa89b89e0d773cd2eeb9f7c58768a973031ff50"
+content-hash = "a4631ff28f9c183a54687ab369d0ddf6076a22bfc9e9a6804887c1843fc418c1"
