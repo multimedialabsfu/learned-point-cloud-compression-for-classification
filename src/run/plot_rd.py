@@ -2,9 +2,19 @@ from __future__ import annotations
 
 import pandas as pd
 
+# isort: off
+
+# Import this first, since monkey-patching is incompatible...
 import compressai_trainer.run.plot_rd as _M
+
+# NOTE: This will be monkey-patched *later* in the imports, but we need to
+# run some init code using the patched version, so we import it instead of
+# from compressai_trainer.utils.compressai.results import compressai_dataframe
+from src.utils.compressai.results import compressai_dataframe
+
+# isort: on
+
 from compressai_trainer.plot import plot_rd
-from compressai_trainer.utils.compressai.results import compressai_dataframe
 
 _M.TITLE = "Performance evaluation on ModelNet40 - Top-1 Accuracy"
 

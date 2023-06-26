@@ -5,8 +5,8 @@ from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
+import src
 
-import compressai
 import compressai_trainer.utils.compressai.results as _M
 
 
@@ -23,7 +23,7 @@ def compressai_dataframe(
 ) -> pd.DataFrame:
     """Returns a dataframe containing the results of a given codec."""
     if base_path is None:
-        base_path = f"{compressai.__path__[0]}/../results/{dataset}"
+        base_path = f"{src.__path__[0]}/../results/{dataset}"
 
     if filename_format is not None:
         pass
