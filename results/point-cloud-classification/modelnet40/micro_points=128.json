@@ -1,0 +1,92 @@
+{
+  "name": "Proposed codec [micro, P=128]",
+  "description": "",
+  "meta": {
+    "model.name": "um-pcc-cls-only-pointnet-mini-001",
+    "dataset.train.meta.name": "ModelNet40",
+    "hp.num_classes": 40,
+    "hp.num_points": 128,
+    "hp.num_channels.g_a.pointwise": [
+      3,
+      16
+    ],
+    "hp.num_channels.g_a.mixer": [],
+    "hp.num_channels.task_backend.transform.pointwise": [
+      16,
+      64,
+      64,
+      64
+    ],
+    "hp.num_channels.task_backend.transform.mixer": [],
+    "hp.num_channels.task_backend.mlp": [
+      64,
+      512,
+      256,
+      40
+    ],
+    "hp.groups.g_a.pointwise": [
+      1
+    ],
+    "hp.groups.task_backend.transform.pointwise": [
+      1,
+      1,
+      1
+    ]
+  },
+  "results": {
+    "bit_loss": [
+      7.626606643682942,
+      12.056397513786827,
+      15.192736336632331,
+      18.542466805085567,
+      23.706166621351937,
+      34.849304118844245,
+      76.3498743758982
+    ],
+    "acc_top1": [
+      40.3160453808752,
+      54.82171799027553,
+      61.46677471636954,
+      64.87034035656401,
+      69.69205834683959,
+      74.83792544570504,
+      79.57860615883304
+    ],
+    "run_hash": [
+      "2e178372769f470998d509f3",
+      "c3404cb946924c09b53ee55e",
+      "bec4f1f91c544ac58200d5f3",
+      "8df152cffcf34f9ebeb168d2",
+      "dad61bbe762e4942bbb3dc67",
+      "5dbb5375d08e4d4bbf34e4be",
+      "f3d6046d4ff748bf978d24d1"
+    ],
+    "criterion.lmbda.cls": [
+      10,
+      14,
+      20,
+      28,
+      40,
+      80,
+      8000
+    ],
+    "epoch": [
+      31,
+      71,
+      68,
+      71,
+      68,
+      76,
+      97
+    ],
+    "loss": [
+      26.828033929512603,
+      32.097808392739566,
+      40.498248701543815,
+      50.15554980211554,
+      63.39727006661836,
+      99.49647608529808,
+      5429.5117149909465
+    ]
+  }
+}

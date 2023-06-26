@@ -1,0 +1,98 @@
+{
+  "name": "Proposed codec [micro, P=32]",
+  "description": "",
+  "meta": {
+    "model.name": "um-pcc-cls-only-pointnet-mini-001",
+    "dataset.train.meta.name": "ModelNet40",
+    "hp.num_classes": 40,
+    "hp.num_points": 32,
+    "hp.num_channels.g_a.pointwise": [
+      3,
+      16
+    ],
+    "hp.num_channels.g_a.mixer": [],
+    "hp.num_channels.task_backend.transform.pointwise": [
+      16,
+      64,
+      64,
+      64
+    ],
+    "hp.num_channels.task_backend.transform.mixer": [],
+    "hp.num_channels.task_backend.mlp": [
+      64,
+      512,
+      256,
+      40
+    ],
+    "hp.groups.g_a.pointwise": [
+      1
+    ],
+    "hp.groups.task_backend.transform.pointwise": [
+      1,
+      1,
+      1
+    ]
+  },
+  "results": {
+    "bit_loss": [
+      7.834418170842398,
+      10.846935284582106,
+      12.890307601112601,
+      15.794877701485758,
+      32.47196790735377,
+      43.64933924002625,
+      71.53965268374651,
+      80.46413297977786
+    ],
+    "acc_top1": [
+      34.076175040518635,
+      43.395461912479746,
+      47.36628849270665,
+      51.41815235008104,
+      62.560777957860594,
+      67.42301458670991,
+      70.70502431118315,
+      71.11021069692056
+    ],
+    "run_hash": [
+      "d04b68cfa61c4230bb222161",
+      "b1cece584daa4cd6bb7effc6",
+      "7c84e98fa332407899149f72",
+      "fce64c08291a4590a0eda6af",
+      "ac8589442b3d46138faf8497",
+      "7e9775c39db145a1b0ad09e2",
+      "d8f0b5f4197147ddb381b1fb",
+      "8d36792b9dfb4fe7b026df8b"
+    ],
+    "criterion.lmbda.cls": [
+      10,
+      14,
+      20,
+      28,
+      80,
+      160,
+      1000,
+      256000
+    ],
+    "epoch": [
+      68,
+      56,
+      51,
+      54,
+      47,
+      115,
+      93,
+      93
+    ],
+    "loss": [
+      28.972180173308196,
+      36.18251542102188,
+      46.68088255747791,
+      58.647151508053085,
+      127.35775549098777,
+      209.43226007742865,
+      996.4506052471636,
+      236913.96882597244
+    ]
+  }
+}

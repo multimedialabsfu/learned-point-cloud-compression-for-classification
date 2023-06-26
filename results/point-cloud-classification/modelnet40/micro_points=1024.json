@@ -1,0 +1,104 @@
+{
+  "name": "Proposed codec [micro, P=1024]",
+  "description": "",
+  "meta": {
+    "model.name": "um-pcc-cls-only-pointnet-mini-001",
+    "dataset.train.meta.name": "ModelNet40",
+    "hp.num_classes": 40,
+    "hp.num_points": 1024,
+    "hp.num_channels.g_a.pointwise": [
+      3,
+      16
+    ],
+    "hp.num_channels.g_a.mixer": [],
+    "hp.num_channels.task_backend.transform.pointwise": [
+      16,
+      64,
+      64,
+      64
+    ],
+    "hp.num_channels.task_backend.transform.mixer": [],
+    "hp.num_channels.task_backend.mlp": [
+      64,
+      512,
+      256,
+      40
+    ],
+    "hp.groups.g_a.pointwise": [
+      1
+    ],
+    "hp.groups.task_backend.transform.pointwise": [
+      1,
+      1,
+      1
+    ]
+  },
+  "results": {
+    "bit_loss": [
+      10.620185125588986,
+      12.647166805483723,
+      16.28471564937449,
+      20.186681348655377,
+      24.55706392965209,
+      36.49722814946351,
+      48.696047141447636,
+      61.58396407116562,
+      78.99930448856696
+    ],
+    "acc_top1": [
+      52.83630470016206,
+      60.008103727714754,
+      65.43760129659644,
+      70.78606158833063,
+      74.2706645056726,
+      77.59319286871961,
+      80.55105348460292,
+      81.68557536466777,
+      83.02269043760131
+    ],
+    "run_hash": [
+      "9447fba58ce04a1b836621d9",
+      "ed15eed869c348f08fcbf15b",
+      "bc7a1998e7384883a5e174b7",
+      "8c4a69f9ac2d40fbacedca7c",
+      "b472c2d6ac764d78a07b13db",
+      "7d369f1007c24b97b488097d",
+      "1851701e65d2441695331a6a",
+      "30198d1b37e04f2387203d11",
+      "38b6b528ab2c408d9e1f6fcd"
+    ],
+    "criterion.lmbda.cls": [
+      10,
+      14,
+      20,
+      28,
+      40,
+      80,
+      160,
+      320,
+      16000
+    ],
+    "epoch": [
+      102,
+      72,
+      69,
+      96,
+      101,
+      62,
+      62,
+      62,
+      63
+    ],
+    "loss": [
+      25.553863661409004,
+      30.623923927690463,
+      38.0638611977452,
+      45.97936653124842,
+      58.26457001672184,
+      94.63531061354874,
+      153.7114707415069,
+      260.48912199196593,
+      9907.80552171308
+    ]
+  }
+}
