@@ -1,0 +1,48 @@
+defaults:
+  - /paths: default
+  - /env: default
+  - /engine: default
+  - /runner: MultitaskPointCloudCompressionRunner
+  - /criterion: MultitaskPccRateDistortionLoss
+  - /optimizer: net_aux
+  - /scheduler: ReduceLROnPlateau
+  - /misc: default
+  - /dataset@dataset.train: modelnet40/train
+  - /dataset@dataset.valid: modelnet40/valid
+  - /dataset@dataset.infer: modelnet40/infer  # TODO same as valid/test?
+  - _self_
+
+paths:
+  _aim_repo: "pcc"
+
+exp:
+  name: "${model.name}-${exp.description}"
+  description:
+
+model:
+  name: "um-pcc-multitask-cls-pointnet"
+
+hp:
+  detach_y1_hat: True
+  num_points: 1024
+  num_classes: 40
+  # num_split_channels: [256, 256]
+  # num_split_channels: [512, 512]
+  # num_split_channels: [1024, 1]
+  # num_channels:
+  #   g_a:
+  #     pointwise: [3, 64, 64, 64, 128, 1024]
+  #     mixer: [1024, 1025]
+  #   g_s: [1025, 256, 512, 3072]
+  #   # g_s: [1025, 256, 512, 3 * ${hp.num_points}]
+  #   task_backend: [1024, 512, 256, "${hp.num_classes}"]
+
+criterion:
+  bpp_divide_by_num_points: False
+
+optimizer:
+  net:
+    lr: 0.001
+  aux:
+    lr: 0.05
+

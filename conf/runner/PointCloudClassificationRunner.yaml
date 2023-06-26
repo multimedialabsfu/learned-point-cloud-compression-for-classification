@@ -1,0 +1,19 @@
+type: "PointCloudClassificationRunner"
+
+inference: {}
+
+# Mean-averaged metrics to track for each data loader.
+meters:
+  train:
+    - loss
+    # - cls_loss
+  valid:
+    - loss
+    # - cls_loss
+  infer:
+    - loss
+    - acc_top1
+    - acc_top3
+
+metrics:
+  - "pc_acc_topk"

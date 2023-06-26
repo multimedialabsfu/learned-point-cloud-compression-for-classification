@@ -1,0 +1,38 @@
+defaults:
+  - /paths: default
+  - /env: default
+  - /engine: default
+  - /runner: PointCloudClassificationRunner
+  - /criterion: MultitaskPccRateDistortionLoss  # NOTE quite flexibly defined
+  - /optimizer: net
+  - /scheduler: ReduceLROnPlateau
+  - /misc: default
+  - /dataset@dataset.train: modelnet40/train
+  - /dataset@dataset.valid: modelnet40/valid
+  - /dataset@dataset.infer: modelnet40/infer  # TODO same as valid/test?
+  - _self_
+
+paths:
+  _aim_repo: "pcc"
+
+exp:
+  name: "${model.name}-${exp.description}"
+  description:
+
+model:
+  name: "um-pc-cls-pointnet"
+  # name: "um-pcc-cls-only-pointnet"
+
+hp:
+  num_points: 1024
+  num_classes: 40
+  num_channels:
+    g_a: [3, 64, 64, 64, 128, 1024]
+    task_backend: [1024, 512, 256, "${hp.num_classes}"]
+    # g_a: [3, 64, 64, 64, 128, 1024, 64]
+    # task_backend: [64, 1024, 512, 256, "${hp.num_classes}"]
+
+optimizer:
+  net:
+    lr: 0.001
+

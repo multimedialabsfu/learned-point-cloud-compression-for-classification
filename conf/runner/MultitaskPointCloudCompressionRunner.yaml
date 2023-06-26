@@ -1,0 +1,50 @@
+type: "MultitaskPointCloudCompressionRunner"
+
+inference:
+  skip_compress: True
+  skip_decompress: True
+
+# Mean-averaged metrics to track for each data loader.
+meters:
+  train:
+    - loss
+    # - aux_loss
+    # - bpp_loss
+    # - bpp_y1_loss
+    # - bpp_y2_loss
+    # - cls_loss
+    # - rec_loss
+    # - fm_1_loss
+    # - fm_2_loss
+  valid:
+    - loss
+    # - aux_loss
+    # - bpp_loss
+    # - bpp_y1_loss
+    # - bpp_y2_loss
+    # - cls_loss
+    # - rec_loss
+    # - fm_1_loss
+    # - fm_2_loss
+  infer:
+    - loss
+    # - aux_loss
+    - bpp_loss
+    - bpp_y1_loss
+    - bpp_y2_loss
+    - cls_loss
+    - rec_loss
+    # - fm_1_loss
+    # - fm_2_loss
+    - bpp
+    # - d1-psnr
+    # - d1-psnr-hausdorff
+    # - d2-psnr
+    # - d2-psnr-hausdorff
+    - acc_top1
+    - acc_top3
+
+metrics:
+  # - "pc_error"
+  - "pc_acc_topk"
+

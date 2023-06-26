@@ -1,0 +1,20 @@
+type: MultitaskPccRateDistortionLoss
+
+# Abbreviations
+# rec: reconstruction
+# cls: classification
+# fm: feature-matching
+
+# lmbda:
+#   rec: 1000.0
+#   cls: 100.0
+#   fm:
+#     "1": 1.0
+#     "2": 1.0
+
+lmbda:
+  rec: 0.0
+  cls: 0.0
+  fm:
+    "1": 0.0
+    "2": 0.0

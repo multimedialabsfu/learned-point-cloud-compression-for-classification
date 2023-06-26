@@ -1,0 +1,34 @@
+defaults:
+  - /paths: default
+  - /env: default
+  - /engine: default
+  - /runner: PointCloudCompressionRunner
+  - /criterion: ChamferPccRateDistortionLoss
+  - /optimizer: net_aux
+  - /scheduler: ReduceLROnPlateau
+  - /misc: default
+  - /dataset@dataset.train: modelnet40/train
+  - /dataset@dataset.valid: modelnet40/valid
+  - /dataset@dataset.infer: modelnet40/infer  # TODO same as valid/test?
+  - _self_
+
+paths:
+  _aim_repo: "pcc"
+
+exp:
+  name: "${model.name}-${exp.description}"
+  description:
+
+model:
+  name: "um-pcc-example"
+
+hp:
+  num_points: 2048
+  # num_bottleneck_channels: 
+
+optimizer:
+  net:
+    # lr: 0.001
+    lr: 0.01
+  aux:
+    lr: 0.05

@@ -1,0 +1,18 @@
+type: "ModelNetSimple"
+config:
+  root: "${paths.datasets}/modelnet/by_num_points/modelnet${.name}/${.num_points}"
+  split: "train"
+  name: "10"
+  num_points: "${hp.num_points}"
+  # cache_path: "${.root}/cache.pkl"
+loader:
+  shuffle: True
+  batch_size: 32
+  num_workers: 4
+settings:
+transforms: []
+meta:
+  name: "ModelNet10"
+  identifier: null
+  num_samples: 3991
+  steps_per_epoch:

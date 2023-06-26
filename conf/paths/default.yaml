@@ -1,0 +1,17 @@
+datasets:       "/data/datasets"
+
+_common_root:   "./logs"
+_aim_repo:      "main"
+aim:            "${._common_root}/aim/${._aim_repo}"
+runs_root:      "${._common_root}/runs"
+
+_run_root:      "${.runs_root}/${env.aim.run_hash}"
+checkpoints:    "${._run_root}/checkpoints"
+configs:        "${._run_root}/configs"
+engine:         "${._run_root}/engine"
+images:         "${._run_root}/images"
+src:            "${._run_root}/src"
+tensorboard:    "${._run_root}/tensorboard"
+
+checkpoint:     null  # to resume from checkpoint, override with e.g. "${.checkpoints}/runner.last.pth"
+model_checkpoint: null  # checkpoint to load only model weights from

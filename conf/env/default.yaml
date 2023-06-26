@@ -1,0 +1,24 @@
+aim:
+  repo: "${paths.aim}"
+  run_hash:
+git:
+  # version = f"r{commit_count}.{commit_hash}"
+  # main_version = latest commit in common on main_branch
+  compressai:
+    branch:
+    version:
+    main_branch: "master"
+    main_version:
+  compressai_trainer:
+    branch:
+    version:
+    main_branch: "master"
+    main_version:
+slurm:
+  account:
+  job_version:
+  job_array_task_version:
+  job_name:
+system:
+  hostname:
+  username:
