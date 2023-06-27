@@ -1,4 +1,5 @@
 from . import (
+    config,
     datasets,
     entropy_models,
     layers,
@@ -12,6 +13,7 @@ from . import (
 )
 
 __all__ = [
+    "config",
     "datasets",
     "entropy_models",
     "layers",
