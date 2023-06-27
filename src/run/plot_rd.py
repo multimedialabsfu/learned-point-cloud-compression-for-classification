@@ -16,6 +16,7 @@ from src.utils.compressai.results import compressai_dataframe
 
 from compressai_trainer.plot import plot_rd
 
+_M.DATASET = "point-cloud-classification/modelnet40"
 _M.TITLE = "Performance evaluation on ModelNet40 - Top-1 Accuracy"
 
 # _M.METRIC = "acc_top1"
@@ -52,18 +53,27 @@ _M.COMPRESSAI_CODECS = [
     "input-compression-tmc13",
 ]
 
-_M.REFERENCE_DF = pd.concat(
-    [
+
+def _reference_dataframes():
+    dfs = [
         compressai_dataframe(
             codec_name=name,
-            dataset="point-cloud-classification/modelnet40",
+            dataset=_M.DATASET,
             filename_format="{codec_name}",
         )
         for name in _M.COMPRESSAI_CODECS
     ]
-)
-_M.REFERENCE_DF["acc_top1"] = _M.REFERENCE_DF["acc_top1"] / 100.0
-_M.REFERENCE_DF["bpp_loss"] = _M.REFERENCE_DF["bit_loss"]
+
+    for df in dfs:
+        df["acc_top1"] = df["acc_top1"] / 100.0
+        df["bpp_loss"] = df["bit_loss"]
+
+    return dfs
+
+
+# For compressai_trainer <= 0.3.9:
+_M.REFERENCE_DF = pd.concat(_reference_dataframes())
+
 
 _M.HOVER_HPARAMS = [
     "model.name",
