@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import compressai_trainer.plot.plot as _M
+import compressai_trainer.plot.rd as _M
 
 _PLOT_RD_SCATTER_SETTINGS_COMMON_PC = dict(
     x="bpp",
