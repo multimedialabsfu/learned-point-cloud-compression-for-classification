@@ -11,9 +11,6 @@ pip install torch==1.13.1 torchvision==0.14.1
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
 ```
 
-TODO: compressai-trainer dependency relax torch
-
-
 
 ### `pc_error` tool
 
@@ -56,22 +53,31 @@ echo "$PATH" | sed 's/:/\n/g' | grep -q "$HOME/.local/bin" || (
 ```
 
 
+## Training
+
+Example run command for training a model:
+
+```python
+poetry run python -m src.run.train --config-path="$PWD/conf/" --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet" ++criterion.lmbda.cls=100
+```
+
+Please see [`scripts/run.sh`](./scripts/run.sh) for more examples.
+
+
+## Evaluation
+
+TODO describe how to run evaluation
+
+
+## Plotting
+
+TODO describe how to make plots
+
 
 ## TODO
 
-- Example run command, e.g.
-
-```python
-poetry run python -m src.run.train --config-path="$PWD/conf/" --config-name="example_pcc_singletask"
-
-poetry run compressai-train --config-path="$PWD/conf/" --config-name="example_pcc_singletask"   ++hp.num_points=1024  # ...
-```
-
-- Run commands for reproducing same models...
-
-
+- Push latest versions of submodules...
 - Ensure everything installs/downloads/builds/trains/evaluates (100% reproducibility)
-- Set latest versions of submodules
 - Add Dockerfile
 - Add dataset downloading/parsing scripts
 
