@@ -54,27 +54,6 @@ _M.COMPRESSAI_CODECS = [
 ]
 
 
-def _reference_dataframes():
-    dfs = [
-        compressai_dataframe(
-            codec_name=name,
-            dataset=_M.DATASET,
-            filename_format="{codec_name}",
-        )
-        for name in _M.COMPRESSAI_CODECS
-    ]
-
-    for df in dfs:
-        df["acc_top1"] = df["acc_top1"] / 100.0
-        df["bpp_loss"] = df["bit_loss"]
-
-    return dfs
-
-
-# For compressai_trainer <= 0.3.9:
-_M.REFERENCE_DF = pd.concat(_reference_dataframes())
-
-
 _M.HOVER_HPARAMS = [
     "model.name",
     # "criterion.lmbda",
@@ -114,6 +93,27 @@ _M.HOVER_DATA = [
 ]
 
 _M.HOVER_DATA += _M.HOVER_HPARAMS + _M.HOVER_METRICS
+
+
+def _reference_dataframes():
+    dfs = [
+        compressai_dataframe(
+            codec_name=name,
+            dataset=_M.DATASET,
+            filename_format="{codec_name}",
+        )
+        for name in _M.COMPRESSAI_CODECS
+    ]
+
+    for df in dfs:
+        df["acc_top1"] = df["acc_top1"] / 100.0
+        df["bpp_loss"] = df["bit_loss"]
+
+    return dfs
+
+
+# For compressai_trainer <= 0.3.9:
+_M.REFERENCE_DF = pd.concat(_reference_dataframes())
 
 
 def plot_dataframe(df: pd.DataFrame, args):
