@@ -66,30 +66,12 @@ Please see [`scripts/run.sh`](./scripts/run.sh) for more examples.
 
 ## Evaluation
 
-TODO describe how to run evaluation
+CompressAI Trainer will evaluate trained models.
+
+For other evaluation and analysis, see `scripts/`.
 
 
 ## Plotting
 
-TODO describe how to make plots
-
-
-## TODO
-
-- Push latest versions of submodules...
-- Ensure everything installs/downloads/builds/trains/evaluates (100% reproducibility)
-- Add Dockerfile
-- Add dataset downloading/parsing scripts
-
-For clarity:
-
-- Documentation of usage
-- Remove unused models, etc (e.g. pc_reconstruction), "ClusterAttention", losses, etc; perhaps in a separate "cleanup" commit for documentation
-
-Separate commits:
-
-- Rename "early split" or something like that? (Or is the other network a subset?)
-- Rename mini-001 -> micro (model name, etc)
-- Use same config structure for `g_a.transform.pointwise`
-- `rate_format = "bpp|bit"`
+See `scripts/run_plot.sh` for examples.
 
