@@ -30,15 +30,21 @@ MICRO_HPARAMS=(
 LITE_HPARAMS=(
   ++hp.num_channels.g_a.pointwise='[3,8,8,16,16,32]'
   ++hp.num_channels.g_a.mixer='[]'
-  ++hp.num_channels.task_backend='[32,512,256,40]'
+  ++hp.num_channels.task_backend.transform.pointwise='[32]'
+  ++hp.num_channels.task_backend.transform.mixer='[]'
+  ++hp.num_channels.task_backend.mlp='[32,512,256,40]'
   ++hp.groups.g_a.pointwise='[1,1,1,2,4]'
+  ++hp.groups.task_backend.transform.pointwise='[]'
 )
 
 FULL_HPARAMS=(
   ++hp.num_channels.g_a.pointwise='[3,64,64,64,128,1024]'
   ++hp.num_channels.g_a.mixer='[]'
-  ++hp.num_channels.task_backend='[1024,512,256,40]'
+  ++hp.num_channels.task_backend.transform.pointwise='[1024]'
+  ++hp.num_channels.task_backend.transform.mixer='[]'
+  ++hp.num_channels.task_backend.mlp='[1024,512,256,40]'
   ++hp.groups.g_a.pointwise='[1,1,1,1,1]'
+  ++hp.groups.task_backend.transform.pointwise='[]'
 )
 
 
@@ -67,9 +73,9 @@ train_ra_curves() {
 NUM_POINTS=(1024 512 256 128 64 32 16 8)
 LMBDAS=(16000 8000 4000 1000 320 160 80 40 28 20 14 10)
 
-train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet-mini-001" "${MICRO_HPARAMS[@]}"
-train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet" "${LITE_HPARAMS[@]}"
-train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet" "${FULL_HPARAMS[@]}"
+train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet-mmsp2023" "${MICRO_HPARAMS[@]}"
+train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet-mmsp2023" "${LITE_HPARAMS[@]}"
+train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet-mmsp2023" "${FULL_HPARAMS[@]}"
 
 
 ################################################################################

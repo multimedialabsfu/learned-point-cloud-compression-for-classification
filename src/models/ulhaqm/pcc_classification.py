@@ -120,8 +120,9 @@ class PointNetClassOnlyPccModel(BaseClassificationPccModel):
         self._setup_hooks()
 
 
+@register_model("um-pcc-cls-only-pointnet-mmsp2023")
 @register_model("um-pcc-cls-only-pointnet-mini-001")
-class PointNetClassOnlyPccModelMini001(BaseClassificationPccModel):
+class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
     latent_codec: Mapping[str, LatentCodec]
 
     def __init__(
@@ -130,27 +131,25 @@ class PointNetClassOnlyPccModelMini001(BaseClassificationPccModel):
         num_classes=40,
         num_channels={
             "g_a": {
-                # "pointwise": [3, 8, 8, 16, 16, 32],
-                "pointwise": [3, 8, 8, 32],
+                "pointwise": [3, 64, 64, 64, 128, 1024],
                 "mixer": [],
             },
             "task_backend": {
                 "transform": {
-                    "pointwise": [32, 32, 64, 64],
+                    "pointwise": [1024],
                     "mixer": [],
                 },
-                "mlp": [64, 512, 256, 40],
+                "mlp": [1024, 512, 256, 40],
             },
         },
         groups={
             "g_a": {
-                # "pointwise": [1, 1, 1, 2, 4],
-                "pointwise": [1, 1, 2],
+                "pointwise": [1, 1, 1, 1, 1],
             },
             "task_backend": {
                 "transform": {
-                    "pointwise": [1, 1, 1],
-                }
+                    "pointwise": [],
+                },
             },
         },
     ):
