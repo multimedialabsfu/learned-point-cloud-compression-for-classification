@@ -57,8 +57,7 @@ FULL_HPARAMS=(
 
 train_ra_curves() {
   for num_points in "${NUM_POINTS[@]}"; do
-    for ((i=0; i<"${#LMBDAS[@]}"; i+=2)); do
-      lmbda="${LMBDAS[i+j]}"
+    for lmbda in "${LMBDAS[@]}"; do
       train "$@" ++criterion.lmbda.cls="${lmbda}" ++hp.num_points="${num_points}"
     done
   done
