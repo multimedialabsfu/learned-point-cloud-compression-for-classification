@@ -40,9 +40,12 @@ class PcChannelwiseBppMeter(ChannelwiseBppMeter):
 
 
 class PcDebugOutputsLogger(DebugOutputsLogger):
-    def _log_output(self, mode, key, input, output, sample_idx):
+    def _log_output(self, mode, key, input, output, sample_idx, context):
         if sample_idx > 4:
             return
+
+        context = {"mode": mode, "key": key, **(context or {})}
+        context_str = "_".join(f"{v}" for v in context.values())
 
         if (mode, key) == ("dec", "x_hat"):
             self.runner._pc_figure_logger.log(input, output, sample_idx)
@@ -51,9 +54,8 @@ class PcDebugOutputsLogger(DebugOutputsLogger):
             arr = featuremap_image(output.cpu().numpy(), cmap=DEFAULT_COLORMAP)
 
         img_dir = self.runner.hparams["paths"]["images"]
-        Image.fromarray(arr).save(f"{img_dir}/{sample_idx:06}_{mode}_{key}.png")
+        Image.fromarray(arr).save(f"{img_dir}/{sample_idx:06}_{context_str}.png")
 
-        context = {"mode": mode, "key": key}
         log_kwargs = dict(
             format="webp",
             lossless=True,
