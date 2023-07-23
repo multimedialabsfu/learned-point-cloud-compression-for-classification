@@ -20,11 +20,11 @@ train --config-name="example_pcc_singletask" ++criterion.lmbda.cls=100
 MICRO_HPARAMS=(
   ++hp.num_channels.g_a.pointwise='[3,16]'
   ++hp.num_channels.g_a.mixer='[]'
-  ++hp.num_channels.task_backend.transform.pointwise='[16,64,64,64]'
+  ++hp.num_channels.task_backend.transform.pointwise='[16]'
   ++hp.num_channels.task_backend.transform.mixer='[]'
-  ++hp.num_channels.task_backend.mlp='[64,512,256,40]'
+  ++hp.num_channels.task_backend.mlp='[16,64,64,64,512,256,40]'
   ++hp.groups.g_a.pointwise='[1]'
-  ++hp.groups.task_backend.transform.pointwise='[1,1,1]'
+  ++hp.groups.task_backend.transform.pointwise='[]'
 )
 
 LITE_HPARAMS=(

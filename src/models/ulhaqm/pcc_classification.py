@@ -161,11 +161,17 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
         ]
         num_channels_task_backend = [
             *num_channels["task_backend"]["transform"]["pointwise"],
+            *num_channels["task_backend"]["transform"]["mixer"][1:],
             *num_channels["task_backend"]["mlp"][1:],
         ]
 
         assert num_channels_task_backend[0] == num_channels_g_a[-1]
         assert num_channels_task_backend[-1] == num_classes
+
+        # FIXME: Disabled since this hasn't been implemented correctly yet.
+        # Should probably be implemented in a separate model, to avoid confusion.
+        assert len(num_channels["task_backend"]["transform"]["pointwise"]) == 1
+        assert len(num_channels["task_backend"]["transform"]["mixer"]) == 0
 
         self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
 
