@@ -1,45 +1,10 @@
 from __future__ import annotations
 
-import torch
 import torch.nn as nn
 
-from .layers import Gain, Interleave, NamedLayer, Reshape, conv1d
+from .layers import Gain, Interleave, NamedLayer, Reshape
 
 GAIN = 10.0
-
-
-class ClusterAttention(nn.Module):
-    def __init__(self, num_channels, num_points, num_clusters):
-        super().__init__()
-        self.cluster_predict = ClusterPredict(num_channels, num_points, num_clusters)
-        self.post = conv1d(num_clusters * num_channels, num_channels, 1)
-        self.num_clusters = num_clusters
-
-    # TODO Is there a more "efficient" but equivalent way to do this?
-    def forward(self, x):
-        n, c, p = x.shape
-        k = self.num_clusters
-        probs = self.cluster_predict(x)
-        x = probs.reshape(n, k, 1, p) * x.reshape(n, 1, c, p)
-        x = x.reshape(n, k * c, p)
-        x = self.post(x)
-        return x
-
-
-class ClusterPredict(nn.Module):
-    def __init__(self, num_channels, num_points, num_clusters):
-        super().__init__()
-        self.conv1 = conv1d(num_channels, num_clusters, 15)
-        self.conv2 = conv1d(num_points, num_clusters, 15)
-        self.act = nn.Softmax(dim=1)
-
-    def forward(self, x):
-        a = self.conv1(x)
-        b = self.conv2(x.transpose(-1, -2))
-        b = torch.matmul(b, x)
-        logits = a + b
-        probs = self.act(logits)
-        return probs
 
 
 def conv1d_group_seq(num_channels, groups):
