@@ -1,19 +1,12 @@
 from __future__ import annotations
 
-import re
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 from catalyst import metrics
-from compressai.datasets.modelnet import PointCloudPreprocessor
-from compressai.registry import register_dataset
 from omegaconf import OmegaConf
-from torch.utils.data import Dataset
 
 from compressai_trainer.run.eval_model import setup
 from compressai_trainer.utils.metrics import compute_metrics
-from compressai_trainer.utils.point_cloud import pc_read
 
 FILESIZES_TSV = "results/tmc13_file_sizes.tsv"
 AGGREGATE_TSV = "results/tmc13_pointnet_001_aggregate.tsv"
@@ -49,40 +42,6 @@ MIN_SCALES = [
     1,  # 1024
     1,  # 2048
 ]
-
-
-@register_dataset("PlyFolderDataset")
-class PlyFolderDataset(Dataset):
-    """Dataset for point-clouds."""
-
-    def __init__(self, root: str, transform=None):
-        super().__init__()
-        self.root = root
-        self.paths = sorted(Path(root).glob("**/*.ply"))
-        self.transform = transform
-        self.preprocessor = PointCloudPreprocessor()
-
-    def __getitem__(self, index):
-        path = self.paths[index]
-        pattern = r"^(?P<loader>.*)_(?P<label_idx>\d+)_(?P<index>\d+)(\.bin)?\.ply$"
-        match = re.match(pattern, path.name)
-        if match is None:
-            raise ValueError(f"Could not parse path: {path}")
-        label_idx = int(match.group("label_idx"))
-        points = pc_read(path)
-        # assert points.shape[0] == self.num_points
-        assert points.shape[1] == 3
-        points = self.preprocessor.preprocess(points)
-        points = self.transform(points)
-        return {
-            "index": index,
-            "points": points,
-            "labels": label_idx,
-            # "path": str(path),
-        }
-
-    def __len__(self):
-        return len(self.paths)
 
 
 # TODO Document how to load a model/runner from a run_hash/config, etc... always confuses me.
