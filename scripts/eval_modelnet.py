@@ -137,6 +137,12 @@ def arange_at_edges(b, dtype=int):
     return b_.cumsum()
 
 
+def write_row_tsv(row, filename, mode):
+    row_str = "\t".join(f"{x}" for x in row)
+    with open(filename, mode) as f:
+        print(row_str, file=f)
+
+
 def run(run_hash, scale):
     runner = load_by_run_hash(run_hash, scale)
     loader = runner.loaders["infer"]
@@ -153,45 +159,49 @@ def run(run_hash, scale):
         out_infer = runner.predict_batch(batch)
         out_net = out_infer["out_net"]
         out_metrics = compute_metrics(out_net, batch, metrics_)
-        print(out_net["t_hat"].argmax().item(), batch["labels"].item())
+        label_hat_idx = out_net["t_hat"].argmax().item()
+        print(label_hat_idx, batch["labels"].item())
 
         for key in out_metrics.keys():
             if key not in meters:
                 continue
             meters[key].update(out_metrics[key], batch_size)
 
-        metrics_str = "\t".join(
-            f"{v:.6f}" for k, v in out_metrics.items() if k in meters
-        )
-        with open(SAMPLES_TSV, "a") as f:
-            print(
-                f"{run_hash}\t{num_points}\t{scale}\t"
-                f"{batch['labels'].item()}\t"
-                f"{batch['index'].item()}\t"
-                f"{batch['points'].shape[1]}\t"
-                f"{out_net['t_hat'].argmax().item()}\t"
-                f"{metrics_str}",
-                file=f,
-            )
+        row = [
+            run_hash,
+            num_points,
+            scale,
+            batch["labels"].item(),
+            batch["index"].item(),
+            batch["points"].shape[1],
+            label_hat_idx,
+            *[f"{v:.6f}" for k, v in out_metrics.items() if k in meters],
+        ]
+        write_row_tsv(row, SAMPLES_TSV, "a")
 
     print({k: m.mean for k, m in meters.items()})
 
-    metrics_str = "\t".join(f"{v.mean:.6f}" for _, v in meters.items())
-
-    with open(AGGREGATE_TSV, "a") as f:
-        print(f"{run_hash}\t{num_points}\t{scale}\t{metrics_str}", file=f)
+    row = [run_hash, num_points, scale, *[f"{v.mean:.6f}" for _, v in meters.items()]]
+    write_row_tsv(row, AGGREGATE_TSV, "a")
 
 
 def run_evals():
-    meters_str = "\t".join(["acc_top1", "acc_top3"])
-    with open(SAMPLES_TSV, "a") as f:
-        print(
-            f"run_hash\tnum_points\tscale\tlabel\tdataset_index\t"
-            f"num_points_sample\tpred_label\t{meters_str}",
-            file=f,
-        )
-    with open(AGGREGATE_TSV, "a") as f:
-        print(f"run_hash\tnum_points\tscale\t{meters_str}", file=f)
+    meters = ["acc_top1", "acc_top3"]
+
+    row = [
+        "run_hash",
+        "num_points",
+        "scale",
+        "label",
+        "dataset_index",
+        "num_points_sample",
+        "pred_label",
+        *meters,
+    ]
+    write_row_tsv(row, SAMPLES_TSV, "a")
+
+    row = ["run_hash", "num_points", "scale", *meters]
+    write_row_tsv(row, AGGREGATE_TSV, "a")
 
     for run_hash, min_scale in zip(RUN_HASHES, MIN_SCALES):
         for scale in SCALES:
