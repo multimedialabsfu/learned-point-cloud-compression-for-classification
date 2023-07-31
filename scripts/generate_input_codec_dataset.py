@@ -5,6 +5,13 @@ import re
 import subprocess
 from pathlib import Path
 
+OCT_ATTENTION_VIRTUALENV_DIR = (
+    "/home/mulhaq/.cache/pypoetry/virtualenvs/octattention-4URgkG2e-py3.11"
+)
+OCT_ATTENTION_DIR = (
+    "/mnt/data/code/research/downloaded/point-cloud-compression/OctAttention"
+)
+
 
 def tmc3_compress(in_file, bin_file, **kwargs):
     cmd = [
@@ -40,6 +47,53 @@ def tmc3_decompress(bin_file, rec_file, **kwargs):
     return {"num_bits": num_bits}
 
 
+def octattention_compress_decompress(in_file, bin_file, rec_file, **kwargs):
+    cmd = [
+        f"{OCT_ATTENTION_VIRTUALENV_DIR}/bin/python",
+        f"{OCT_ATTENTION_DIR}/run_codec.py",
+        f"--ckpt_path={OCT_ATTENTION_DIR}/modelsave/obj/encoder_epoch_00800093.pth",
+        f"--in_file={in_file}",
+        f"--bin_file={bin_file}",
+        f"--rec_file={rec_file}",
+        *[f"--{k}={v}" for k, v in kwargs.items()],
+    ]
+    try:
+        p = subprocess.run(
+            cmd, check=True, capture_output=True, text=True, cwd=OCT_ATTENTION_DIR
+        )
+    except subprocess.CalledProcessError as e:
+        print(e.stdout)
+        print(e.stderr)
+        raise e
+    num_bits = None
+    for line in p.stdout.splitlines():
+        m = re.match(r"^binsize\(b\): (?P<num_bits>[0-9]+)$", line)
+        if m is not None:
+            num_bits = int(m.group("num_bits"))
+            break
+    if num_bits is None:
+        raise RuntimeError("Could not parse bitstream size")
+    out = {"num_bits": num_bits}
+    return {"out_enc": out, "out_dec": out}
+
+
+def run_codec(codec, in_file, bin_file, rec_file, scale, **kwargs):
+    if codec == "tmc3":
+        out_enc = tmc3_compress(in_file, bin_file, inputScale=scale, **kwargs)
+        out_dec = tmc3_decompress(bin_file, rec_file, outputBinaryPly=0)
+        return {"out_enc": out_enc, "out_dec": out_dec}
+    if codec == "octattention":
+        for bptt in [64, 32, 16]:
+            try:
+                return octattention_compress_decompress(
+                    in_file, bin_file, rec_file, scale=scale, bptt=bptt, **kwargs
+                )
+            except subprocess.CalledProcessError:
+                pass
+        raise RuntimeError("Could not compress with OctAttention")
+    raise ValueError(f"Unknown codec: {codec}")
+
+
 def write_row_tsv(row, filename, mode):
     row_str = "\t".join(f"{x}" for x in row)
     with open(filename, mode) as f:
@@ -72,8 +126,8 @@ def main(argv=None):
         rec_file = Path(args.out_dir) / relative_path.with_suffix(".rec.ply")
         rec_file.parent.mkdir(parents=True, exist_ok=True)
 
-        out_enc = tmc3_compress(in_file, bin_file, inputScale=str(args.scale))
-        out_dec = tmc3_decompress(bin_file, rec_file, outputBinaryPly=0)
+        out = run_codec(args.codec, in_file, bin_file, rec_file, args.scale)
+        out_dec = out["out_dec"]
 
         row = [args.codec, in_file, bin_file, rec_file, out_dec["num_bits"]]
         write_row_tsv(row, args.out_results_tsv, "a")
