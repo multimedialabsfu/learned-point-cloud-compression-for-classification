@@ -3,6 +3,7 @@ import re
 
 import bjontegaard as bd
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 
@@ -15,6 +16,8 @@ sns.set_theme(
     font="Times New Roman",
     # font_scale=1,
 )
+
+EPSILON = 1e-8
 
 DATASET = "ModelNet40"
 x = "bit_loss"
@@ -164,25 +167,65 @@ def write_codec_plot(df, codec_type):
     plt.close(fig)
 
 
+def preprocess_for_bd(x_ref, y_ref, x_curr, y_curr):
+    x_ref = np.array(x_ref)
+    y_ref = np.array(y_ref)
+    x_curr = np.array(x_curr)
+    y_curr = np.array(y_curr)
+
+    # Ensure strictly monotonically increasing.
+    for arr in [x_ref, x_curr, y_ref, y_curr]:
+        assert (arr[:-1] < arr[1:]).all()
+
+    x_min = min(x_ref[0], x_curr[0])
+    x_max = max(x_ref[-1], x_curr[-1])
+
+    # if x_ref[0] > x_min:
+    #     x_ref = [x_min, *x_ref]
+    #     y_ref = [INTERPOLATE_WITH_RD_ORIGIN, *y_ref]
+    #
+    # if x_curr[0] > x_min:
+    #     x_curr = [x_min, *x_curr]
+    #     y_curr = [INTERPOLATE_WITH_RD_ORIGIN, *y_curr]
+
+    if "avoid_x_zero":
+        x_ref[x_ref == 0] = x_ref[1] - EPSILON
+        x_curr[x_curr == 0] = x_curr[1] - EPSILON
+
+    if x_ref[-1] < x_max:
+        x_ref = [*x_ref, x_max]
+        y_ref = [*y_ref, y_ref[-1] + EPSILON]
+
+    if x_curr[-1] < x_max:
+        x_curr = [*x_curr, x_max]
+        y_curr = [*y_curr, y_curr[-1] + EPSILON]
+
+    return x_ref, y_ref, x_curr, y_curr
+
+
 def compute_stats(name, df_curr, df_ref):
     # codec_type = df_curr["codec_type"].unique()[0]
     # df_curr = df_curr[df_curr["bit_loss"] < BD_MAX_BITRATES[codec_type]["curr"]]
     # df_ref = df_ref[df_ref["bit_loss"] < BD_MAX_BITRATES[codec_type]["ref"]]
 
+    x_ref, y_ref, x_curr, y_curr = preprocess_for_bd(
+        df_ref[x], df_ref[y], df_curr[x], df_curr[y]
+    )
+
     bd_rate = bd.bd_rate(
-        rate_anchor=df_ref[x],
-        dist_anchor=df_ref[y],
-        rate_test=df_curr[x],
-        dist_test=df_curr[y],
+        rate_anchor=x_ref,
+        dist_anchor=y_ref,
+        rate_test=x_curr,
+        dist_test=y_curr,
         method="akima",
         require_matching_points=False,
     )
 
     bd_dist = bd.bd_psnr(
-        rate_anchor=df_ref[x],
-        dist_anchor=df_ref[y],
-        rate_test=df_curr[x],
-        dist_test=df_curr[y],
+        rate_anchor=x_ref,
+        dist_anchor=y_ref,
+        rate_test=x_curr,
+        dist_test=y_curr,
         method="akima",
         require_matching_points=False,
     )
