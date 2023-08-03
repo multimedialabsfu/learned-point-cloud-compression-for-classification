@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import math
 import re
 import subprocess
 from pathlib import Path
@@ -47,6 +48,44 @@ def tmc3_decompress(bin_file, rec_file, **kwargs):
     return {"num_bits": num_bits}
 
 
+def draco_compress(in_file, bin_file, **kwargs):
+    cmd = [
+        "draco_encoder",
+        "-point_cloud",
+        "-i",
+        f"{in_file}",
+        "-o",
+        f"{bin_file}",
+        *[x for k, v in kwargs.items() for x in [f"-{k}", f"{v}"]],
+    ]
+    p = subprocess.run(cmd, check=True, capture_output=True, text=True)
+    # print(p.stdout)
+    num_bits = None
+    for line in p.stdout.splitlines():
+        m = re.match(r"^Encoded size = (?P<num_bytes>[0-9]+) bytes$", line)
+        if m is not None:
+            num_bits = int(m.group("num_bytes")) * 8
+            break
+    if num_bits is None:
+        raise RuntimeError("Could not parse bitstream size")
+    return {"num_bits": num_bits}
+
+
+def draco_decompress(bin_file, rec_file, **kwargs):
+    cmd = [
+        "draco_decoder",
+        "-point_cloud",
+        "-i",
+        f"{bin_file}",
+        "-o",
+        f"{rec_file}",
+        *[x for k, v in kwargs.items() for x in [f"-{k}", f"{v}"]],
+    ]
+    p = subprocess.run(cmd, check=True, capture_output=True, text=True)
+    # print(p.stdout)
+    return {}
+
+
 def octattention_compress_decompress(in_file, bin_file, rec_file, **kwargs):
     cmd = [
         f"{OCT_ATTENTION_VIRTUALENV_DIR}/bin/python",
@@ -81,6 +120,11 @@ def run_codec(codec, in_file, bin_file, rec_file, scale, **kwargs):
     if codec == "tmc3":
         out_enc = tmc3_compress(in_file, bin_file, inputScale=scale, **kwargs)
         out_dec = tmc3_decompress(bin_file, rec_file, outputBinaryPly=0)
+        return {"out_enc": out_enc, "out_dec": out_dec}
+    if codec == "draco":
+        qp = math.log2(scale)
+        out_enc = draco_compress(in_file, bin_file, qp=qp, cl=10, **kwargs)
+        out_dec = draco_decompress(bin_file, rec_file)
         return {"out_enc": out_enc, "out_dec": out_dec}
     if codec == "octattention":
         for bptt in [64, 32, 16]:
@@ -127,15 +171,19 @@ def main(argv=None):
         rec_file.parent.mkdir(parents=True, exist_ok=True)
 
         out = run_codec(args.codec, in_file, bin_file, rec_file, args.scale)
-        out_dec = out["out_dec"]
+        num_bits = (
+            out["out_enc"]["num_bits"]
+            if "num_bits" in out["out_enc"]
+            else out["out_dec"]["num_bits"]
+        )
 
-        row = [args.codec, in_file, bin_file, rec_file, out_dec["num_bits"]]
+        row = [args.codec, in_file, bin_file, rec_file, num_bits]
         write_row_tsv(row, args.out_results_tsv, "a")
 
         print(in_file)
         print(bin_file)
         print(rec_file)
-        print(f"num_bits: {out_dec['num_bits']}")
+        print(f"num_bits: {num_bits}")
         print("-" * 80)
 
 
