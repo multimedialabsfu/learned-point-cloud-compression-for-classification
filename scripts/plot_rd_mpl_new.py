@@ -1,3 +1,4 @@
+import os
 import re
 
 import bjontegaard as bd
@@ -5,6 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+import src  # noqa: F401
 from compressai_trainer.utils.compressai.results import compressai_dataframe
 
 sns.set_theme(
@@ -18,7 +20,7 @@ DATASET = "ModelNet40"
 x = "bit_loss"
 y = "acc_top1"
 
-CODEC_TYPES = ["full", "lite", "micro"]
+CODEC_TYPES = ["full", "lite", "micro", "input-compression"]
 
 CODECS = [
     "full_points=1024",
@@ -46,7 +48,11 @@ CODECS = [
     "micro_points=16",
     "micro_points=8",
     "input-compression-tmc13",
+    "input-compression-octattention",
+    "input-compression-draco",
 ]
+
+REF_CODEC_NAME = "Input compression codec [tmc13, P=*]"
 
 COLORS = {
     "baseline_with_transform": "#999999",
@@ -119,30 +125,39 @@ def plot_baseline(ax, dataset):
 def write_codec_plot(df, codec_type):
     fig, ax = plt.subplots(figsize=(0.9 * 6.4, 1.0 * 4.8))
 
-    ax.set(
-        xlabel="Rate (bits)",
-        ylabel="Top-1 Accuracy (%)",
-        xlim=[0, 600],
-        ylim=[0, 100],
-    )
+    if codec_type == "input-compression":
+        ax.set(
+            xlabel="Rate (bits)",
+            ylabel="Top-1 Accuracy (%)",
+            xlim=[0, 3000],
+            ylim=[0, 100],
+        )
+        palette = [
+            *sns.color_palette("husl", 9)[-1:],
+            *sns.color_palette("cubehelix", 3)[:2],
+        ]
+    else:
+        ax.set(
+            xlabel="Rate (bits)",
+            ylabel="Top-1 Accuracy (%)",
+            xlim=[0, 600],
+            ylim=[0, 100],
+        )
+        palette = sns.color_palette("husl", 9)
 
     plot_baseline(ax, DATASET)
 
-    mask = (df["codec_type"] == codec_type) | (df["codec_type"] == "input-compression")
+    mask = (df["codec_type"] == codec_type) | (df["name"] == REF_CODEC_NAME)
+    # mask |= (df["codec_type"] == "input-compression")
     df_curr = df[mask]
 
-    sns.lineplot(
-        ax=ax,
-        data=df_curr,
-        x=x,
-        y=y,
-        hue="name",
-        palette=sns.color_palette("husl", 9),
-    )
+    sns.lineplot(ax=ax, data=df_curr, x=x, y=y, hue="name", palette=palette)
     ax.legend().set_title(None)
 
+    root_dir = "results/plot_rd/pdf/rate_accuracy"
+    os.makedirs(root_dir, exist_ok=True)
     fig.savefig(
-        f"results/plot_rd/pdf/rate_accuracy/{DATASET.lower()}_{codec_type}.pdf",
+        f"{root_dir}/{DATASET.lower()}_{codec_type}.pdf",
         bbox_inches="tight",
         # pad_inches=0,
     )
@@ -174,14 +189,14 @@ def compute_stats(name, df_curr, df_ref):
 
     max_y = df_curr[y].max()
 
-    print(f"{name:<40} & {max_y:6.1f} & {bd_rate:6.1f} & {bd_dist:6.1f}")
+    print(f"{name:<40} & {max_y:6.1f} & {bd_rate:6.1f} & {bd_dist:6.1f} \\\\")
 
 
 def main():
     df = read_dataframe()
     print(df.to_string())
 
-    df_ref = df[df["codec_type"] == "input-compression"]
+    df_ref = df[df["name"] == REF_CODEC_NAME]
 
     for name, df_curr in df.groupby("name", sort=False):
         compute_stats(name, df_curr, df_ref)
