@@ -12,7 +12,27 @@
 
 ## Installation
 
-### Using poetry
+
+### Clone repository
+
+```bash
+git clone https://github.com/multimedialabsfu/learned-point-cloud-compression-for-classification
+git submodule update --init --recursive
+```
+
+
+### Python dependencies
+
+
+#### Using poetry
+
+First, install [poetry](https://python-poetry.org/docs/#installation):
+
+```bash
+curl -sSL https://install.python-poetry.org | python3 -
+```
+
+Then, install all python dependencies:
 
 ```bash
 poetry install
@@ -24,7 +44,23 @@ pip install "git+https://github.com/facebookresearch/pytorch3d.git"
 ```
 
 
-### `pc_error` tool
+#### Using virtualenv
+
+```bash
+virtualenv venv
+source venv/bin/activate
+pip install -e .
+pip install -e ./submodules/compressai
+pip install -e ./submodules/compressai-trainer
+pip install torch==1.13.1 torchvision==0.14.1
+pip install "git+https://github.com/facebookresearch/pytorch3d.git"
+```
+
+
+### External tools
+
+
+#### `pc_error` tool
 
 ```bash
 cd third_party/pc_error
@@ -36,7 +72,7 @@ cp pc_error "$HOME/.local/bin/"
 ```
 
 
-### tmc13 codec
+#### tmc13 codec
 
 ```bash
 git clone https://github.com/MPEGGroup/mpeg-pcc-tmc13
@@ -65,25 +101,63 @@ echo "$PATH" | sed 's/:/\n/g' | grep -q "$HOME/.local/bin" || (
 ```
 
 
+## Datasets
+
+ - Download the [ModelNet40] dataset.
+ - To generate datasets for specific number of points `N`, use [`scripts/generate_datasets_by_n_points.py`](./scripts/generate_datasets_by_n_points.py).
+ - Many point-cloud codecs accept `*.ply` files, but not `*.off`. To convert the dataset, install the `ctmconv` and `fd` utilities and run [`scripts/generate_datasets_to_ply.sh`](./scripts/generate_datasets_to_ply.sh).
+
+
 ## Training
 
-Example run command for training a model:
+We use [CompressAI Trainer] for training. See the [walkthrough] for more details.
+
+To train a single-task classification compression model, use:
 
 ```bash
-python -m src.run.train --config-path="$PWD/conf/" --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet-mmsp2023" ++criterion.lmbda.cls=100
+python -m src.run.train \
+  --config-path="$PWD/conf/" \
+  --config-name="example_pcc_singletask" \
+  ++model.name="um-pcc-cls-only-pointnet-mmsp2023" \
+  ++hp.num_points=1024 \
+  ++criterion.lmbda.cls=100
 ```
 
-Please see [`scripts/run.sh`](./scripts/run.sh) for more examples.
+To train a multi-task input reconstruction compression model, use:
+
+```bash
+python -m src.run.train \
+  --config-path="$PWD/conf/" \
+  --config-name="example_pcc_multitask" \
+  ++model.name="um-pcc-multitask-cls-pointnet" \
+  ++hp.num_points=1024 \
+  ++hp.detach_y1_hat=True \
+  ++criterion.lmbda.rec=16000 \
+  ++criterion.lmbda.cls=100
+```
+
+To train vanilla PointNet (i.e. no compression), use:
+
+```bash
+python -m src.run.train \
+  --config-path="$PWD/conf/" \
+  --config-name="example_pc_task" \
+  ++model.name="um-pc-cls-pointnet" \
+  ++hp.num_points=1024 \
+  ++criterion.lmbda.cls=1.0
+```
+
+Please see [`scripts/run.sh`](./scripts/run.sh) for more examples, including how to train different codec configurations/layer sizes.
 
 
 ## Evaluation
 
-CompressAI Trainer will evaluate trained models.
-
-For other evaluation and analysis, see `scripts/`.
+[CompressAI Trainer] automatically evaluates models during training. To see the Aim experiment tracker/dashboard, please follow [these instructions](https://interdigitalinc.github.io/CompressAI-Trainer/tutorials/full.html#viewing-the-experiment-dashboard-in-aim).
 
 
 ## Saving results to JSON
+
+To save the results to JSON, modify [`scripts/save_json_from_aim_query.py`](./scripts/save_json_from_aim_query.py) to query your specific models. (By default, it is currently set up to generate all the trained codec curves shown in our paper.) Then, run:
 
 ```bash
 python scripts/save_json_from_aim_query.py --aim-repo-path="/path/to/aim/repo" --output-dir="results/point-cloud-classification/modelnet40"
@@ -92,7 +166,17 @@ python scripts/save_json_from_aim_query.py --aim-repo-path="/path/to/aim/repo" -
 
 ## Plotting
 
-See `scripts/run_plot.sh` for examples.
+- **RD curves:** Once the JSON results are saved, add the relevant files to the `CODECS` list in [`scripts/plot_rd_mpl.py`](./scripts/plot_rd_mpl.py) and run it to plot the RD curves.
+- **Reconstructed point clouds:** using [`scripts/plot_point_cloud_mpl.py`](./scripts/plot_point_cloud_mpl.py).
+- **Critical point sets:** [`scripts/plot_critical_point_set.py`](./scripts/plot_critical_point_set.py) can be used to plot the critical point sets. See [`scripts/run_plot.sh`](./scripts/run_plot.sh) for example usage.
+
+
+## Input compression codec evaluation
+
+In our paper, we also evaluated "input compression codec" performance. To reproduce these results, please follow the procedure outlined in the paper, and make use of the following scripts:
+
+ - [`scripts/generate_input_codec_dataset.sh`](./scripts/generate_input_codec_dataset.sh)
+ - [`scripts/eval_input_codec.sh`](./scripts/eval_input_codec.sh)
 
 
 ## Citation
@@ -107,3 +191,10 @@ Please cite this work as:
   year = {2023},
 }
 ```
+
+
+
+
+[ModelNet40]: http://modelnet.cs.princeton.edu/ModelNet40.zip
+[CompressAI Trainer]: https://github.com/InterDigitalInc/CompressAI-Trainer
+[walkthrough]: https://interdigitalinc.github.io/CompressAI-Trainer/tutorials/full.html

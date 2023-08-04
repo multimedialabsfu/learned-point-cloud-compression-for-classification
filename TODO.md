@@ -2,6 +2,8 @@
 - Ensure everything installs/downloads/builds/trains/evaluates (100% reproducibility)
 - Add Dockerfile
 - Add dataset downloading/parsing scripts
+- Upload pretrained models (that are compatible with "um-pcc-cls-only-pointnet-mmsp2023")
+- Remove unused "um-pcc-cls-only-pointnet" to avoid confusion?
 
 For clarity:
 
