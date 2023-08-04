@@ -2,7 +2,7 @@
   "name": "Proposed codec [full, P=512]",
   "description": "",
   "meta": {
-    "model.name": "um-pcc-cls-only-pointnet",
+    "model.name": "um-pcc-cls-only-pointnet-mmsp2023",
     "dataset.train.meta.name": "ModelNet40",
     "hp.num_classes": 40,
     "hp.num_points": 512,

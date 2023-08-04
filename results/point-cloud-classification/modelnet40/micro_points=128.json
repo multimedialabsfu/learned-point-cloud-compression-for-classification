@@ -2,7 +2,7 @@
   "name": "Proposed codec [micro, P=128]",
   "description": "",
   "meta": {
-    "model.name": "um-pcc-cls-only-pointnet-mini-001",
+    "model.name": "um-pcc-cls-only-pointnet-mmsp2023",
     "dataset.train.meta.name": "ModelNet40",
     "hp.num_classes": 40,
     "hp.num_points": 128,
