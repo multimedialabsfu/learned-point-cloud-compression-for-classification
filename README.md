@@ -71,6 +71,13 @@ CompressAI Trainer will evaluate trained models.
 For other evaluation and analysis, see `scripts/`.
 
 
+## Saving results to JSON
+
+```bash
+python scripts/save_json_from_aim_query.py --aim-repo-path="/path/to/aim/repo" --output-dir="results/point-cloud-classification/modelnet40"
+```
+
+
 ## Plotting
 
 See `scripts/run_plot.sh` for examples.

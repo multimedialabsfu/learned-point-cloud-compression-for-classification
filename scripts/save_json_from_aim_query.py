@@ -1,12 +1,12 @@
+import argparse
 import json
+import os
 
 import aim
 
 from compressai_trainer.run.plot_rd import HOVER_METRICS
 from compressai_trainer.utils.aim.query import get_runs_dataframe, run_hashes_by_query
 from compressai_trainer.utils.optimal import optimal_dataframe
-
-AIM_REPO_PATH = "/home/mulhaq/data/aim/pc-mordor/pcc"
 
 OPTIMAL_METHOD = "convex"
 
@@ -89,12 +89,12 @@ def write_json(df, path, hover_hparams):
         json.dump(out_dict, f, indent=2)
 
 
-def run_writer(repo, meta, name, hover_hparams):
+def run_writer(output_dir, repo, meta, name, hover_hparams):
     query = " and ".join(f"run.{k} == {repr(v)}" for k, v in meta.items())
 
     stem_keys = ["model.name", "hp.num_channels.g_a.pointwise", "hp.num_points"]
     stem = ";".join(f"{k}={meta[k]}" for k in stem_keys)
-    out_path = f"results/plot_rd/json/{stem}.json"
+    out_path = f"{output_dir}/{stem}.json"
 
     print(f"Query: {query}")
     print(f"Output path: {out_path}")
@@ -123,8 +123,20 @@ def run_writer(repo, meta, name, hover_hparams):
     write_json(df, out_path, hover_hparams)
 
 
+def build_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--aim-repo-path", required=True)
+    parser.add_argument("--output-dir", required=True)
+    return parser
+
+
 def main():
-    repo = aim.Repo(AIM_REPO_PATH)
+    parser = build_parser()
+    args = parser.parse_args()
+
+    repo = aim.Repo(args.aim_repo_path)
+
+    os.makedirs(args.output_dir, exist_ok=True)
 
     for num_points in [1024, 512, 256, 128, 64, 32, 16, 8]:
         meta = {
@@ -139,6 +151,7 @@ def main():
         }
 
         run_writer(
+            args.output_dir,
             repo,
             meta,
             name=f"Proposed codec [full, P={num_points}]",
@@ -158,6 +171,7 @@ def main():
         }
 
         run_writer(
+            args.output_dir,
             repo,
             meta,
             name=f"Proposed codec [lite, P={num_points}]",
@@ -180,6 +194,7 @@ def main():
         }
 
         run_writer(
+            args.output_dir,
             repo,
             meta,
             name=f"Proposed codec [micro, P={num_points}]",
