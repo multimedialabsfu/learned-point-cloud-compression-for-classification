@@ -121,7 +121,7 @@ class PointNetClassOnlyPccModel(BaseClassificationPccModel):
 
 
 @register_model("um-pcc-cls-only-pointnet-mmsp2023")
-@register_model("um-pcc-cls-only-pointnet-mini-001")
+@register_model("um-pcc-cls-only-pointnet-mini-001")  # NOTE: Old name.
 class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
     latent_codec: Mapping[str, LatentCodec]
 

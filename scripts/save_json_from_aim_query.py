@@ -166,7 +166,7 @@ def main():
 
     for num_points in [1024, 512, 256, 128, 64, 32, 16, 8]:
         meta = {
-            "model.name": "um-pcc-cls-only-pointnet-mini-001",
+            "model.name": "um-pcc-cls-only-pointnet-mmsp2023",
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
             "hp.num_channels.g_a.pointwise": [3, 16],
