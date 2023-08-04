@@ -57,8 +57,8 @@ echo "$PATH" | sed 's/:/\n/g' | grep -q "$HOME/.local/bin" || (
 
 Example run command for training a model:
 
-```python
-poetry run python -m src.run.train --config-path="$PWD/conf/" --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet" ++criterion.lmbda.cls=100
+```bash
+python -m src.run.train --config-path="$PWD/conf/" --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet-mmsp2023" ++criterion.lmbda.cls=100
 ```
 
 Please see [`scripts/run.sh`](./scripts/run.sh) for more examples.
