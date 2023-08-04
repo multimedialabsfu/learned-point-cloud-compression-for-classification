@@ -1,3 +1,4 @@
+- Reconstructed images/RD curves/etc
 - Ensure everything installs/downloads/builds/trains/evaluates (100% reproducibility)
 - Add Dockerfile
 - Add dataset downloading/parsing scripts

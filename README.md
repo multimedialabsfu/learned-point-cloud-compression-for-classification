@@ -1,3 +1,15 @@
+# Learned Point Cloud Compression for Classification
+
+> <sup>**Abstract:** Deep learning is increasingly being used to perform machine vision tasks such as classification, object detection, and segmentation on 3D point cloud data. However, deep learning inference is computationally expensive. The limited computational capabilities of end devices thus necessitate a codec for transmitting point cloud data over the network for server-side processing. Such a codec must be lightweight and capable of achieving high compression ratios without sacrificing accuracy. Motivated by this, we present a novel point cloud codec that is highly specialized for the machine task of classification. Our codec, based on PointNet, achieves a significantly better rate-accuracy trade-off in comparison to alternative methods. In particular, it achieves a 94% reduction in BD-bitrate over non-specialized codecs on the ModelNet40 dataset. For low-resource end devices, we also propose two lightweight configurations of our encoder that achieve similar BD-bitrate reductions of 93% and 92% with 3% and 5% drops in top-1 accuracy, while consuming only 0.470 and 0.048 encoder-side kMACs/point, respectively. Our codec demonstrates the potential of specialized codecs for machine analysis of point clouds, and provides a basis for extension to more complex tasks and datasets in the future.</sup>
+
+- **Authors:** Mateen Ulhaq and Ivan V. Bajić
+- **Affiliation:** Simon Fraser University
+- **Paper:** Published at MMSP 2023. Available online: [[arXiv](TODO)]. [[BibTeX citation](#citation)]
+
+
+----
+
+
 ## Installation
 
 ### Using poetry
@@ -82,3 +94,16 @@ python scripts/save_json_from_aim_query.py --aim-repo-path="/path/to/aim/repo" -
 
 See `scripts/run_plot.sh` for examples.
 
+
+## Citation
+
+Please cite this work as:
+
+```bibtex
+@inproceedings{ulhaq2023mmsp,
+  title = {Learned Point Cloud Compression for Classification},
+  author = {Ulhaq, Mateen and Baji\'{c}, Ivan V.},
+  booktitle = {Proc. IEEE MMSP},
+  year = {2023},
+}
+```
