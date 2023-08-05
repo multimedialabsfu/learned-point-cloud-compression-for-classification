@@ -40,7 +40,6 @@ poetry install
 poetry shell
 pip install -e ./submodules/compressai
 pip install -e ./submodules/compressai-trainer
-pip install torch==1.13.1 torchvision==0.14.1
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
 ```
 
@@ -53,7 +52,6 @@ source venv/bin/activate
 pip install -e .
 pip install -e ./submodules/compressai
 pip install -e ./submodules/compressai-trainer
-pip install torch==1.13.1 torchvision==0.14.1
 pip install "git+https://github.com/facebookresearch/pytorch3d.git"
 ```
 
