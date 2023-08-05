@@ -102,9 +102,41 @@ echo "$PATH" | sed 's/:/\n/g' | grep -q "$HOME/.local/bin" || (
 
 ## Datasets
 
- - Download the [ModelNet40] dataset.
- - To generate datasets for specific number of points `N`, use [`scripts/generate_datasets_by_n_points.py`](./scripts/generate_datasets_by_n_points.py).
- - Many point-cloud codecs accept `*.ply` files, but not `*.off`. To convert the dataset, install the `ctmconv` and `fd` utilities and run [`scripts/generate_datasets_to_ply.sh`](./scripts/generate_datasets_to_ply.sh).
+We use the [ModelNet40] dataset. Note that this dataset is **automatically downloaded** by the `torch_geometric.datasets.modelnet.ModelNet` class. By default, `++dataset.{train,valid,infer}.config.root` is set to `"${paths.datasets}/modelnet/by_n_pt/modelnet${.name}/${.num_points}"`. For compatibility with our scripts, we recommend that you also follow the same directory structure, and only override `++paths.dataset`.
+
+OPTIONAL: For evaluating [input compression codecs](#input-compression-codecs):
+   - To generate datasets for specific number of points `N`, use [`scripts/generate_datasets_by_n_points.py`](./scripts/generate_datasets_by_n_points.py).
+   - Many point-cloud codecs accept `*.ply` files, but not `*.off`. To convert the dataset, install the `ctmconv` and `fd` utilities and run [`scripts/generate_datasets_to_ply.sh`](./scripts/generate_datasets_to_ply.sh).
+
+
+<details>
+
+<summary>Our directory structure</summary>
+
+For reference, we used the following directory structure.
+
+```
+${paths.datasets}/modelnet/
+├── by_n_pt
+│   └── modelnet40
+│       ├── 1024            <-- format=.pt, points=1024, processed
+│       ├── 512
+│       └── ...
+├── by_n_ply
+│   ├── 1024                <-- format=.ply, points=1024, flat
+│   ├── 0512
+│   └── ...
+├── by_n_scale_ply
+│   ├── 1024
+│   │   ├── 0256            <-- format=.ply, points=1024, scale=256, flat
+│   │   ├── 0128
+│   │   └── ...
+│   └── ...
+├── modelnet40              <-- format=.off, default
+└── modelnet40_repaired_off <-- format=.off, class/loader (e.g. desk/train)
+```
+
+</details>
 
 
 ## Training
@@ -118,6 +150,7 @@ python -m src.run.train \
   --config-path="$PWD/conf/" \
   --config-name="example_pcc_singletask" \
   ++model.name="um-pcc-cls-only-pointnet-mmsp2023" \
+  ++paths.datasets="$HOME/data/datasets" \
   ++hp.num_points=1024 \
   ++criterion.lmbda.cls=100
 ```
@@ -129,6 +162,7 @@ python -m src.run.train \
   --config-path="$PWD/conf/" \
   --config-name="example_pcc_multitask" \
   ++model.name="um-pcc-multitask-cls-pointnet" \
+  ++paths.datasets="$HOME/data/datasets" \
   ++hp.num_points=1024 \
   ++hp.detach_y1_hat=True \
   ++criterion.lmbda.rec=16000 \
@@ -142,6 +176,7 @@ python -m src.run.train \
   --config-path="$PWD/conf/" \
   --config-name="example_pc_task" \
   ++model.name="um-pc-cls-pointnet" \
+  ++paths.datasets="$HOME/data/datasets" \
   ++hp.num_points=1024 \
   ++criterion.lmbda.cls=1.0
 ```
