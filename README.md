@@ -35,6 +35,7 @@ curl -sSL https://install.python-poetry.org | python3 -
 Then, install all python dependencies:
 
 ```bash
+poetry env use python3.10
 poetry install
 poetry shell
 pip install -e ./submodules/compressai
