@@ -1,6 +1,6 @@
 type: "ModelNetSimple"
 config:
-  root: "${paths.datasets}/modelnet/by_num_points/modelnet${.name}/${.num_points}"
+  root: "${paths.datasets}/modelnet/by_n_pt/modelnet${.name}/${.num_points}"
   split: "test"
   name: "40"
   num_points: "${hp.num_points}"
