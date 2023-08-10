@@ -116,6 +116,16 @@ def octattention_compress_decompress(in_file, bin_file, rec_file, **kwargs):
     return {"out_enc": out, "out_dec": out}
 
 
+# NOTE: This codec is run externally beforehand.
+def external_compress_decompress(in_file, bin_file, rec_file, **kwargs):
+    common_file = Path(bin_file).with_suffix("")
+    bin_files = sorted(common_file.parent.glob(f"{common_file.name}.*bin"))
+    assert len(bin_files) > 0
+    num_bits = sum(sub_bin_file.stat().st_size * 8 for sub_bin_file in bin_files)
+    out = {"num_bits": num_bits}
+    return {"out_enc": out, "out_dec": out}
+
+
 def run_codec(codec, in_file, bin_file, rec_file, scale, **kwargs):
     if codec == "tmc3":
         out_enc = tmc3_compress(in_file, bin_file, inputScale=scale, **kwargs)
@@ -135,6 +145,8 @@ def run_codec(codec, in_file, bin_file, rec_file, scale, **kwargs):
             except subprocess.CalledProcessError:
                 pass
         raise RuntimeError("Could not compress with OctAttention")
+    if codec == "external":
+        return external_compress_decompress(in_file, bin_file, rec_file, **kwargs)
     raise ValueError(f"Unknown codec: {codec}")
 
 
