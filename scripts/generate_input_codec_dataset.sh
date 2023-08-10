@@ -3,6 +3,7 @@
 codec_name="tmc3"
 in_dir_root="/mnt/data/datasets/modelnet/by_n_ply"
 out_dir_root="/mnt/data/datasets/modelnet/by_n_scale_ply_${codec_name}"
+# TODO supply format string instead of hardcoding...
 
 NUM_POINTSES=(8 16 32 64 128 256 512 1024)
 SCALES=(8 16 32 64 128 256)

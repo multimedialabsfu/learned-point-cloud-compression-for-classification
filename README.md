@@ -23,6 +23,8 @@ git submodule update --init --recursive
 
 ### Python dependencies
 
+Use either [poetry](#using-poetry) or [virtualenv](#using-virtualenv) to install python dependencies.
+
 
 #### Using poetry
 
@@ -226,6 +228,7 @@ In our paper, we also evaluated "input compression codec" performance. To reprod
 
  - [`scripts/generate_input_codec_dataset.sh`](./scripts/generate_input_codec_dataset.sh)
  - [`scripts/eval_input_codec.sh`](./scripts/eval_input_codec.sh)
+   NOTE: Please modify `RUN_HASHES` to point to your own trained models.
 
 
 ## Citation
