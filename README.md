@@ -104,56 +104,67 @@ echo "$PATH" | sed 's/:/\n/g' | grep -q "$HOME/.local/bin" || (
 
 ## Datasets
 
-We use the [ModelNet40] dataset. Note that for *training*, this dataset is **automatically downloaded and processed** by the `torch_geometric.datasets.modelnet.ModelNet` class. By default, `++dataset.{train,valid,infer}.config.root` is set to `"${paths.datasets}/modelnet/by_n_pt/modelnet${.name}/${.num_points}"`. For compatibility with our scripts, we recommend that you also follow the same directory structure, and only override `++paths.dataset`.
+Download and *repair* the [ModelNet40] dataset (it has incorrect OFF headers!) by running:
 
-OPTIONAL: For evaluating [input compression codecs](#input-compression-codecs):
-   - To generate datasets for specific number of points `N`, use [`scripts/generate_datasets_by_n_points.py`](./scripts/generate_datasets_by_n_points.py).
-   - Many point-cloud codecs accept `*.ply` files, but not `*.off`. To convert the dataset, install the `ctmconv` utility and run [`scripts/convert_dataset.py`](./scripts/convert_dataset.py):
-   ```bash
-   python convert_dataset.py \
-     --input_dir='dataset=modelnet40,format=off' \
-     --output_dir='dataset=modelnet40,format=ply' \
-     --convert_only=True
-   ```
-   - To generate a dataset for a specific number of points, run:
-   ```bash
-   python convert_dataset.py \
-     --input_dir='dataset=modelnet40,format=off' \
-     --output_dir="dataset=modelnet40,format=ply,normalize=True,num_points=${NUM_POINTS}" \
-     --normalize=True \
-     --num_points_resample="${NUM_POINTS}" \
-     --num_points_subsample="${NUM_POINTS}"
-   ```
+```bash
+# Navigate to your desired root dataset directory.
+cd "${paths.datasets}/modelnet"
+
+# Download and extract the dataset.
+wget 'http://modelnet.cs.princeton.edu/ModelNet40.zip'
+unzip 'ModelNet40.zip'
+python scripts/repair_modelnet.py --input_dir=ModelNet40
+mv ModelNet40 dataset=modelnet40,format=off
+
+# Another reasonable alternative:
+# wget 'https://shapenet.cs.stanford.edu/media/modelnet40_normal_resampled.zip'
+```
+
+During *training*, the `torch_geometric.datasets.modelnet.ModelNet` dataset class also downloads and processes its own format of the ModelNet40 dataset into the directory `${paths.datasets}/modelnet/dataset=modelnet40,format=pt`. For compatibility with our scripts, we recommend that you also follow the same directory structure.
 
 
 <details>
 
 <summary>Our directory structure</summary>
 
-For reference, we used the following directory structure.
-
 ```
 ${paths.datasets}/modelnet/
-├── by_n_pt
-│   └── modelnet40
-│       ├── 1024            <-- format=.pt, points=1024, processed
-│       ├── 512
-│       └── ...
+├── dataset=modelnet40,format=off  <-- original dataset
+├── dataset=modelnet40,format=pt   <-- torch_geometric compatible dataset
 ├── by_n_ply
 │   ├── 1024                <-- format=.ply, points=1024, flat
 │   ├── 0512
 │   └── ...
-├── by_n_scale_ply
+├── by_n_scale_ply_tmc3
 │   ├── 1024
 │   │   ├── 0256            <-- format=.ply, points=1024, scale=256, flat
 │   │   ├── 0128
 │   │   └── ...
 │   └── ...
-├── modelnet40              <-- format=.off, default
-└── modelnet40_repaired_off <-- format=.off, class/loader (e.g. desk/train)
+└── ModelNet40.zip
 ```
 
 </details>
+
+
+[OPTIONAL] For evaluating [input compression codecs](#input-compression-codec-evaluation):
+- To generate datasets for a specific number of points `N`, use [`scripts/generate_datasets_by_n_points.py`](./scripts/generate_datasets_by_n_points.py).
+- Many point-cloud codecs accept `*.ply` files, but not `*.off`. To convert the dataset, install the `ctmconv` utility and run [`scripts/convert_dataset.py`](./scripts/convert_dataset.py):
+  ```bash
+  python convert_dataset.py \
+    --input_dir='dataset=modelnet40,format=off' \
+    --output_dir='dataset=modelnet40,format=ply' \
+    --convert_only=True
+  ```
+- To generate a normalized dataset for a specific number of points, run:
+  ```bash
+  python convert_dataset.py \
+    --input_dir='dataset=modelnet40,format=off' \
+    --output_dir="dataset=modelnet40,format=ply,normalize=True,num_points=${NUM_POINTS}" \
+    --normalize=True \
+    --num_points_resample="${NUM_POINTS}" \
+    --num_points_subsample="${NUM_POINTS}"
+  ```
 
 
 ## Training
@@ -228,6 +239,7 @@ In our paper, we also evaluated "input compression codec" performance. To reprod
 
  - [`scripts/generate_input_codec_dataset.sh`](./scripts/generate_input_codec_dataset.sh)
  - [`scripts/eval_input_codec.sh`](./scripts/eval_input_codec.sh)
+
    NOTE: Please modify `RUN_HASHES` to point to your own trained models.
 
 
