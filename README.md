@@ -102,11 +102,26 @@ echo "$PATH" | sed 's/:/\n/g' | grep -q "$HOME/.local/bin" || (
 
 ## Datasets
 
-We use the [ModelNet40] dataset. Note that this dataset is **automatically downloaded** by the `torch_geometric.datasets.modelnet.ModelNet` class. By default, `++dataset.{train,valid,infer}.config.root` is set to `"${paths.datasets}/modelnet/by_n_pt/modelnet${.name}/${.num_points}"`. For compatibility with our scripts, we recommend that you also follow the same directory structure, and only override `++paths.dataset`.
+We use the [ModelNet40] dataset. Note that for *training*, this dataset is **automatically downloaded and processed** by the `torch_geometric.datasets.modelnet.ModelNet` class. By default, `++dataset.{train,valid,infer}.config.root` is set to `"${paths.datasets}/modelnet/by_n_pt/modelnet${.name}/${.num_points}"`. For compatibility with our scripts, we recommend that you also follow the same directory structure, and only override `++paths.dataset`.
 
 OPTIONAL: For evaluating [input compression codecs](#input-compression-codecs):
    - To generate datasets for specific number of points `N`, use [`scripts/generate_datasets_by_n_points.py`](./scripts/generate_datasets_by_n_points.py).
-   - Many point-cloud codecs accept `*.ply` files, but not `*.off`. To convert the dataset, install the `ctmconv` and `fd` utilities and run [`scripts/generate_datasets_to_ply.sh`](./scripts/generate_datasets_to_ply.sh).
+   - Many point-cloud codecs accept `*.ply` files, but not `*.off`. To convert the dataset, install the `ctmconv` utility and run [`scripts/convert_dataset.py`](./scripts/convert_dataset.py):
+   ```bash
+   python convert_dataset.py \
+     --input_dir='dataset=modelnet40,format=off' \
+     --output_dir='dataset=modelnet40,format=ply' \
+     --convert_only=True
+   ```
+   - To generate a dataset for a specific number of points, run:
+   ```bash
+   python convert_dataset.py \
+     --input_dir='dataset=modelnet40,format=off' \
+     --output_dir="dataset=modelnet40,format=ply,normalize=True,num_points=${NUM_POINTS}" \
+     --normalize=True \
+     --num_points_resample="${NUM_POINTS}" \
+     --num_points_subsample="${NUM_POINTS}"
+   ```
 
 
 <details>

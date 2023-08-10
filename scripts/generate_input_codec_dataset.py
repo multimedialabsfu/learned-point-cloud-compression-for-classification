@@ -189,6 +189,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
-
-
-# NOTE: The by_n_ply directory may be generated generated using ...
