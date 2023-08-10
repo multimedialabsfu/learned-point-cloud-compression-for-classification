@@ -52,6 +52,7 @@ CODECS = [
     "micro_points=8",
     "input-compression-tmc13",
     "input-compression-octattention",
+    "input-compression-ipdae",
     "input-compression-draco",
 ]
 
@@ -137,7 +138,7 @@ def write_codec_plot(df, codec_type):
         )
         palette = [
             *sns.color_palette("husl", 9)[-1:],
-            *sns.color_palette("cubehelix", 3)[:2],
+            *sns.color_palette("cubehelix", 3)[:3],
         ]
     else:
         ax.set(
