@@ -35,7 +35,8 @@ class PlyFolderDataset(Dataset):
     def __getitem__(self, index):
         path = self.paths[index]
         pattern = (
-            r"^(?P<loader>.*)_(?P<label_idx>\d+)_(?P<index>\d+)(\.bin|\.rec)?\.ply$"
+            r"^(?P<loader>.*)_(?P<label_idx>\d+)_(?P<index>\d+)"
+            r"(\.ply|\.bin|\.rec)*\.ply$"
         )
         match = re.match(pattern, path.name)
         if match is None:
