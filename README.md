@@ -4,7 +4,7 @@
 
 - **Authors:** Mateen Ulhaq and Ivan V. Bajić
 - **Affiliation:** Simon Fraser University
-- **Paper:** Published at MMSP 2023. Available online: [[arXiv](TODO)]. [[BibTeX citation](#citation)]
+- **Paper:** Published at MMSP 2023. Available online: [[arXiv]]. [[BibTeX citation](#citation)]
 
 
 ----
@@ -259,6 +259,7 @@ Please cite this work as:
 
 
 
+[arXiv]: https://arxiv.org/abs/2308.05959
 [ModelNet40]: http://modelnet.cs.princeton.edu/ModelNet40.zip
 [CompressAI Trainer]: https://github.com/InterDigitalInc/CompressAI-Trainer
 [walkthrough]: https://interdigitalinc.github.io/CompressAI-Trainer/tutorials/full.html
