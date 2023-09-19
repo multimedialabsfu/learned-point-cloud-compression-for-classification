@@ -375,7 +375,7 @@ FILENAMES=(
   full_4
 )
 
-mkdir -p results/plot_pointcloud/pdf/critical_points/
+mkdir -p results/plot_pointcloud/pdf/crit/
 mkdir -p results/plot_pointcloud/pdf/rec/
 
 for ((i=0; i < "${#RUN_HASHES[@]}"; i+=1)); do
