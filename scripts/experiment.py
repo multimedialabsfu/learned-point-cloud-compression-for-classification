@@ -6,6 +6,7 @@ import plotly.express as px
 import torch
 from omegaconf import OmegaConf
 
+import src.models  # noqa: F401
 from compressai.entropy_models import EntropyBottleneck
 from compressai_trainer.run.eval_model import setup
 

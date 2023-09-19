@@ -6,6 +6,7 @@ import pandas as pd
 import torch
 from omegaconf import DictConfig
 
+import src.models  # noqa: F401
 from compressai_trainer.run.eval_model import config_path, setup
 from compressai_trainer.utils.metrics import compute_metrics
 
