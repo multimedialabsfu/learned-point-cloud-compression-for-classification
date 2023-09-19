@@ -360,6 +360,23 @@ RUN_HASHES=(
 # aca683c052df45c5a44d1f48  #                    (3, 8, 64) um-pcc-cls-only-pointnet-mini-001               164000  236.782315  0.836305
 )
 
+# Condensed version:
+RUN_HASHES=(
+#                 run_hash  # hp.num_channels.g_a.pointwise                        model.name  criterion.lmbda.cls    bpp_loss  acc_top1
+  d657d2773d784935ac8d373f  #                       (3, 16)     um-pcc-multitask-cls-pointnet                   14   31.798217  0.684360
+  1f7de7fd3b274e8b89234bfa  #                       (3, 16)     um-pcc-multitask-cls-pointnet                   28   20.582290  0.711102
+  f54c39d00c334adf903d6a6e  #                       (3, 16)     um-pcc-multitask-cls-pointnet                   40   28.714629  0.738655
+  6cc7b7899ee7411c9f2dbd51  #                       (3, 16)     um-pcc-multitask-cls-pointnet                 1000   76.265409  0.820502
+  409c1460ec784662b14dfcbc  #         (3, 8, 8, 16, 16, 32)     um-pcc-multitask-cls-pointnet                   14   15.061701  0.619935
+  63e1dbf94b694d7693dc2cb7  #         (3, 8, 8, 16, 16, 32)     um-pcc-multitask-cls-pointnet                   20   18.964734  0.695705
+  3616dc2455214fdeb4f4b62d  #         (3, 8, 8, 16, 16, 32)     um-pcc-multitask-cls-pointnet                   80   39.130638  0.809968
+  76a4b98a929244818f28e1ba  #         (3, 8, 8, 16, 16, 32)     um-pcc-multitask-cls-pointnet                 1000  130.053458  0.841977
+  b67c87a00d5240cc936f6a43  #    (3, 64, 64, 64, 128, 1024)     um-pcc-multitask-cls-pointnet                   14   15.212449  0.659238
+  7a1ccbf555ad4d3e896a9a3b  #    (3, 64, 64, 64, 128, 1024)     um-pcc-multitask-cls-pointnet                   28   21.752992  0.777147
+  7c69baf921d84a4482dd1be6  #    (3, 64, 64, 64, 128, 1024)     um-pcc-multitask-cls-pointnet                  160   53.775588  0.852512
+  677b6063456b4930a27c2857  #    (3, 64, 64, 64, 128, 1024)     um-pcc-multitask-cls-pointnet                 4000  347.090900  0.880875
+)
+
 FILENAMES=(
   micro_1
   micro_2
