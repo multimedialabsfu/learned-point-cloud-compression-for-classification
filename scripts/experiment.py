@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import torch
-from compressai.entropy_models import EntropyBottleneck
 from omegaconf import OmegaConf
 
+from compressai.entropy_models import EntropyBottleneck
 from compressai_trainer.run.eval_model import setup
 
 run_hash = "5fc2276b120e427ebacf840d"

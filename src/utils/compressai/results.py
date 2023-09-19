@@ -5,9 +5,9 @@ from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
-import src
 
 import compressai_trainer.utils.compressai.results as _M
+import src
 
 
 def compressai_dataframe(
