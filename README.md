@@ -4,7 +4,7 @@
 
 - **Authors:** Mateen Ulhaq and Ivan V. Bajić
 - **Affiliation:** Simon Fraser University
-- **Paper:** Published at MMSP 2023. Available online: [[arXiv]]. [[BibTeX citation](#citation)]
+- **Links:** Published and presented at MMSP 2023. [[Paper][arXiv]]. [[Slides]]. [[BibTeX citation](#citation)].
 
 
 ----
@@ -260,6 +260,7 @@ Please cite this work as:
 
 
 [arXiv]: https://arxiv.org/abs/2308.05959
+[Slides]: https://raw.githubusercontent.com/multimedialabsfu/learned-point-cloud-compression-for-classification/assets/main/assets/slides.pdf
 [ModelNet40]: http://modelnet.cs.princeton.edu/ModelNet40.zip
 [CompressAI Trainer]: https://github.com/InterDigitalInc/CompressAI-Trainer
 [walkthrough]: https://interdigitalinc.github.io/CompressAI-Trainer/tutorials/full.html
