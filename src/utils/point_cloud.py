@@ -3,7 +3,8 @@ from __future__ import annotations
 import os
 import re
 import subprocess
-import tempfile
+import traceback
+import warnings
 from typing import Optional
 
 import numpy as np
@@ -16,6 +17,20 @@ try:
     tempfile = MemoryTempfile()
 except ImportError:
     import tempfile
+
+    warnings.warn("Could not import memory_tempfile. Falling back to tempfile.")
+except Exception as e:
+    import tempfile
+
+    warnings.warn(
+        "Could not create MemoryTempfile. Falling back to tempfile. "
+        "Without the /tmp directory, this may lead to slower pc_error metrics. "
+        "If you have a tmpfs at a different location, consider specifying it: "
+        "tempfile = MemoryTempfile(['/path/to/tmpdir']). "
+        "Otherwise, you can ignore this warning, since the default works too. "
+        "Exception message:\n"
+        f"{''.join(traceback.format_exception(None, e, e.__traceback__))}"
+    )
 
 
 def pc_write(pc: np.ndarray, file):
