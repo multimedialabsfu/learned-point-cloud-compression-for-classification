@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import math
-
-import torch
 import torch.nn as nn
 from pytorch3d.loss import chamfer_distance
 
@@ -63,8 +60,7 @@ class MultitaskPccRateDistortionLoss(nn.Module):
         assert C == 3
         num_points = N * P if self.bpp_divide_by_num_points else N
         out = {
-            f"bpp_{name}_loss": torch.log(likelihoods).sum()
-            / (-math.log(2) * num_points)
+            f"bpp_{name}_loss": likelihoods.log2().sum() / -num_points
             for name, likelihoods in output["likelihoods"].items()
         }
         out["bpp_loss"] = sum(out.values())
