@@ -25,16 +25,16 @@ from .utils import (
 
 RD_PLOT_METRICS = [
     "rec_loss",
-    "d1-psnr",
-    "d1-psnr-hausdorff",
+    # "d1-psnr",
+    # "d1-psnr-hausdorff",
     # "d2-psnr",
     # "d2-psnr-hausdorff",
 ]
 
 RD_PLOT_DESCRIPTIONS = [
     "Reconstruction loss",
-    "D1-PSNR (point-to-point)",
-    "Hausdorff D1-PSNR (point-to-point)",
+    # "D1-PSNR (point-to-point)",
+    # "Hausdorff D1-PSNR (point-to-point)",
     # "D2-PSNR (point-to-plane)",
     # "Hausdorff D2-PSNR (point-to-plane)",
 ]
@@ -49,8 +49,8 @@ RD_PLOT_SETTINGS_COMMON: dict[str, Any] = dict(
         hover_data=[
             "name",
             "bpp",
-            "d1-psnr",
-            "d1-psnr-hausdorff",
+            # "d1-psnr",
+            # "d1-psnr-hausdorff",
             # "d2-psnr",
             # "d2-psnr-hausdorff",
             "loss",
@@ -122,7 +122,8 @@ class PointCloudCompressionRunner(BaseRunner):
         out_net = out_infer["out_net"]
 
         out_criterion = self.criterion(out_net, batch)
-        out_metrics = compute_metrics(out_net, batch, ["pc_error"])
+        # out_metrics = compute_metrics(out_net, batch, ["pc_error"])
+        out_metrics = compute_metrics(out_net, batch, [])
         out_metrics["bpp"] = out_infer["bpp"]
         out_metrics["bpp_loss"] = out_criterion["bpp_loss"].item()
         out_metrics["rec_loss"] = out_criterion["rec_loss"].item()
@@ -165,8 +166,8 @@ class PointCloudCompressionRunner(BaseRunner):
             "bpp": r(self.loader_metrics["bpp"]),
             "bpp_loss": r(self.loader_metrics["bpp_loss"]),
             "rec_loss": r(self.loader_metrics["rec_loss"]),
-            "d1-psnr": r(self.loader_metrics["d1-psnr"]),
-            "d1-psnr-hausdorff": r(self.loader_metrics["d1-psnr-hausdorff"]),
+            # "d1-psnr": r(self.loader_metrics["d1-psnr"]),
+            # "d1-psnr-hausdorff": r(self.loader_metrics["d1-psnr-hausdorff"]),
         }
         return pd.DataFrame.from_dict([d])
 
