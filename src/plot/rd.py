@@ -65,4 +65,15 @@ _M.PLOT_RD_SETTINGS = {
             # yaxis=dict(range=[20, 50], tick0=20, dtick=1),
         ),
     },
+    "rec_loss": {
+        "scatter_kwargs": dict(
+            color="name",
+        ),
+        "layout_kwargs": dict(
+            xaxis_title="Rate (bits)",
+            xaxis=dict(range=[0.0, 10.0], tick0=0.0, dtick=25.0),
+            yaxis_title="Reconstruction loss",
+            yaxis=dict(range=[0.0, 0.1], tick0=0.0, dtick=5),
+        ),
+    },
 }

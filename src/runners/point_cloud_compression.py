@@ -24,6 +24,7 @@ from .utils import (
 )
 
 RD_PLOT_METRICS = [
+    "rec_loss",
     "d1-psnr",
     "d1-psnr-hausdorff",
     # "d2-psnr",
@@ -31,6 +32,7 @@ RD_PLOT_METRICS = [
 ]
 
 RD_PLOT_DESCRIPTIONS = [
+    "Reconstruction loss",
     "D1-PSNR (point-to-point)",
     "Hausdorff D1-PSNR (point-to-point)",
     # "D2-PSNR (point-to-plane)",
@@ -52,6 +54,7 @@ RD_PLOT_SETTINGS_COMMON: dict[str, Any] = dict(
             # "d2-psnr",
             # "d2-psnr-hausdorff",
             "loss",
+            "rec_loss",
             "epoch",
             "criterion.lmbda",
         ],
@@ -121,6 +124,8 @@ class PointCloudCompressionRunner(BaseRunner):
         out_criterion = self.criterion(out_net, batch)
         out_metrics = compute_metrics(out_net, batch, ["pc_error"])
         out_metrics["bpp"] = out_infer["bpp"]
+        out_metrics["bpp_loss"] = out_criterion["bpp_loss"].item()
+        out_metrics["rec_loss"] = out_criterion["rec_loss"].item()
 
         loss = {}
         loss["net"] = out_criterion["loss"]
@@ -158,6 +163,8 @@ class PointCloudCompressionRunner(BaseRunner):
             "criterion.lmbda": self.hparams["criterion"]["lmbda"],
             "loss": r(self.loader_metrics["loss"]),
             "bpp": r(self.loader_metrics["bpp"]),
+            "bpp_loss": r(self.loader_metrics["bpp_loss"]),
+            "rec_loss": r(self.loader_metrics["rec_loss"]),
             "d1-psnr": r(self.loader_metrics["d1-psnr"]),
             "d1-psnr-hausdorff": r(self.loader_metrics["d1-psnr-hausdorff"]),
         }
