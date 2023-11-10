@@ -6,6 +6,38 @@ from pytorch3d.loss import chamfer_distance
 from compressai.registry import register_criterion
 
 
+@register_criterion("ChamferPccRateDistortionLoss")
+class ChamferPccRateDistortionLoss(nn.Module):
+    """Simple loss for regular point cloud compression.
+
+    For compression models that reconstruct the input point cloud.
+    """
+
+    def __init__(self, lmbda=5.0):
+        super().__init__()
+        self.lmbda = lmbda
+
+    def forward(self, output, target):
+        out = {}
+        out["bpp_loss"] = self.bpp_loss(output, target)
+        out["rec_loss"] = self.rec_loss(output, target)
+        out["loss"] = out["bpp_loss"] + self.lmbda * out["rec_loss"]
+        return out
+
+    def bpp_loss(self, output, target):
+        N, P, C = target["points"].shape
+        assert C == 3
+        num_points = N * P
+        return sum(
+            likelihoods.log2().sum() / -num_points
+            for likelihoods in output["likelihoods"].values()
+        )
+
+    def rec_loss(self, output, target):
+        loss_chamfer, _ = chamfer_distance(output["x_hat"], target["points"])
+        return loss_chamfer
+
+
 @register_criterion("MultitaskPccRateDistortionLoss")
 class MultitaskPccRateDistortionLoss(nn.Module):
     """
