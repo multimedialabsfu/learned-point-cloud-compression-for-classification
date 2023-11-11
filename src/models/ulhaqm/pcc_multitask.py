@@ -10,7 +10,7 @@ from compressai.latent_codecs import LatentCodec
 from compressai.latent_codecs.entropy_bottleneck import EntropyBottleneckLatentCodec
 from compressai.models import CompressionModel
 from compressai.registry import register_model
-from src.layers.ulhaqm import NamedLayer
+from src.layers.ulhaqm import Gain, NamedLayer
 from src.layers.ulhaqm.pcc import (
     pointnet_classification_backend,
     pointnet_g_a_simple,
@@ -128,9 +128,6 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
                 "pointwise": [1024, 256, 512, 1024 * 3],
             },
             "task_backend": {
-                "transform": {
-                    "pointwise": [],
-                },
                 "mlp": [1024, 512, 256, 40],
             },
         },
@@ -138,11 +135,7 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
             "g_a": {
                 "pointwise": [1, 1, 1, 1, 1],
             },
-            "task_backend": {
-                "transform": {
-                    "pointwise": [],
-                },
-            },
+            "task_backend": {},
         },
         detach_y1_hat=True,
     ):
@@ -155,8 +148,7 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
         ]
 
         num_channels_task_backend = [
-            *num_channels["task_backend"]["transform"]["pointwise"],
-            *num_channels["task_backend"]["mlp"][1:],
+            *num_channels["task_backend"]["mlp"],
         ]
 
         num_channels_g_s = [
@@ -177,10 +169,9 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
         self.g_s = pointnet_g_s_simple(num_channels["g_s"]["pointwise"])
 
         self.task_backend = nn.Sequential(
-            *pointnet_g_a_simple(
-                num_channels["task_backend"]["transform"],
-                groups.get("task_backend", {}).get("transform"),
-                gain=1.0,
+            *nn.Sequential(
+                nn.Identity(),  # For compatibility with previous checkpoints.
+                Gain((num_channels_task_backend[0], 1), factor=1.0),
             ),
             *pointnet_classification_backend(
                 num_channels=num_channels["task_backend"]["mlp"],

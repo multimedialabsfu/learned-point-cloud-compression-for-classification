@@ -35,10 +35,8 @@ HOVER_HPARAMS_LITE = [
 HOVER_HPARAMS_MICRO = [
     *HOVER_HPARAMS_COMMON,
     "hp.num_channels.g_a.pointwise",
-    "hp.num_channels.task_backend.transform.pointwise",
     "hp.num_channels.task_backend.mlp",
     "hp.groups.g_a.pointwise",
-    "hp.groups.task_backend.transform.pointwise",
 ]
 
 VARYING_HPARAMS = [
@@ -179,10 +177,8 @@ def main():
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
             "hp.num_channels.g_a.pointwise": [3, 16],
-            "hp.num_channels.task_backend.transform.pointwise": [16],
             "hp.num_channels.task_backend.mlp": [16, 512, 256, 40],
             "hp.groups.g_a.pointwise": [1],
-            "hp.groups.task_backend.transform.pointwise": [],
             "hp.num_points": num_points,
         }
 

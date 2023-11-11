@@ -70,10 +70,8 @@ _M.HOVER_HPARAMS = [
     #
     # Mini:
     "hp.num_channels.g_a.pointwise",
-    "hp.num_channels.task_backend.transform.pointwise",
     "hp.num_channels.task_backend.mlp",
     "hp.groups.g_a.pointwise",
-    "hp.groups.task_backend.transform.pointwise",
     #
 ]
 

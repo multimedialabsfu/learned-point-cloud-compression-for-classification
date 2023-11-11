@@ -9,8 +9,12 @@ from compressai.latent_codecs import LatentCodec
 from compressai.latent_codecs.entropy_bottleneck import EntropyBottleneckLatentCodec
 from compressai.models import CompressionModel
 from compressai.registry import register_model
-from src.layers.ulhaqm import NamedLayer
-from src.layers.ulhaqm.pcc import pointnet_classification_backend, pointnet_g_a_simple
+from src.layers.ulhaqm import Gain, NamedLayer
+from src.layers.ulhaqm.pcc import (
+    GAIN,
+    pointnet_classification_backend,
+    pointnet_g_a_simple,
+)
 
 
 class BaseClassificationPccModel(CompressionModel):
@@ -132,20 +136,12 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
                 "pointwise": [3, 64, 64, 64, 128, 1024],
             },
             "task_backend": {
-                "transform": {
-                    "pointwise": [1024],
-                },
                 "mlp": [1024, 512, 256, 40],
             },
         },
         groups={
             "g_a": {
                 "pointwise": [1, 1, 1, 1, 1],
-            },
-            "task_backend": {
-                "transform": {
-                    "pointwise": [],
-                },
             },
         },
     ):
@@ -155,23 +151,18 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
             *num_channels["g_a"]["pointwise"],
         ]
         num_channels_task_backend = [
-            *num_channels["task_backend"]["transform"]["pointwise"],
-            *num_channels["task_backend"]["mlp"][1:],
+            *num_channels["task_backend"]["mlp"],
         ]
 
         assert num_channels_task_backend[0] == num_channels_g_a[-1]
         assert num_channels_task_backend[-1] == num_classes
 
-        # FIXME: Disabled since this hasn't been implemented correctly yet.
-        # Should probably be implemented in a separate model, to avoid confusion.
-        assert len(num_channels["task_backend"]["transform"]["pointwise"]) == 1
-
         self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
 
         self.task_backend = nn.Sequential(
-            pointnet_g_a_simple(
-                num_channels["task_backend"]["transform"],
-                groups["task_backend"]["transform"],
+            nn.Sequential(
+                nn.Identity(),  # For compatibility with previous checkpoints.
+                Gain((num_channels_task_backend[0], 1), GAIN),
             ),
             pointnet_classification_backend(
                 num_channels=num_channels["task_backend"]["mlp"],
