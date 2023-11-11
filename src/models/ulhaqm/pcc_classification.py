@@ -79,7 +79,6 @@ class PointNetClassOnlyPccModel(BaseClassificationPccModel):
         num_channels={
             "g_a": {
                 "pointwise": [3, 64, 64, 64, 128, 1024],
-                "mixer": [],
             },
             "task_backend": [1024, 512, 256, 40],
         },
@@ -93,7 +92,6 @@ class PointNetClassOnlyPccModel(BaseClassificationPccModel):
 
         num_channels_g_a = [
             *num_channels["g_a"]["pointwise"],
-            *num_channels["g_a"]["mixer"][1:],
         ]
 
         assert num_channels["task_backend"][0] == num_channels_g_a[-1]
@@ -132,12 +130,10 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
         num_channels={
             "g_a": {
                 "pointwise": [3, 64, 64, 64, 128, 1024],
-                "mixer": [],
             },
             "task_backend": {
                 "transform": {
                     "pointwise": [1024],
-                    "mixer": [],
                 },
                 "mlp": [1024, 512, 256, 40],
             },
@@ -157,11 +153,9 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
 
         num_channels_g_a = [
             *num_channels["g_a"]["pointwise"],
-            *num_channels["g_a"]["mixer"][1:],
         ]
         num_channels_task_backend = [
             *num_channels["task_backend"]["transform"]["pointwise"],
-            *num_channels["task_backend"]["transform"]["mixer"][1:],
             *num_channels["task_backend"]["mlp"][1:],
         ]
 
@@ -171,7 +165,6 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
         # FIXME: Disabled since this hasn't been implemented correctly yet.
         # Should probably be implemented in a separate model, to avoid confusion.
         assert len(num_channels["task_backend"]["transform"]["pointwise"]) == 1
-        assert len(num_channels["task_backend"]["transform"]["mixer"]) == 0
 
         self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
 

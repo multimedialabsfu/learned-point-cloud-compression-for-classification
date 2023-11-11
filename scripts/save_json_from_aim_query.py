@@ -24,7 +24,6 @@ HOVER_HPARAMS_COMMON = [
 HOVER_HPARAMS_FULL = [
     *HOVER_HPARAMS_COMMON,
     "hp.num_channels.g_a.pointwise",
-    "hp.num_channels.g_a.mixer",
     "hp.num_channels.task_backend",
     "hp.groups.g_a.pointwise",
 ]
@@ -36,9 +35,7 @@ HOVER_HPARAMS_LITE = [
 HOVER_HPARAMS_MICRO = [
     *HOVER_HPARAMS_COMMON,
     "hp.num_channels.g_a.pointwise",
-    "hp.num_channels.g_a.mixer",
     "hp.num_channels.task_backend.transform.pointwise",
-    "hp.num_channels.task_backend.transform.mixer",
     "hp.num_channels.task_backend.mlp",
     "hp.groups.g_a.pointwise",
     "hp.groups.task_backend.transform.pointwise",
@@ -144,7 +141,6 @@ def main():
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
             "hp.num_channels.g_a.pointwise": [3, 64, 64, 64, 128, 1024],
-            "hp.num_channels.g_a.mixer": [],
             "hp.num_channels.task_backend": [1024, 512, 256, 40],
             "hp.groups.g_a.pointwise": [1, 1, 1, 1, 1],
             "hp.num_points": num_points,
@@ -164,7 +160,6 @@ def main():
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
             "hp.num_channels.g_a.pointwise": [3, 8, 8, 16, 16, 32],
-            "hp.num_channels.g_a.mixer": [],
             "hp.num_channels.task_backend": [32, 512, 256, 40],
             "hp.groups.g_a.pointwise": [1, 1, 1, 2, 4],
             "hp.num_points": num_points,
@@ -184,9 +179,7 @@ def main():
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
             "hp.num_channels.g_a.pointwise": [3, 16],
-            "hp.num_channels.g_a.mixer": [],
             "hp.num_channels.task_backend.transform.pointwise": [16],
-            "hp.num_channels.task_backend.transform.mixer": [],
             "hp.num_channels.task_backend.mlp": [16, 512, 256, 40],
             "hp.groups.g_a.pointwise": [1],
             "hp.groups.task_backend.transform.pointwise": [],

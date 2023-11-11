@@ -123,7 +123,6 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
         num_channels={
             "g_a": {
                 "pointwise": [3, 64, 64, 64, 128, 1024],
-                "mixer": [],
             },
             "g_s": {
                 "pointwise": [1024, 256, 512, 1024 * 3],
@@ -131,7 +130,6 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
             "task_backend": {
                 "transform": {
                     "pointwise": [],
-                    "mixer": [],
                 },
                 "mlp": [1024, 512, 256, 40],
             },
@@ -154,12 +152,10 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
 
         num_channels_g_a = [
             *num_channels["g_a"]["pointwise"],
-            *num_channels["g_a"]["mixer"][1:],
         ]
 
         num_channels_task_backend = [
             *num_channels["task_backend"]["transform"]["pointwise"],
-            *num_channels["task_backend"]["transform"]["mixer"][1:],
             *num_channels["task_backend"]["mlp"][1:],
         ]
 
