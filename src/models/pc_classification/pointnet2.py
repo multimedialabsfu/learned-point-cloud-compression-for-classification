@@ -29,9 +29,9 @@
 from __future__ import annotations
 
 import torch.nn as nn
-import torch.nn.functional as F
 
 from compressai.registry import register_model
+from src.layers.layers import Reshape
 from src.layers.pc_pointnet2 import PointNetSetAbstraction
 
 
@@ -47,65 +47,76 @@ class PointNet2ClassPcModel(nn.Module):
         normal_channel=False,
     ):
         super().__init__()
+
         in_channel = 6 if normal_channel else 3
         self.normal_channel = normal_channel
-        self.sa1 = PointNetSetAbstraction(
-            npoint=num_points,
-            radius=0.2,
-            nsample=32,
-            in_channel=in_channel,
-            mlp=[64, 64, 128],
-            group_all=False,
+
+        self.down = nn.ModuleDict(
+            {
+                "_1": PointNetSetAbstraction(
+                    npoint=512,
+                    radius=0.2,
+                    nsample=32,
+                    in_channel=in_channel,
+                    mlp=[64, 64, 128],
+                    group_all=False,
+                ),
+                "_2": PointNetSetAbstraction(
+                    npoint=128,
+                    radius=0.4,
+                    nsample=64,
+                    in_channel=128 + 3,
+                    mlp=[128, 128, 256],
+                    group_all=False,
+                ),
+                "_3": PointNetSetAbstraction(
+                    npoint=None,
+                    radius=None,
+                    nsample=None,
+                    in_channel=256 + 3,
+                    mlp=[256, 512, 1024],
+                    group_all=True,
+                ),
+            }
         )
-        self.sa2 = PointNetSetAbstraction(
-            npoint=128,
-            radius=0.4,
-            nsample=64,
-            in_channel=128 + 3,
-            mlp=[128, 128, 256],
-            group_all=False,
+
+        self.task_backend = nn.Sequential(
+            Reshape((1024,)),
+            nn.Linear(1024, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.4),
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.4),
+            nn.Linear(256, num_classes),
+            # nn.LogSoftmax(dim=-1),
+            # NOTE: The log-softmax is done in nn.CrossEntropyLoss since
+            # nn.CrossEntropyLoss == nn.NLLLoss ∘ nn.LogSoftmax,
+            # where nn.NLLLoss doesn't acutally contain a log, despite its name.
         )
-        self.sa3 = PointNetSetAbstraction(
-            npoint=None,
-            radius=None,
-            nsample=None,
-            in_channel=256 + 3,
-            mlp=[256, 512, 1024],
-            group_all=True,
-        )
-        self.fc1 = nn.Linear(1024, 512)
-        self.bn1 = nn.BatchNorm1d(512)
-        self.drop1 = nn.Dropout(0.4)
-        self.fc2 = nn.Linear(512, 256)
-        self.bn2 = nn.BatchNorm1d(256)
-        self.drop2 = nn.Dropout(0.4)
-        self.fc3 = nn.Linear(256, num_classes)
 
     def forward(self, input):
-        xyz = input["points"].transpose(-2, -1)
-        B, _, _ = xyz.shape
-        if self.normal_channel:
-            norm = xyz[:, 3:, :]
-            xyz = xyz[:, :3, :]
-        else:
-            norm = None
-        l1_xyz, l1_points = self.sa1(xyz, norm)
-        l2_xyz, l2_points = self.sa2(l1_xyz, l1_points)
-        l3_xyz, l3_points = self.sa3(l2_xyz, l2_points)
-        x = l3_points.view(B, 1024)
-        x = self.drop1(F.relu(self.bn1(self.fc1(x))))
-        x = self.drop2(F.relu(self.bn2(self.fc2(x))))
-        x = self.fc3(x)
-        # x = F.log_softmax(x, -1)  # NOTE: This is done in nn.CrossEntropyLoss.
-        # In fact, nn.CrossEntropyLoss == nn.NLLLoss ∘ nn.LogSoftmax,
-        # where nn.NLLLoss doesn't acutally contain a log, despite its name.
-        t_hat = x
+        points = input["points"].transpose(-2, -1)
 
-        # return x, l3_points
+        if self.normal_channel:
+            xyz = points[:, :3, :]
+            norm = points[:, 3:, :]
+        else:
+            xyz = points
+            norm = None
+
+        xyz_ = {0: xyz}
+        u_ = {0: norm}
+
+        for i in range(1, 4):
+            xyz_[i], u_[i] = self.down[f"_{i}"](xyz_[i - 1], u_[i - 1])
+
+        t_hat = self.task_backend(u_[3])
+
         return {
             "t_hat": t_hat,
-            # **{k: v for k, v in self.outputs.items()},
             # Additional outputs:
-            # "y": y,
             "debug_outputs": {},
         }
