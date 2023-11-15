@@ -62,8 +62,9 @@ RD_PLOT_SETTINGS_COMMON: dict[str, Any] = dict(
 )
 
 
-@register_runner("PointCloudCompressionRunner")
-class PointCloudCompressionRunner(BaseRunner):
+@register_runner("ReconstructionPointCloudCompressionRunner")
+@register_runner("PointCloudCompressionRunner")  # NOTE: Old name.
+class ReconstructionPointCloudCompressionRunner(BaseRunner):
     """Runner for point-cloud compression experiments."""
 
     def __init__(

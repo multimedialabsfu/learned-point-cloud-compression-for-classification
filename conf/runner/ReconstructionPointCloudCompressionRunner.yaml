@@ -1,4 +1,4 @@
-type: "PointCloudCompressionRunner"
+type: "ReconstructionPointCloudCompressionRunner"
 
 inference:
   skip_compress: True
