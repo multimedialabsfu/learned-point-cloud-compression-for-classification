@@ -5,6 +5,18 @@ import torch.nn as nn
 from torch import Tensor
 
 
+class Lambda(nn.Module):
+    def __init__(self, func):
+        super().__init__()
+        self.func = func
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(func={self.func})"
+
+    def forward(self, x):
+        return self.func(x)
+
+
 class NamedLayer(nn.Module):
     def __init__(self, name: str):
         super().__init__()
