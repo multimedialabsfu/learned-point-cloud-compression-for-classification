@@ -5,11 +5,11 @@ from compressai.latent_codecs.entropy_bottleneck import EntropyBottleneckLatentC
 from compressai.registry import register_model
 from src.layers.pcc import pointnet_g_a_simple, pointnet_g_s_simple
 
-from .base import BasePccModel
+from .base import BaseReconstructionPccModel
 
 
 @register_model("um-pcc-rec-pointnet")
-class PointnetPccModel(BasePccModel):
+class PointnetReconstructionPccModel(BaseReconstructionPccModel):
     def __init__(
         self,
         num_points=1024,

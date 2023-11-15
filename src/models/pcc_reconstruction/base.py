@@ -4,7 +4,7 @@ from compressai.latent_codecs import LatentCodec
 from compressai.models import CompressionModel
 
 
-class BasePccModel(CompressionModel):
+class BaseReconstructionPccModel(CompressionModel):
     latent_codec: LatentCodec
 
     def forward(self, input):
