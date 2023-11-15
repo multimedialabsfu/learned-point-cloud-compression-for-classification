@@ -9,7 +9,7 @@ from .base import BaseReconstructionPccModel
 
 
 @register_model("um-pcc-rec-pointnet")
-class PointnetReconstructionPccModel(BaseReconstructionPccModel):
+class PointNetReconstructionPccModel(BaseReconstructionPccModel):
     def __init__(
         self,
         num_points=1024,
