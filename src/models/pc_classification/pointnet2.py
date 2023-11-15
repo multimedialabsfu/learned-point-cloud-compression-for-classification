@@ -81,16 +81,16 @@ class PointNet2ClassPcModel(nn.Module):
         )
 
         self.task_backend = nn.Sequential(
-            Reshape((1024,)),
-            nn.Linear(1024, 512),
+            nn.Conv1d(1024, 512, 1),
             nn.BatchNorm1d(512),
             nn.ReLU(inplace=True),
             nn.Dropout(0.4),
-            nn.Linear(512, 256),
+            nn.Conv1d(512, 256, 1),
             nn.BatchNorm1d(256),
             nn.ReLU(inplace=True),
             nn.Dropout(0.4),
-            nn.Linear(256, num_classes),
+            nn.Conv1d(256, num_classes, 1),
+            Reshape((num_classes,)),
             # nn.LogSoftmax(dim=-1),
             # NOTE: The log-softmax is done in nn.CrossEntropyLoss since
             # nn.CrossEntropyLoss == nn.NLLLoss ∘ nn.LogSoftmax,
