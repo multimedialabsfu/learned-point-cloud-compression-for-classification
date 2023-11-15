@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import torch.nn as nn
 
-from src.layers.ulhaqm import NamedLayer
+from src.layers import NamedLayer
 
 
 class BaseClassificationPcModel(nn.Module):

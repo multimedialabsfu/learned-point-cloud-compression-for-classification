@@ -8,8 +8,8 @@ from compressai.entropy_models import EntropyBottleneck
 from compressai.latent_codecs import LatentCodec
 from compressai.latent_codecs.entropy_bottleneck import EntropyBottleneckLatentCodec
 from compressai.registry import register_model
-from src.layers.ulhaqm import Gain
-from src.layers.ulhaqm.pcc import (
+from src.layers import Gain
+from src.layers.pcc import (
     pointnet_classification_backend,
     pointnet_g_a_simple,
     pointnet_g_s_simple,

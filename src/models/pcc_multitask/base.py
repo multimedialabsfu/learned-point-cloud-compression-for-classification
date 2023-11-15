@@ -6,7 +6,7 @@ import torch
 
 from compressai.latent_codecs import LatentCodec
 from compressai.models import CompressionModel
-from src.layers.ulhaqm import NamedLayer
+from src.layers import NamedLayer
 
 
 class BaseMultitaskPccModel(CompressionModel):

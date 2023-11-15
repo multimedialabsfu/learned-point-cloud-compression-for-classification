@@ -1,3 +1,4 @@
 # from compressai.layers import *
 
-from .ulhaqm import *
+from .layers import *
+from .pcc import *
