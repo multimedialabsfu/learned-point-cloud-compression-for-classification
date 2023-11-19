@@ -10,6 +10,7 @@ from compressai.registry import register_model
 from src.layers.layers import Gain, Reshape, Transpose
 from src.layers.pc_pointnet2 import PointNetSetAbstraction
 from src.layers.pcc import GAIN
+from src.layers.pcc_reconstruction.pointnet2 import UpsampleBlock
 
 
 @register_model("um-pcc-rec-pointnet2")
@@ -118,7 +119,6 @@ class PointNet2ReconstructionPccModel(CompressionModel):
             }
         )
 
-        # TODO(refactor): Extract to UpsampleBlock.
         self.up = nn.ModuleDict(
             {
                 "_0": nn.Sequential(
@@ -129,39 +129,9 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                     Reshape((E[0], P[0])),
                     Transpose(-2, -1),
                 ),
-                "_1": nn.Sequential(
-                    nn.Conv1d(E[2] + D[1] + 3, D[1], 1),
-                    nn.BatchNorm1d(D[1]),
-                    nn.ReLU(inplace=True),
-                    nn.Conv1d(D[1], E[1] * S[1], 1, groups=4),
-                    nn.BatchNorm1d(E[1] * S[1]),
-                    nn.ReLU(inplace=True),
-                    Reshape((E[1], S[1], P[1])),
-                    Transpose(-2, -1),
-                    Reshape((E[1], P[1] * S[1])),
-                ),
-                "_2": nn.Sequential(
-                    nn.Conv1d(E[3] + D[2] + 3, D[2], 1),
-                    nn.BatchNorm1d(D[2]),
-                    nn.ReLU(inplace=True),
-                    nn.Conv1d(D[2], E[2] * S[2], 1, groups=4),
-                    nn.BatchNorm1d(E[2] * S[2]),
-                    nn.ReLU(inplace=True),
-                    Reshape((E[2], S[2], P[2])),
-                    Transpose(-2, -1),
-                    Reshape((E[2], P[2] * S[2])),
-                ),
-                "_3": nn.Sequential(
-                    nn.Conv1d(E[4] + D[3], D[3], 1),
-                    nn.BatchNorm1d(D[3]),
-                    nn.ReLU(inplace=True),
-                    nn.Conv1d(D[3], E[3] * S[3], 1, groups=32),
-                    nn.BatchNorm1d(E[3] * S[3]),
-                    nn.ReLU(inplace=True),
-                    Reshape((E[3], S[3], P[3])),
-                    Transpose(-2, -1),
-                    Reshape((E[3], P[3] * S[3])),
-                ),
+                "_1": UpsampleBlock(D, E, P, S, i=1, extra_in_ch=3, groups=(1, 4)),
+                "_2": UpsampleBlock(D, E, P, S, i=2, extra_in_ch=3, groups=(1, 4)),
+                "_3": UpsampleBlock(D, E, P, S, i=3, extra_in_ch=0, groups=(1, 32)),
             }
         )
 
