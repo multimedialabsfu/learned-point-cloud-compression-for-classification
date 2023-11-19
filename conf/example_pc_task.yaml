@@ -21,7 +21,6 @@ exp:
 
 model:
   name: "um-pc-cls-pointnet"
-  # name: "um-pcc-cls-only-pointnet"
 
 hp:
   num_points: 1024
