@@ -13,6 +13,7 @@ class UpsampleBlock(nn.Module):
             nn.BatchNorm1d(D[i]),
             nn.ReLU(inplace=True),
             nn.Conv1d(D[i], E[i] * S[i], 1, groups=groups[1]),
+            Interleave(groups=groups[1]),
             nn.BatchNorm1d(E[i] * S[i]),
             nn.ReLU(inplace=True),
             Reshape((E[i], S[i], P[i])),
