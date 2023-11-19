@@ -111,7 +111,9 @@ class PointNet2ClassPcModel(nn.Module):
         u_ = {0: norm}
 
         for i in range(1, 4):
-            xyz_[i], u_[i] = self.down[f"_{i}"](xyz_[i - 1], u_[i - 1])
+            down_out_i = self.down[f"_{i}"](xyz_[i - 1], u_[i - 1])
+            xyz_[i] = down_out_i["new_xyz"]
+            u_[i] = down_out_i["new_features"]
 
         t_hat = self.task_backend(u_[3])
 
