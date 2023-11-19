@@ -264,26 +264,51 @@ class PointNetSetAbstraction(nn.Module):
             new_xyz: sampled points position data, [B, C, S]
             new_points_concat: sample points feature data, [B, D', S]
         """
+        B, C, N = xyz.shape
         xyz = xyz.permute(0, 2, 1)
+
         if points is not None:
+            _, D, _ = points.shape
             points = points.permute(0, 2, 1)
+        else:
+            D = 0
 
         if self.group_all:
-            new_xyz, new_points = sample_and_group_all(xyz, points)
-        else:
-            new_xyz, new_points = sample_and_group(
-                self.npoint, self.radius, self.nsample, xyz, points
+            new_xyz, grouped_points, grouped_xyz, idx = sample_and_group_all(
+                xyz, points, returnfps=True
             )
-        # new_xyz: sampled points position data, [B, npoint, C]
-        # new_points: sampled points data, [B, npoint, nsample, C+D]
-        new_points = new_points.permute(0, 3, 2, 1)  # [B, C+D, nsample,npoint]
+            npoint = 1
+            nsample = N
+        else:
+            new_xyz, grouped_points, grouped_xyz, idx = sample_and_group(
+                self.npoint, self.radius, self.nsample, xyz, points, returnfps=True
+            )
+            npoint = self.npoint
+            nsample = self.nsample
+
+        assert grouped_xyz.shape == (B, npoint, nsample, C)
+        assert grouped_points.shape == (B, npoint, nsample, C + D)
+        assert new_xyz.shape == (B, npoint, C)
+        assert idx.shape == (B, npoint)
+
+        grouped_xyz = grouped_xyz.permute(0, 3, 2, 1)  # [B, C, npoint, nsample]
+        grouped_points = grouped_points.permute(0, 3, 1, 2)  # [B, C+D, npoint, nsample]
+        new_xyz = new_xyz.permute(0, 2, 1)  # [B, C, npoint]
+
+        new_points = grouped_points.permute(0, 1, 3, 2)  # [B, C+D, nsample, npoint]
         for i, conv in enumerate(self.mlp_convs):
             bn = self.mlp_bns[i]
             new_points = F.relu(bn(conv(new_points)))
-
         new_points = torch.max(new_points, 2)[0]
-        new_xyz = new_xyz.permute(0, 2, 1)
-        return new_xyz, new_points
+
+        # NOTE: "points" is misleading, so it's relabeled to "features" instead.
+        return {
+            "grouped_xyz": grouped_xyz,  # [B, C, npoint, nsample]
+            "grouped_features": grouped_points,  # [B, C+D, npoint, nsample]
+            "new_xyz": new_xyz,  # [B, C, npoint]
+            "new_features": new_points,  # [B, C+D, npoint]
+            "idx": idx,  # [B, npoint]
+        }
 
 
 class PointNetSetAbstractionMsg(nn.Module):
