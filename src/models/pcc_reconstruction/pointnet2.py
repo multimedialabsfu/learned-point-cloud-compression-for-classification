@@ -7,7 +7,7 @@ from compressai.entropy_models import EntropyBottleneck
 from compressai.latent_codecs import EntropyBottleneckLatentCodec
 from compressai.models import CompressionModel
 from compressai.registry import register_model
-from src.layers.layers import Gain, Reshape, Transpose
+from src.layers.layers import Gain, Interleave, Reshape, Transpose
 from src.layers.pc_pointnet2 import PointNetSetAbstraction
 from src.layers.pcc import GAIN
 from src.layers.pcc_reconstruction.pointnet2 import UpsampleBlock
@@ -33,7 +33,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         # P = [None, 512, 128, 1]
         # S = [None, 32, 64, 128]
 
-        D = [3 * self.normal_channel, 128, 256, 1024]
+        D = [3 * self.normal_channel, 128, 256, 512]
         P = [num_points, 256, 64, 1]
         S = [None, 4, 4, 64]
 
@@ -42,7 +42,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         assert P[2] == P[3] * S[3]
 
         E = [3, 32, 32, 32, 0]
-        M = [64, 128, 256, 1024]
+        M = [64, 64, 128, 512]
 
         self.down = nn.ModuleDict(
             {
@@ -92,7 +92,8 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                 ),
                 "_3": nn.Sequential(
                     Reshape((D[3], 1)),
-                    nn.Conv1d(D[3], M[3], 1),
+                    nn.Conv1d(D[3], M[3], 1, groups=4),
+                    Interleave(groups=4),
                     Gain((M[3], 1), factor=GAIN),
                 ),
             }
@@ -114,7 +115,8 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                 ),
                 "_3": nn.Sequential(
                     Gain((M[3], 1), factor=1 / GAIN),
-                    nn.Conv1d(M[3], D[3], 1),
+                    nn.Conv1d(M[3], D[3], 1, groups=4),
+                    Interleave(groups=4),
                 ),
             }
         )
@@ -131,7 +133,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                 ),
                 "_1": UpsampleBlock(D, E, P, S, i=1, extra_in_ch=3, groups=(1, 4)),
                 "_2": UpsampleBlock(D, E, P, S, i=2, extra_in_ch=3, groups=(1, 4)),
-                "_3": UpsampleBlock(D, E, P, S, i=3, extra_in_ch=0, groups=(1, 32)),
+                "_3": UpsampleBlock(D, E, P, S, i=3, extra_in_ch=0, groups=(1, 4)),
             }
         )
 
