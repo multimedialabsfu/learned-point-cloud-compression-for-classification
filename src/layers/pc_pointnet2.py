@@ -216,7 +216,7 @@ def sample_and_group(npoint, radius, nsample, xyz, points, returnfps=False):
         return new_xyz, new_points
 
 
-def sample_and_group_all(xyz, points):
+def sample_and_group_all(xyz, points, returnfps=False):
     """
     Input:
         xyz: input points position data, [B, N, 3]
@@ -227,13 +227,17 @@ def sample_and_group_all(xyz, points):
     """
     device = xyz.device
     B, N, C = xyz.shape
+    fps_idx = torch.zeros(B, 1, dtype=torch.long).to(device)
     new_xyz = torch.zeros(B, 1, C).to(device)
     grouped_xyz = xyz.view(B, 1, N, C)
     if points is not None:
         new_points = torch.cat([grouped_xyz, points.view(B, 1, N, -1)], dim=-1)
     else:
         new_points = grouped_xyz
-    return new_xyz, new_points
+    if returnfps:
+        return new_xyz, new_points, grouped_xyz, fps_idx
+    else:
+        return new_xyz, new_points
 
 
 class PointNetSetAbstraction(nn.Module):
