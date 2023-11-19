@@ -38,7 +38,12 @@ class Reshape(nn.Module):
         return f"{self.__class__.__name__}(shape={self.shape})"
 
     def forward(self, x):
-        return x.reshape(x.shape[0], *self.shape)
+        output_shape = (x.shape[0], *self.shape)
+        try:
+            return x.reshape(output_shape)
+        except RuntimeError as e:
+            e.args += (f"Cannot reshape input {tuple(x.shape)} to {output_shape}",)
+            raise e
 
 
 class Transpose(nn.Module):
