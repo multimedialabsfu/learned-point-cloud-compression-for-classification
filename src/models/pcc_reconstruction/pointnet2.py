@@ -155,24 +155,46 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         )
 
     def forward(self, input):
-        points = input["points"].transpose(-2, -1)
+        xyz, norm = self._get_inputs(input)
+        y_out_, u_, uu_ = self._compress(xyz, norm, mode="forward")
+        x_hat, y_hat_, v_ = self._decompress(y_out_, mode="forward")
 
+        return {
+            "x_hat": x_hat,
+            "likelihoods": {f"y_{i}": y_out_[i]["likelihoods"]["y"] for i in range(4)},
+            # Additional outputs:
+            "debug_outputs": {
+                **{f"u_{i}": v for i, v in u_.items() if v is not None},
+                **{f"uu_{i}": v for i, v in uu_.items()},
+                **{f"y_hat_{i}": v for i, v in y_hat_.items()},
+                **{f"v_{i}": v for i, v in v_.items() if v.numel() > 0},
+            },
+        }
+
+    def compress(self, input):
+        raise NotImplementedError
+
+    def decompress(self, strings, shape):
+        raise NotImplementedError
+
+    def _get_inputs(self, input):
+        points = input["points"].transpose(-2, -1)
         if self.normal_channel:
             xyz = points[:, :3, :]
             norm = points[:, 3:, :]
         else:
             xyz = points
             norm = None
+        return xyz, norm
 
-        # TODO Describe these.
+    def _compress(self, xyz, norm, *, mode):
+        lc_func = (lambda lc: lc.compress) if mode == "compress" else (lambda lc: lc)
+
         xyz_ = {0: xyz}
         u_ = {0: norm}
         uu_ = {}
-        uu_hat_ = {}
         y_ = {}
-        y_hat_ = {}
         y_out_ = {}
-        v_ = {}
 
         for i in range(1, 4):
             down_out_i = self.down[f"_{i}"](xyz_[i - 1], u_[i - 1])
@@ -184,7 +206,23 @@ class PointNet2ReconstructionPccModel(CompressionModel):
 
         for i in reversed(range(0, 4)):
             y_[i] = self.h_a[f"_{i}"](uu_[i])
-            y_out_[i] = self.latent_codec[f"_{i}"](y_[i])
+            y_out_[i] = lc_func(self.latent_codec[f"_{i}"])(y_[i])
+
+        return y_out_, u_, uu_
+
+    def _decompress(self, y_inputs_, *, mode):
+        y_hat_ = {}
+        y_out_ = {}
+        uu_hat_ = {}
+        v_ = {}
+
+        for i in reversed(range(0, 4)):
+            if mode == "forward":
+                y_out_[i] = y_inputs_[i]
+            elif mode == "decompress":
+                y_out_[i] = self.latent_codec[f"_{i}"].decompress(
+                    y_inputs_[i]["strings"], shape=y_inputs_[i]["shape"]
+                )
             y_hat_[i] = y_out_[i]["y_hat"]
             uu_hat_[i] = self.h_s[f"_{i}"](y_hat_[i])
 
@@ -196,19 +234,4 @@ class PointNet2ReconstructionPccModel(CompressionModel):
 
         x_hat = v_[0]
 
-        return {
-            "x_hat": x_hat,
-            "likelihoods": {f"y_{i}": y_out_[i]["likelihoods"]["y"] for i in range(4)},
-            # Additional outputs:
-            # "y": y,
-            # "y_hat": y_hat,
-            "debug_outputs": {
-                # "y_hat": y_hat,
-            },
-        }
-
-    def compress(self, input):
-        raise NotImplementedError
-
-    def decompress(self, strings, shape):
-        raise NotImplementedError
+        return x_hat, y_hat_, v_
