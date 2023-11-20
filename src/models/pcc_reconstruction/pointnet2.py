@@ -176,10 +176,32 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         }
 
     def compress(self, input):
-        raise NotImplementedError
+        xyz, norm = self._get_inputs(input)
+        y_out_, _, _ = self._compress(xyz, norm, mode="compress")
+
+        return {
+            # "strings": {f"y_{i}": y_out_[i]["strings"] for i in range(self.levels)},
+            # Flatten nested structure into list[list[str]]:
+            "strings": [
+                ss for level in range(self.levels) for ss in y_out_[level]["strings"]
+            ],
+            "shape": {f"y_{i}": y_out_[i]["shape"] for i in range(self.levels)},
+        }
 
     def decompress(self, strings, shape):
-        raise NotImplementedError
+        y_inputs_ = {
+            i: {
+                "strings": [strings[i]],
+                "shape": shape[f"y_{i}"],
+            }
+            for i in range(self.levels)
+        }
+
+        x_hat, _, _ = self._decompress(y_inputs_, mode="decompress")
+
+        return {
+            "x_hat": x_hat,
+        }
 
     def _get_inputs(self, input):
         points = input["points"].transpose(-2, -1)
