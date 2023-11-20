@@ -44,6 +44,8 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         E = [3, 32, 32, 32, 0]
         M = [64, 64, 128, 512]
 
+        self.levels = 4
+
         self.down = nn.ModuleDict(
             {
                 "_1": PointNetSetAbstraction(
@@ -161,7 +163,9 @@ class PointNet2ReconstructionPccModel(CompressionModel):
 
         return {
             "x_hat": x_hat,
-            "likelihoods": {f"y_{i}": y_out_[i]["likelihoods"]["y"] for i in range(4)},
+            "likelihoods": {
+                f"y_{i}": y_out_[i]["likelihoods"]["y"] for i in range(self.levels)
+            },
             # Additional outputs:
             "debug_outputs": {
                 **{f"u_{i}": v for i, v in u_.items() if v is not None},
@@ -196,15 +200,15 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         y_ = {}
         y_out_ = {}
 
-        for i in range(1, 4):
+        for i in range(1, self.levels):
             down_out_i = self.down[f"_{i}"](xyz_[i - 1], u_[i - 1])
             xyz_[i] = down_out_i["new_xyz"]
             u_[i] = down_out_i["new_features"]
             uu_[i - 1] = down_out_i["grouped_features"]
 
-        uu_[3] = u_[3][:, :, None, :]
+        uu_[self.levels - 1] = u_[self.levels - 1][:, :, None, :]
 
-        for i in reversed(range(0, 4)):
+        for i in reversed(range(0, self.levels)):
             y_[i] = self.h_a[f"_{i}"](uu_[i])
             y_out_[i] = lc_func(self.latent_codec[f"_{i}"])(y_[i])
 
@@ -216,7 +220,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         uu_hat_ = {}
         v_ = {}
 
-        for i in reversed(range(0, 4)):
+        for i in reversed(range(0, self.levels)):
             if mode == "forward":
                 y_out_[i] = y_inputs_[i]
             elif mode == "decompress":
@@ -226,10 +230,10 @@ class PointNet2ReconstructionPccModel(CompressionModel):
             y_hat_[i] = y_out_[i]["y_hat"]
             uu_hat_[i] = self.h_s[f"_{i}"](y_hat_[i])
 
-        B, _, *tail = uu_hat_[3].shape
-        v_[4] = uu_hat_[3].new_zeros((B, 0, *tail))
+        B, _, *tail = uu_hat_[self.levels - 1].shape
+        v_[self.levels] = uu_hat_[self.levels - 1].new_zeros((B, 0, *tail))
 
-        for i in reversed(range(0, 4)):
+        for i in reversed(range(0, self.levels)):
             v_[i] = self.up[f"_{i}"](torch.cat([v_[i + 1], uu_hat_[i]], dim=1))
 
         x_hat = v_[0]
