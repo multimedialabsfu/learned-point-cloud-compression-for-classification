@@ -232,7 +232,8 @@ class PointNet2ReconstructionPccModel(CompressionModel):
 
         for i in reversed(range(0, self.levels)):
             y_[i] = self.h_a[f"_{i}"](uu_[i])
-            y_out_[i] = lc_func(self.latent_codec[f"_{i}"])(y_[i])
+            # NOTE: Reshape 1D -> 2D since latent codecs expect 2D inputs.
+            y_out_[i] = lc_func(self.latent_codec[f"_{i}"])(y_[i][..., None])
 
         return y_out_, u_, uu_
 
@@ -249,7 +250,8 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                 y_out_[i] = self.latent_codec[f"_{i}"].decompress(
                     y_inputs_[i]["strings"], shape=y_inputs_[i]["shape"]
                 )
-            y_hat_[i] = y_out_[i]["y_hat"]
+            # NOTE: Reshape 2D -> 1D since latent codecs return 2D outputs.
+            y_hat_[i] = y_out_[i]["y_hat"].squeeze(-1)
             uu_hat_[i] = self.h_s[f"_{i}"](y_hat_[i])
 
         B, _, *tail = uu_hat_[self.levels - 1].shape
