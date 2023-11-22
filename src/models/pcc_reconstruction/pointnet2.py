@@ -75,33 +75,28 @@ class PointNet2ReconstructionPccModel(CompressionModel):
             }
         )
 
-        # NOTE: Reshape 1D -> 2D since latent codecs expect 2D inputs.
         self.h_a = nn.ModuleDict(
             {
                 "_0": nn.Sequential(
                     Reshape((D[0] + 3, P[1] * S[1])),
                     nn.Conv1d(D[0] + 3, M[0], 1),
                     Gain((M[0], 1), factor=GAIN),
-                    Reshape((M[0], 1, -1)),
                 ),
                 "_1": nn.Sequential(
                     Reshape((D[1] + 3, P[2] * S[2])),
                     nn.Conv1d(D[1] + 3, M[1], 1),
                     Gain((M[1], 1), factor=GAIN),
-                    Reshape((M[1], 1, -1)),
                 ),
                 "_2": nn.Sequential(
                     Reshape((D[2] + 3, P[3] * S[3])),
                     nn.Conv1d(D[2] + 3, M[2], 1),
                     Gain((M[2], 1), factor=GAIN),
-                    Reshape((M[2], 1, -1)),
                 ),
                 "_3": nn.Sequential(
                     Reshape((D[3], 1)),
                     nn.Conv1d(D[3], M[3], 1, groups=4),
                     Interleave(groups=4),
                     Gain((M[3], 1), factor=GAIN),
-                    Reshape((M[3], 1, -1)),
                 ),
             }
         )
@@ -109,22 +104,18 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         self.h_s = nn.ModuleDict(
             {
                 "_0": nn.Sequential(
-                    Reshape((M[0], -1)),
                     Gain((M[0], 1), factor=1 / GAIN),
                     nn.Conv1d(M[0], D[0] + 3, 1),
                 ),
                 "_1": nn.Sequential(
-                    Reshape((M[1], -1)),
                     Gain((M[1], 1), factor=1 / GAIN),
                     nn.Conv1d(M[1], D[1] + 3, 1),
                 ),
                 "_2": nn.Sequential(
-                    Reshape((M[2], -1)),
                     Gain((M[2], 1), factor=1 / GAIN),
                     nn.Conv1d(M[2], D[2] + 3, 1),
                 ),
                 "_3": nn.Sequential(
-                    Reshape((M[3], -1)),
                     Gain((M[3], 1), factor=1 / GAIN),
                     nn.Conv1d(M[3], D[3], 1, groups=4),
                     Interleave(groups=4),
