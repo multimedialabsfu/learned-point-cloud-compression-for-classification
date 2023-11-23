@@ -8,10 +8,10 @@ readme = "README.md"
 packages = [{include = "src"}]
 # packages = [{include = "learned_point_cloud_compression_for_classification"}]
 
-# [tool.poetry.scripts]
-# compressai-train = "compressai_trainer.run.train:main"
-# compressai-eval = "compressai_trainer.run.eval_model:main"
-# compressai-plot = "compressai_trainer.run.plot_rd:main"
+[tool.poetry.scripts]
+compressai-train = "src.run.train:main"
+compressai-eval = "src.run.eval_model:main"
+compressai-plot = "src.run.plot_rd:main"
 
 [tool.poetry.dependencies]
 python = ">=3.8.0,<3.11"
