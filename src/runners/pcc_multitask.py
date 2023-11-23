@@ -12,7 +12,7 @@ from compressai.models.base import CompressionModel
 from compressai.typing import TCriterion
 from compressai_trainer.registry import register_runner
 from compressai_trainer.runners.base import BaseRunner
-from compressai_trainer.utils.metrics import compute_metrics
+from src.utils.metrics import compute_metrics
 
 from .utils import (
     EbDistributionsFigureLogger,
