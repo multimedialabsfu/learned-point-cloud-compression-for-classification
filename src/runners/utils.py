@@ -32,8 +32,8 @@ class PcChannelwiseBppMeter(ChannelwiseBppMeter):
     def update(self, out_net, input):
         _, P, _ = input["points"].shape
         chan_bpp = {
-            k: l.detach().log2().sum(axis=-1) / -P
-            for k, l in out_net["likelihoods"].items()
+            k: lh.detach().log2().sum(axis=-1) / -P
+            for k, lh in out_net["likelihoods"].items()
         }
         for name, ch_bpp in chan_bpp.items():
             self._chan_bpp[name].extend(ch_bpp)

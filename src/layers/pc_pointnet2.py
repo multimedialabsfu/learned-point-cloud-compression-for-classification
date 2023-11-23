@@ -35,7 +35,6 @@ import torch.nn.functional as F
 
 
 def pc_normalize(pc):
-    l = pc.shape[0]
     centroid = np.mean(pc, axis=0)
     pc = pc - centroid
     m = np.max(np.sqrt(np.sum(pc**2, axis=1)))
@@ -112,7 +111,9 @@ def farthest_point_sample(xyz, npoint, _method="pytorch3d"):
         if _method == "fpsample.npdu_kdtree":
             func = fpsample.fps_npdu_kdtree_sampling
         if _method == "fpsample.bucket":
-            func = lambda *args: fpsample.bucket_fps_kdline_sampling(*args, h=5)
+            func = lambda *args: fpsample.bucket_fps_kdline_sampling(  # noqa: E731
+                *args, h=5
+            )
 
         with ThreadPoolExecutor(max_workers=min(8, len(xyz))) as executor:
             indices = list(executor.map(lambda pc: func(pc, npoint), xyz.cpu().numpy()))

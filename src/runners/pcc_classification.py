@@ -4,4 +4,4 @@ Please use the multi-task runner instead:
 That includes both classification and optional reconstruction.
 """
 
-from .pcc_multitask import MultitaskPointCloudCompressionRunner
+# from .pcc_multitask import MultitaskPointCloudCompressionRunner

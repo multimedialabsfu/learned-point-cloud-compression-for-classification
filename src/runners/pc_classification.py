@@ -93,7 +93,7 @@ class PointCloudClassificationRunner(BaseRunner):
 
     @property
     def _current_dataframe(self):
-        r = lambda x: float(f"{x:.4g}")
+        r = lambda x: float(f"{x:.4g}")  # noqa: E731
         d = {
             "name": self.hparams["model"]["name"] + "*",
             "epoch": self.epoch_step,
