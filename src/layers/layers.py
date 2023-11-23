@@ -4,6 +4,8 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
+from compressai.layers.layers import *
+
 
 class Lambda(nn.Module):
     def __init__(self, func):

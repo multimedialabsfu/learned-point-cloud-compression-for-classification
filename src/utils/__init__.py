@@ -1,4 +1,4 @@
-# from compressai_trainer.utils import *
+from compressai_trainer.utils import *
 
 from . import compressai as compressai
 from . import metrics as metrics
