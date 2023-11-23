@@ -9,6 +9,8 @@ import pandas as pd
 import compressai_trainer.utils.compressai.results as _M
 import src
 
+_M.GENERIC_CODECS = []
+
 
 def compressai_dataframe(
     codec_name: str,

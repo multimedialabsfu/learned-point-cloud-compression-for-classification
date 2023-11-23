@@ -31,12 +31,16 @@ class PcChannelwiseBppMeter(ChannelwiseBppMeter):
 
     def update(self, out_net, input):
         _, P, _ = input["points"].shape
-        chan_bpp = {
+        chan_rate = {
             k: lh.detach().log2().sum(axis=-1) / -P
             for k, lh in out_net["likelihoods"].items()
         }
-        for name, ch_bpp in chan_bpp.items():
-            self._chan_bpp[name].extend(ch_bpp)
+        try:
+            _chan_rate = self._chan_rate  # compressai_trainer>=0.3.11
+        except AttributeError:
+            _chan_rate = self._chan_bpp  # compressai_trainer<=0.3.10
+        for name, ch_rate in chan_rate.items():
+            _chan_rate[name].extend(ch_rate)
 
 
 class PcDebugOutputsLogger(DebugOutputsLogger):
