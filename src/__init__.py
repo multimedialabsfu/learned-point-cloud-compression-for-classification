@@ -7,8 +7,10 @@ from . import (
     models,
     optimizers,
     plot,
+    registry,
     run,
     runners,
+    typing,
     utils,
 )
 
@@ -21,7 +23,9 @@ __all__ = [
     "models",
     "optimizers",
     "plot",
+    "registry",
     "run",
     "runners",
+    "typing",
     "utils",
 ]
