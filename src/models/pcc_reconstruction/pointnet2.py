@@ -19,9 +19,10 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         self,
         num_points=1024,
         num_classes=40,
-        num_channels={
-            # NOTE: Ignored for now.
-        },
+        D=(0, 128, 256, 512),
+        P=(1024, 256, 64, 1),
+        S=(None, 4, 4, 64),
+        R=(None, 0.2, 0.4, None),
         normal_channel=False,
     ):
         super().__init__()
@@ -32,10 +33,10 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         # D = [3 * self.normal_channel, 128, 256, 1024]
         # P = [None, 512, 128, 1]
         # S = [None, 32, 64, 128]
+        # R = [None, 0.2, 0.4, None]
 
-        D = [3 * self.normal_channel, 128, 256, 512]
-        P = [num_points, 256, 64, 1]
-        S = [None, 4, 4, 64]
+        # NOTE: P[0] is only used to determine the number of output points.
+        # assert P[0] == num_points
 
         assert P[0] == P[1] * S[1]
         assert P[1] == P[2] * S[2]
@@ -50,7 +51,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
             {
                 "_1": PointNetSetAbstraction(
                     npoint=P[1],
-                    radius=0.2,
+                    radius=R[1],
                     nsample=S[1],
                     in_channel=D[0] + 3,
                     mlp=[64, 64, D[1]],
@@ -58,7 +59,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                 ),
                 "_2": PointNetSetAbstraction(
                     npoint=P[2],
-                    radius=0.4,
+                    radius=R[2],
                     nsample=S[2],
                     in_channel=D[1] + 3,
                     mlp=[128, 128, D[2]],
