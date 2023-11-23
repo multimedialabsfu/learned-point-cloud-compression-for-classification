@@ -4,7 +4,6 @@ import time
 from typing import Any, Optional
 
 import pandas as pd
-import plotly.graph_objects as go
 import torch
 from catalyst import metrics
 
@@ -172,18 +171,9 @@ class ReconstructionPointCloudCompressionRunner(BaseRunner):
         }
         return pd.DataFrame.from_dict([d])
 
-    def _current_rd_traces(self, metric):
+    def _current_traces(self, metric):
         lmbda = self.hparams["criterion"]["lmbda"]
-        num_points = len(self._loader_metrics["bpp"])
-        samples_scatter = go.Scatter(
-            x=self._loader_metrics["bpp"],
-            y=self._loader_metrics[metric],
-            mode="markers",
-            name=f'{self.hparams["model"]["name"]} {lmbda:.4f}',
-            text=[f"lmbda={lmbda:.4f}\nsample_idx={i}" for i in range(num_points)],
-            visible="legendonly",
-        )
-        return [samples_scatter]
+        return self._rd_figure_logger.current_rd_traces(x="bpp", y=metric, lmbda=lmbda)
 
     def _handle_custom_metrics(self, out_net, out_metrics, input):
         self._loader_metrics["chan_bpp"].update(out_net, input)
@@ -195,22 +185,34 @@ class ReconstructionPointCloudCompressionRunner(BaseRunner):
             log_kwargs=dict(track_kwargs=dict(step=0))
         )
 
-    def _log_rd_curves(self):
+    def _log_rd_curves(self, **kwargs):
+        return [
+            self._log_rd_curves_figure(metric, description, **kwargs)
+            for metric, description in zip(RD_PLOT_METRICS, RD_PLOT_DESCRIPTIONS)
+        ]
+
+    def _log_rd_curves_figure(
+        self, metric, description, df=None, traces=None, **kwargs
+    ):
+        if df is None:
+            df = self._current_dataframe
+        if traces is None:
+            traces = self._current_traces(metric)
         meta = self.hparams["dataset"]["infer"]["meta"]
-        for metric, description in zip(RD_PLOT_METRICS, RD_PLOT_DESCRIPTIONS):
-            self._rd_figure_logger.log(
-                df=self._current_dataframe,
-                traces=self._current_rd_traces(metric),
-                metric=metric,
-                dataset=meta["identifier"],
-                **RD_PLOT_SETTINGS_COMMON,
-                layout_kwargs=dict(
-                    title=RD_PLOT_TITLE.format(
-                        dataset=meta["name"],
-                        metric=description,
-                    ),
+        return self._rd_figure_logger.log(
+            df=df,
+            traces=traces,
+            metric=metric,
+            dataset=meta["identifier"],
+            **RD_PLOT_SETTINGS_COMMON,
+            layout_kwargs=dict(
+                title=RD_PLOT_TITLE.format(
+                    dataset=meta["name"],
+                    metric=description,
                 ),
-            )
+            ),
+            **kwargs,
+        )
 
     def _setup_loader_metrics(self):
         self._loader_metrics = {
