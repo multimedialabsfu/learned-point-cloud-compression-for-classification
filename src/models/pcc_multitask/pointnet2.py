@@ -283,20 +283,20 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
 
         uu_[self.levels - 1] = u_[self.levels - 1][:, :, None, :]
 
-        # NOTE: Reshape 1D -> 2D since latent codecs expect 2D inputs.
-        # Hence, we add an extra dimension beforehand via y[..., None].
-
         for i in reversed(range(0, self.levels)):
             y_[i] = self.h_a[f"_{i}"](uu_[i])
 
             if i == self.levels - 1:
                 y_[(i, 1)], y_[(i, 2)] = self.split(y_[i], i)
-                for j in [1, 2]:
-                    y_out_[(i, j)] = lc_func(self.latent_codec[f"_{i}_{j}"])(
-                        y_[(i, j)][..., None]
-                    )
-            else:
-                y_out_[i] = lc_func(self.latent_codec[f"_{i}"])(y_[i][..., None])
+
+            keys = [(i, 1), (i, 2)] if i == self.levels - 1 else [i]
+
+            for key in keys:
+                # NOTE: Reshape 1D -> 2D since latent codecs expect 2D inputs.
+                # Hence, we add an extra dimension beforehand via y[..., None].
+                y_out_[key] = lc_func(self.latent_codec[self._fmt_key(key)])(
+                    y_[key][..., None]
+                )
 
         return y_out_, u_, uu_
 
@@ -309,32 +309,21 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
         v_ = {}
 
         for i in reversed(range(0, self.levels)):
-            if mode == "forward":
-                if i == self.levels - 1:
-                    for j in [1, 2]:
-                        y_out_[(i, j)] = y_inputs_[(i, j)]
-                else:
-                    y_out_[i] = y_inputs_[i]
-            elif mode == "decompress":
-                if i == self.levels - 1:
-                    for j in [1, 2]:
-                        y_out_[(i, j)] = self.latent_codec[f"_{i}_{j}"].decompress(
-                            y_inputs_[(i, j)]["strings"],
-                            shape=y_inputs_[(i, j)]["shape"],
-                        )
-                else:
-                    y_out_[i] = self.latent_codec[f"_{i}"].decompress(
-                        y_inputs_[i]["strings"], shape=y_inputs_[i]["shape"]
-                    )
+            keys = [(i, 1), (i, 2)] if i == self.levels - 1 else [i]
 
-            # NOTE: Reshape 2D -> 1D since latent codecs return 2D outputs.
-            # Hence, we remove an extra dimension afterwards via y.squeeze(-1).
+            for key in keys:
+                if mode == "forward":
+                    y_out_[key] = y_inputs_[key]
+                elif mode == "decompress":
+                    y_out_[key] = self.latent_codec[self._fmt_key(key)].decompress(
+                        y_inputs_[key]["strings"], shape=y_inputs_[key]["shape"]
+                    )
+                # NOTE: Reshape 2D -> 1D since latent codecs return 2D outputs.
+                # Hence, we remove an extra dimension afterwards via y.squeeze(-1).
+                y_hat_[key] = y_out_[key]["y_hat"].squeeze(-1)
+
             if i == self.levels - 1:
-                for j in [1, 2]:
-                    y_hat_[(i, j)] = y_out_[(i, j)]["y_hat"].squeeze(-1)
                 y_hat_[i] = self.merge(detach_if(y_hat_[(i, 1)]), y_hat_[(i, 2)])
-            else:
-                y_hat_[i] = y_out_[i]["y_hat"].squeeze(-1)
 
             uu_hat_[i] = self.h_s[f"_{i}"](y_hat_[i])
 
