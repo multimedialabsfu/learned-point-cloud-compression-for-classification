@@ -23,10 +23,32 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         P=(1024, 256, 64, 1),
         S=(None, 4, 4, 64),
         R=(None, 0.2, 0.4, None),
+        E=(3, 32, 32, 32, 0),
+        M=(64, 64, 128, 512),
         normal_channel=False,
     ):
+        """
+        Args:
+            num_points: Number of input points. [unused]
+            num_classes: Number of object classes. [unused]
+            D: Number of input feature channels.
+            P: Number of output points.
+            S: Number of samples per centroid.
+            R: Radius of the ball to query points within.
+            E: Number of output feature channels after each upsample.
+            M: Number of latent channels for the bottleneck.
+            normal_channel: Whether the input includes normals.
+        """
         super().__init__()
 
+        self.num_points = num_points
+        self.num_classes = num_classes
+        self.D = D
+        self.P = P
+        self.S = S
+        self.R = R
+        self.E = E
+        self.M = M
         self.normal_channel = bool(normal_channel)
 
         # Original PointNet++ architecture:
@@ -41,9 +63,6 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         assert P[0] == P[1] * S[1]
         assert P[1] == P[2] * S[2]
         assert P[2] == P[3] * S[3]
-
-        E = [3, 32, 32, 32, 0]
-        M = [64, 64, 128, 512]
 
         self.levels = 4
 
@@ -215,7 +234,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         return xyz, norm
 
     def _compress(self, xyz, norm, *, mode):
-        lc_func = (lambda lc: lc.compress) if mode == "compress" else (lambda lc: lc)
+        lc_func = {"forward": lambda lc: lc, "compress": lambda lc: lc.compress}[mode]
 
         xyz_ = {0: xyz}
         u_ = {0: norm}
