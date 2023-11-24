@@ -95,6 +95,8 @@ class PointNet2ReconstructionPccModel(CompressionModel):
             }
         )
 
+        groups_h_3 = 1 if D[3] * M[3] <= 2**16 else 4
+
         self.h_a = nn.ModuleDict(
             {
                 "_0": nn.Sequential(
@@ -114,8 +116,8 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                 ),
                 "_3": nn.Sequential(
                     Reshape((D[3], 1)),
-                    nn.Conv1d(D[3], M[3], 1, groups=4),
-                    Interleave(groups=4),
+                    nn.Conv1d(D[3], M[3], 1, groups=groups_h_3),
+                    Interleave(groups=groups_h_3),
                     Gain((M[3], 1), factor=GAIN),
                 ),
             }
@@ -137,8 +139,8 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                 ),
                 "_3": nn.Sequential(
                     Gain((M[3], 1), factor=1 / GAIN),
-                    nn.Conv1d(M[3], D[3], 1, groups=4),
-                    Interleave(groups=4),
+                    nn.Conv1d(M[3], D[3], 1, groups=groups_h_3),
+                    Interleave(groups=groups_h_3),
                 ),
             }
         )
