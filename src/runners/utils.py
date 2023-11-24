@@ -32,7 +32,7 @@ class PcChannelwiseBppMeter(ChannelwiseBppMeter):
     def update(self, out_net, input):
         _, P, _ = input["points"].shape
         chan_rate = {
-            k: lh.detach().log2().sum(axis=-1) / -P
+            k: lh.detach().log2().sum(dim=tuple(range(2, len(lh.shape)))) / -P
             for k, lh in out_net["likelihoods"].items()
         }
         try:
