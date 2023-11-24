@@ -24,7 +24,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         S=(None, 4, 4, 64),
         R=(None, 0.2, 0.4, None),
         E=(3, 32, 32, 32, 0),
-        M=(64, 64, 128, 512),
+        M=(64, 64, 64, 64),
         normal_channel=False,
     ):
         """
