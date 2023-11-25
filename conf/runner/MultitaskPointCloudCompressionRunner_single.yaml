@@ -9,16 +9,19 @@ meters:
   train:
     - loss
     # - aux_loss
+    # - bit_loss
     # - bpp_loss
     # - cls_loss
   valid:
     - loss
     # - aux_loss
+    # - bit_loss
     # - bpp_loss
     # - cls_loss
   infer:
     - loss
     # - aux_loss
+    - bit_loss
     - bpp_loss
     - cls_loss
     - bpp

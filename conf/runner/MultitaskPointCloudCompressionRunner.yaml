@@ -9,6 +9,9 @@ meters:
   train:
     - loss
     # - aux_loss
+    # - bit_loss
+    # - bit_y1_loss
+    # - bit_y2_loss
     # - bpp_loss
     # - bpp_y1_loss
     # - bpp_y2_loss
@@ -19,6 +22,9 @@ meters:
   valid:
     - loss
     # - aux_loss
+    # - bit_loss
+    # - bit_y1_loss
+    # - bit_y2_loss
     # - bpp_loss
     # - bpp_y1_loss
     # - bpp_y2_loss
@@ -29,6 +35,9 @@ meters:
   infer:
     - loss
     # - aux_loss
+    - bit_loss
+    - bit_y1_loss
+    - bit_y2_loss
     - bpp_loss
     - bpp_y1_loss
     - bpp_y2_loss
