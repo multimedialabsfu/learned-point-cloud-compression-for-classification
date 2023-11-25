@@ -73,7 +73,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                     radius=R[1],
                     nsample=S[1],
                     in_channel=D[0] + 3,
-                    mlp=[64, 64, D[1]],
+                    mlp=[D[1] // 2, D[1] // 2, D[1]],
                     group_all=False,
                 ),
                 "_2": PointNetSetAbstraction(
@@ -81,7 +81,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                     radius=R[2],
                     nsample=S[2],
                     in_channel=D[1] + 3,
-                    mlp=[128, 128, D[2]],
+                    mlp=[D[1], D[1], D[2]],
                     group_all=False,
                 ),
                 "_3": PointNetSetAbstraction(
@@ -89,7 +89,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                     radius=None,
                     nsample=None,
                     in_channel=D[2] + 3,
-                    mlp=[256, 512, D[3]],
+                    mlp=[D[2], D[3], D[3]],
                     group_all=True,
                 ),
             }
