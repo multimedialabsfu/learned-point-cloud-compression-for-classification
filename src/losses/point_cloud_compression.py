@@ -13,29 +13,38 @@ class ChamferPccRateDistortionLoss(nn.Module):
     For compression models that reconstruct the input point cloud.
     """
 
-    def __init__(self, lmbda=5.0):
+    def __init__(self, lmbda=None, rate_key="bpp"):
         super().__init__()
         self.lmbda = lmbda
+        self.rate_key = rate_key
 
     def forward(self, output, target):
-        out = {}
-        out["bpp_loss"] = self.bpp_loss(output, target)
-        out["rec_loss"] = self.rec_loss(output, target)
-        out["loss"] = out["bpp_loss"] + self.lmbda * out["rec_loss"]
+        out = {
+            **self.compute_bpp_loss(output, target),
+            **self.compute_rec_loss(output, target),
+        }
+        out["loss"] = out[f"{self.rate_key}_loss"] + self.lmbda * out["rec_loss"]
         return out
 
-    def bpp_loss(self, output, target):
+    def compute_bpp_loss(self, output, target):
         N, P, C = target["points"].shape
         assert C == 3
-        num_points = N * P
-        return sum(
-            likelihoods.log2().sum() / -num_points
-            for likelihoods in output["likelihoods"].values()
-        )
+        out_bit = {
+            f"bit_{name}_loss": lh.log2().sum() / -N
+            for name, lh in output["likelihoods"].items()
+        }
+        out_bpp = {
+            f"bpp_{name}_loss": out_bit[f"bit_{name}_loss"] / P
+            for name in output["likelihoods"].keys()
+        }
+        out = {**out_bit, **out_bpp}
+        out["bit_loss"] = sum(out_bit.values())
+        out["bpp_loss"] = out["bit_loss"] / P
+        return out
 
-    def rec_loss(self, output, target):
+    def compute_rec_loss(self, output, target):
         loss_chamfer, _ = chamfer_distance(output["x_hat"], target["points"])
-        return loss_chamfer
+        return {"rec_loss": loss_chamfer}
 
 
 @register_criterion("MultitaskPccRateDistortionLoss")
@@ -60,13 +69,13 @@ class MultitaskPccRateDistortionLoss(nn.Module):
         }
     """
 
-    def __init__(self, lmbda={}, bpp_divide_by_num_points=True):
+    def __init__(self, lmbda={}, rate_key="bpp"):
         super().__init__()
         self.lmbda = lmbda
+        self.rate_key = rate_key
         self.rec_metric = lambda *args, **kwargs: chamfer_distance(*args, **kwargs)[0]
         self.cls_metric = nn.CrossEntropyLoss()
         self.fm_metric = nn.MSELoss()
-        self.bpp_divide_by_num_points = bpp_divide_by_num_points
 
     def forward(self, output, target):
         out = {
@@ -77,7 +86,7 @@ class MultitaskPccRateDistortionLoss(nn.Module):
         }
 
         out["loss"] = (
-            out.get("bpp_loss", 0)
+            out.get(f"{self.rate_key}_loss", 0)
             + self.lmbda.get("rec", 0) * out.get("rec_loss", 0)
             + self.lmbda.get("cls", 0) * out.get("cls_loss", 0)
             # + sum(lmbda * out[f"fm_{k}_loss"] for k, lmbda in self.lmbda["fm"].items())
@@ -90,12 +99,17 @@ class MultitaskPccRateDistortionLoss(nn.Module):
             return {}
         N, P, C = target["points"].shape
         assert C == 3
-        num_points = N * P if self.bpp_divide_by_num_points else N
-        out = {
-            f"bpp_{name}_loss": likelihoods.log2().sum() / -num_points
-            for name, likelihoods in output["likelihoods"].items()
+        out_bit = {
+            f"bit_{name}_loss": lh.log2().sum() / -N
+            for name, lh in output["likelihoods"].items()
         }
-        out["bpp_loss"] = sum(out.values())
+        out_bpp = {
+            f"bpp_{name}_loss": out_bit[f"bit_{name}_loss"] / P
+            for name in output["likelihoods"].keys()
+        }
+        out = {**out_bit, **out_bpp}
+        out["bit_loss"] = sum(out_bit.values())
+        out["bpp_loss"] = out["bit_loss"] / P
         return out
 
     def compute_rec_loss(self, output, target):

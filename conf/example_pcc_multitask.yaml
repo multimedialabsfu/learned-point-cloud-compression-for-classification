@@ -38,7 +38,7 @@ hp:
   #   task_backend: [1024, 512, 256, "${hp.num_classes}"]
 
 criterion:
-  bpp_divide_by_num_points: False
+  rate_key: "bit"
 
 optimizer:
   net:
