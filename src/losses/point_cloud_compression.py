@@ -15,7 +15,7 @@ class ChamferPccRateDistortionLoss(nn.Module):
 
     def __init__(self, lmbda=None, rate_key="bpp"):
         super().__init__()
-        self.lmbda = lmbda
+        self.lmbda = lmbda if isinstance(lmbda, dict) else {"rec": lmbda}
         self.rate_key = rate_key
 
     def forward(self, output, target):
@@ -23,7 +23,7 @@ class ChamferPccRateDistortionLoss(nn.Module):
             **self.compute_bpp_loss(output, target),
             **self.compute_rec_loss(output, target),
         }
-        out["loss"] = out[f"{self.rate_key}_loss"] + self.lmbda * out["rec_loss"]
+        out["loss"] = out[f"{self.rate_key}_loss"] + self.lmbda["rec"] * out["rec_loss"]
         return out
 
     def compute_bpp_loss(self, output, target):
