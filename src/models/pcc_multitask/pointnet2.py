@@ -155,7 +155,7 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
             {
                 "_0": nn.Sequential(
                     nn.Conv1d(E[1] + D[0] + 3, E[1], 1),
-                    nn.BatchNorm1d(E[1]),
+                    # nn.BatchNorm1d(E[1]),
                     nn.ReLU(inplace=True),
                     nn.Conv1d(E[1], E[0], 1),
                     Reshape((E[0], P[0])),
