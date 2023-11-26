@@ -55,7 +55,7 @@ RD_PLOT_SETTINGS_COMMON: dict[str, Any] = dict(
             "loss",
             "rec_loss",
             "epoch",
-            "criterion.lmbda",
+            "criterion.lmbda.rec",
         ],
     ),
 )
@@ -161,7 +161,7 @@ class ReconstructionPointCloudCompressionRunner(BaseRunner):
         d = {
             "name": self.hparams["model"]["name"] + "*",
             "epoch": self.epoch_step,
-            "criterion.lmbda": self.hparams["criterion"]["lmbda"],
+            "criterion.lmbda.rec": self.hparams["criterion"]["lmbda"]["rec"],
             "loss": r(self.loader_metrics["loss"]),
             "bpp": r(self.loader_metrics["bpp"]),
             "bpp_loss": r(self.loader_metrics["bpp_loss"]),
@@ -172,7 +172,7 @@ class ReconstructionPointCloudCompressionRunner(BaseRunner):
         return pd.DataFrame.from_dict([d])
 
     def _current_traces(self, metric):
-        lmbda = self.hparams["criterion"]["lmbda"]
+        lmbda = self.hparams["criterion"]["lmbda"]["rec"]
         return self._rd_figure_logger.current_rd_traces(x="bpp", y=metric, lmbda=lmbda)
 
     def _handle_custom_metrics(self, out_net, out_metrics, input):
