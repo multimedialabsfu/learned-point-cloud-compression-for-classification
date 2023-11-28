@@ -107,6 +107,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                         Gain((M[i], 1), factor=GAIN),
                     )
                     for i in range(self.levels - 1)
+                    if M[i] > 0
                 },
                 f"_{i_final}": nn.Sequential(
                     Reshape((D[i_final], 1)),
@@ -125,6 +126,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                         nn.Conv1d(M[i], D[i] + 3, 1),
                     )
                     for i in range(self.levels - 1)
+                    if M[i] > 0
                 },
                 f"_{i_final}": nn.Sequential(
                     Gain((M[i_final], 1), factor=1 / GAIN),
@@ -137,16 +139,16 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         self.up = nn.ModuleDict(
             {
                 "_0": nn.Sequential(
-                    nn.Conv1d(E[1] + D[0] + 3, E[1], 1),
+                    nn.Conv1d(E[1] + D[0] + 3 * bool(M[0]), E[1], 1),
                     # nn.BatchNorm1d(E[1]),
                     nn.ReLU(inplace=True),
                     nn.Conv1d(E[1], E[0], 1),
                     Reshape((E[0], P[0])),
                     Transpose(-2, -1),
                 ),
-                "_1": UpsampleBlock(D, E, P, S, i=1, extra_in_ch=3, groups=(1, 4)),
-                "_2": UpsampleBlock(D, E, P, S, i=2, extra_in_ch=3, groups=(1, 4)),
-                "_3": UpsampleBlock(D, E, P, S, i=3, extra_in_ch=0, groups=(1, 4)),
+                "_1": UpsampleBlock(D, E, M, P, S, i=1, extra_in_ch=3, groups=(1, 4)),
+                "_2": UpsampleBlock(D, E, M, P, S, i=2, extra_in_ch=3, groups=(1, 4)),
+                "_3": UpsampleBlock(D, E, M, P, S, i=3, extra_in_ch=0, groups=(1, 4)),
             }
         )
 
@@ -156,6 +158,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
                     entropy_bottleneck=EntropyBottleneck(M[i], tail_mass=1e-4),
                 )
                 for i in range(self.levels)
+                if M[i] > 0
             }
         )
 
@@ -167,7 +170,9 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         return {
             "x_hat": x_hat,
             "likelihoods": {
-                f"y_{i}": y_out_[i]["likelihoods"]["y"] for i in range(self.levels)
+                f"y_{i}": y_out_[i]["likelihoods"]["y"]
+                for i in range(self.levels)
+                if "likelihoods" in y_out_[i]
             },
             # Additional outputs:
             "debug_outputs": {
@@ -234,6 +239,10 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         uu_[self.levels - 1] = u_[self.levels - 1][:, :, None, :]
 
         for i in reversed(range(0, self.levels)):
+            if self.M[i] == 0:
+                y_out_[i] = {"strings": [b""], "shape": ()}
+                continue
+
             y_[i] = self.h_a[f"_{i}"](uu_[i])
             # NOTE: Reshape 1D -> 2D since latent codecs expect 2D inputs.
             y_out_[i] = lc_func(self.latent_codec[f"_{i}"])(y_[i][..., None])
@@ -247,6 +256,8 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         v_ = {}
 
         for i in reversed(range(0, self.levels)):
+            if self.M[i] == 0:
+                continue
             if mode == "forward":
                 y_out_[i] = y_inputs_[i]
             elif mode == "decompress":
@@ -261,7 +272,11 @@ class PointNet2ReconstructionPccModel(CompressionModel):
         v_[self.levels] = uu_hat_[self.levels - 1].new_zeros((B, 0, *tail))
 
         for i in reversed(range(0, self.levels)):
-            v_[i] = self.up[f"_{i}"](torch.cat([v_[i + 1], uu_hat_[i]], dim=1))
+            v_[i] = self.up[f"_{i}"](
+                v_[i + 1]
+                if self.M[i] == 0
+                else torch.cat([v_[i + 1], uu_hat_[i]], dim=1)
+            )
 
         x_hat = v_[0]
 

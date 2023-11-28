@@ -113,6 +113,7 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
                         Gain((M[i], 1), factor=GAIN),
                     )
                     for i in range(self.levels - 1)
+                    if M[i] > 0
                 },
                 f"_{i_final}": nn.Sequential(
                     Reshape((D[i_final], 1)),
@@ -131,6 +132,7 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
                         nn.Conv1d(M[i], D[i] + 3, 1),
                     )
                     for i in range(self.levels - 1)
+                    if M[i] > 0
                 },
                 f"_{i_final}": nn.Sequential(
                     Gain((M[i_final], 1), factor=1 / GAIN),
@@ -143,16 +145,16 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
         self.up = nn.ModuleDict(
             {
                 "_0": nn.Sequential(
-                    nn.Conv1d(E[1] + D[0] + 3, E[1], 1),
+                    nn.Conv1d(E[1] + D[0] + 3 * bool(M[0]), E[1], 1),
                     # nn.BatchNorm1d(E[1]),
                     nn.ReLU(inplace=True),
                     nn.Conv1d(E[1], E[0], 1),
                     Reshape((E[0], P[0])),
                     Transpose(-2, -1),
                 ),
-                "_1": UpsampleBlock(D, E, P, S, i=1, extra_in_ch=3, groups=(1, 4)),
-                "_2": UpsampleBlock(D, E, P, S, i=2, extra_in_ch=3, groups=(1, 4)),
-                "_3": UpsampleBlock(D, E, P, S, i=3, extra_in_ch=0, groups=(1, 4)),
+                "_1": UpsampleBlock(D, E, M, P, S, i=1, extra_in_ch=3, groups=(1, 4)),
+                "_2": UpsampleBlock(D, E, M, P, S, i=2, extra_in_ch=3, groups=(1, 4)),
+                "_3": UpsampleBlock(D, E, M, P, S, i=3, extra_in_ch=0, groups=(1, 4)),
             }
         )
 
@@ -183,6 +185,7 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
                         entropy_bottleneck=EntropyBottleneck(M[i], tail_mass=1e-4),
                     )
                     for i in range(self.levels - 1)
+                    if M[i] > 0
                 },
                 f"_{i_final}_1": EntropyBottleneckLatentCodec(
                     entropy_bottleneck=EntropyBottleneck(M_L_1, tail_mass=1e-4),
@@ -202,7 +205,9 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
             "x_hat": x_hat,
             "t_hat": t_hat,
             "likelihoods": {
-                f"y{self._fmt_key(k)}": v["likelihoods"]["y"] for k, v in y_out_.items()
+                f"y{self._fmt_key(k)}": v["likelihoods"]["y"]
+                for k, v in y_out_.items()
+                if "likelihoods" in v
             },
             # Additional outputs:
             "debug_outputs": {
@@ -270,6 +275,11 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
         uu_[self.levels - 1] = u_[self.levels - 1][:, :, None, :]
 
         for i in reversed(range(0, self.levels)):
+            if self.M[i] == 0:
+                assert i != self.levels - 1
+                y_out_[i] = {"strings": [b""], "shape": ()}
+                continue
+
             y_[i] = self.h_a[f"_{i}"](uu_[i])
 
             if i == self.levels - 1:
@@ -295,6 +305,10 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
         v_ = {}
 
         for i in reversed(range(0, self.levels)):
+            if self.M[i] == 0:
+                assert i != self.levels - 1
+                continue
+
             keys = [(i, 1), (i, 2)] if i == self.levels - 1 else [i]
 
             for key in keys:
@@ -317,7 +331,11 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
         v_[self.levels] = uu_hat_[self.levels - 1].new_zeros((B, 0, *tail))
 
         for i in reversed(range(0, self.levels)):
-            v_[i] = self.up[f"_{i}"](torch.cat([v_[i + 1], uu_hat_[i]], dim=1))
+            v_[i] = self.up[f"_{i}"](
+                v_[i + 1]
+                if self.M[i] == 0
+                else torch.cat([v_[i + 1], uu_hat_[i]], dim=1)
+            )
 
         x_hat = v_[0]
         t_hat = self.task_backend(y_hat_[(self.levels - 1, 1)])

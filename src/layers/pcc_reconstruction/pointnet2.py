@@ -5,10 +5,12 @@ from src.layers.layers import Interleave, Reshape, Transpose
 
 
 class UpsampleBlock(nn.Module):
-    def __init__(self, D, E, P, S, i, extra_in_ch=3, groups=(1, 1)):
+    def __init__(self, D, E, M, P, S, i, extra_in_ch=3, groups=(1, 1)):
         super().__init__()
         self.block = nn.Sequential(
-            nn.Conv1d(E[i + 1] + D[i] + extra_in_ch, D[i], 1, groups=groups[0]),
+            nn.Conv1d(
+                E[i + 1] + (D[i] + extra_in_ch) * bool(M[i]), D[i], 1, groups=groups[0]
+            ),
             Interleave(groups=groups[0]),
             nn.BatchNorm1d(D[i]),
             nn.ReLU(inplace=True),
