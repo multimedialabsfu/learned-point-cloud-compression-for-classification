@@ -101,52 +101,41 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
             }
         )
 
-        groups_h_3 = 1 if D[3] * M[3] <= 2**16 else 4
+        i_final = self.levels - 1
+        groups_h_final = 1 if D[i_final] * M[i_final] <= 2**16 else 4
 
         self.h_a = nn.ModuleDict(
             {
-                "_0": nn.Sequential(
-                    Reshape((D[0] + 3, P[1] * S[1])),
-                    nn.Conv1d(D[0] + 3, M[0], 1),
-                    Gain((M[0], 1), factor=GAIN),
-                ),
-                "_1": nn.Sequential(
-                    Reshape((D[1] + 3, P[2] * S[2])),
-                    nn.Conv1d(D[1] + 3, M[1], 1),
-                    Gain((M[1], 1), factor=GAIN),
-                ),
-                "_2": nn.Sequential(
-                    Reshape((D[2] + 3, P[3] * S[3])),
-                    nn.Conv1d(D[2] + 3, M[2], 1),
-                    Gain((M[2], 1), factor=GAIN),
-                ),
-                "_3": nn.Sequential(
-                    Reshape((D[3], 1)),
-                    nn.Conv1d(D[3], M[3], 1, groups=groups_h_3),
-                    Interleave(groups=groups_h_3),
-                    Gain((M[3], 1), factor=GAIN),
+                **{
+                    f"_{i}": nn.Sequential(
+                        Reshape((D[i] + 3, P[i + 1] * S[i + 1])),
+                        nn.Conv1d(D[i] + 3, M[i], 1),
+                        Gain((M[i], 1), factor=GAIN),
+                    )
+                    for i in range(self.levels - 1)
+                },
+                f"_{i_final}": nn.Sequential(
+                    Reshape((D[i_final], 1)),
+                    nn.Conv1d(D[i_final], M[i_final], 1, groups=groups_h_final),
+                    Interleave(groups=groups_h_final),
+                    Gain((M[i_final], 1), factor=GAIN),
                 ),
             }
         )
 
         self.h_s = nn.ModuleDict(
             {
-                "_0": nn.Sequential(
-                    Gain((M[0], 1), factor=1 / GAIN),
-                    nn.Conv1d(M[0], D[0] + 3, 1),
-                ),
-                "_1": nn.Sequential(
-                    Gain((M[1], 1), factor=1 / GAIN),
-                    nn.Conv1d(M[1], D[1] + 3, 1),
-                ),
-                "_2": nn.Sequential(
-                    Gain((M[2], 1), factor=1 / GAIN),
-                    nn.Conv1d(M[2], D[2] + 3, 1),
-                ),
-                "_3": nn.Sequential(
-                    Gain((M[3], 1), factor=1 / GAIN),
-                    nn.Conv1d(M[3], D[3], 1, groups=groups_h_3),
-                    Interleave(groups=groups_h_3),
+                **{
+                    f"_{i}": nn.Sequential(
+                        Gain((M[i], 1), factor=1 / GAIN),
+                        nn.Conv1d(M[i], D[i] + 3, 1),
+                    )
+                    for i in range(self.levels - 1)
+                },
+                f"_{i_final}": nn.Sequential(
+                    Gain((M[i_final], 1), factor=1 / GAIN),
+                    nn.Conv1d(M[i_final], D[i_final], 1, groups=groups_h_final),
+                    Interleave(groups=groups_h_final),
                 ),
             }
         )
@@ -189,19 +178,16 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
 
         self.latent_codec = nn.ModuleDict(
             {
-                "_0": EntropyBottleneckLatentCodec(
-                    entropy_bottleneck=EntropyBottleneck(M[0], tail_mass=1e-4),
-                ),
-                "_1": EntropyBottleneckLatentCodec(
-                    entropy_bottleneck=EntropyBottleneck(M[1], tail_mass=1e-4),
-                ),
-                "_2": EntropyBottleneckLatentCodec(
-                    entropy_bottleneck=EntropyBottleneck(M[2], tail_mass=1e-4),
-                ),
-                "_3_1": EntropyBottleneckLatentCodec(
+                **{
+                    f"_{i}": EntropyBottleneckLatentCodec(
+                        entropy_bottleneck=EntropyBottleneck(M[i], tail_mass=1e-4),
+                    )
+                    for i in range(self.levels - 1)
+                },
+                f"_{i_final}_1": EntropyBottleneckLatentCodec(
                     entropy_bottleneck=EntropyBottleneck(M_L_1, tail_mass=1e-4),
                 ),
-                "_3_2": EntropyBottleneckLatentCodec(
+                f"_{i_final}_2": EntropyBottleneckLatentCodec(
                     entropy_bottleneck=EntropyBottleneck(M_L_2, tail_mass=1e-4),
                 ),
             }
