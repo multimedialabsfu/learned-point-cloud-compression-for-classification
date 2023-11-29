@@ -224,6 +224,8 @@ class PointNet2ReconstructionPccModel(CompressionModel):
     def _compress(self, xyz, norm, *, mode):
         lc_func = {"forward": lambda lc: lc, "compress": lambda lc: lc.compress}[mode]
 
+        B, _, _ = xyz.shape
+
         xyz_ = {0: xyz}
         u_ = {0: norm}
         uu_ = {}
@@ -240,7 +242,7 @@ class PointNet2ReconstructionPccModel(CompressionModel):
 
         for i in reversed(range(0, self.levels)):
             if self.M[i] == 0:
-                y_out_[i] = {"strings": [b""], "shape": ()}
+                y_out_[i] = {"strings": [[b""] * B], "shape": ()}
                 continue
 
             y_[i] = self.h_a[f"_{i}"](uu_[i])
