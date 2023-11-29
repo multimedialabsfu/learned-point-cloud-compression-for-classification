@@ -56,6 +56,34 @@ def run_eval_model(runner, batches, filenames, output_dir, metrics):
     return outputs
 
 
+def _results_dict(conf, outputs):
+    result_keys = list(outputs[0].keys())
+    result_non_avg_keys = ["filename"]
+    result_avg_keys = [k for k in result_keys if k not in result_non_avg_keys]
+
+    return {
+        "name": conf.model.name,
+        "description": "",
+        "meta": {
+            "dataset": conf.dataset.infer.meta.name,
+            "env.aim.run_hash": conf.env.aim.run_hash,
+            "misc.device": conf.misc.device,
+            "model.source": conf.model.get("source"),
+            "model.name": conf.model.get("name"),
+            "model.metric": conf.model.get("metric"),
+            "model.quality": conf.model.get("quality"),
+            **{f"criterion.lmbda.{k}": v for k, v in conf.criterion.lmbda.items()},
+            "paths.model_checkpoint": conf.paths.get("model_checkpoint"),
+        },
+        "results_averaged": {
+            **{k: np.mean([out[k] for out in outputs]) for k in result_avg_keys},
+        },
+        "results_by_sample": {
+            **{k: [out[k] for out in outputs] for k in result_keys},
+        },
+    }
+
+
 def _write_pointcloud(x, filename):
     B, _, C = x.shape
     assert B == 1 and C == 3
@@ -78,6 +106,7 @@ def main():
 
 # Monkey patch:
 _M.run_eval_model = run_eval_model
+_M._results_dict = _results_dict
 
 
 if __name__ == "__main__":
