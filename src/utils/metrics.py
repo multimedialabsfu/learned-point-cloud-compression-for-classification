@@ -45,11 +45,8 @@ def pc_error(
     single_pass: bool = False,
 ):
     """Point cloud error metrics using MPEG's pc_error tool."""
-    a = a["x_hat"]
-    b = b["points"]
-
-    # a = a["points"]
-    # b = b["x_hat"]
+    a = a["points"]
+    b = b["x_hat"]
 
     a = a.detach().cpu().numpy()
     b = b.detach().cpu().numpy()
@@ -70,7 +67,7 @@ def pc_error(
     return _vectorize(a, b, f)
 
 
-def pc_acc_topk(output, target):
+def pc_acc_topk(target, output):
     outputs = output["t_hat"]
     labels = target["labels"]
     n = labels.shape[0]

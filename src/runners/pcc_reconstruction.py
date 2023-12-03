@@ -123,8 +123,8 @@ class ReconstructionPointCloudCompressionRunner(BaseRunner):
         out_net = out_infer["out_net"]
 
         out_criterion = self.criterion(out_net, batch)
-        # out_metrics = compute_metrics(out_net, batch, ["pc_error"])
-        out_metrics = compute_metrics(out_net, batch, [])
+        # out_metrics = compute_metrics(batch, out_net, ["pc_error"])
+        out_metrics = compute_metrics(batch, out_net, [])
         out_metrics["bpp"] = out_infer["bpp"]
         out_metrics["bpp_loss"] = out_criterion["bpp_loss"].item()
         out_metrics["rec_loss"] = out_criterion["rec_loss"].item()

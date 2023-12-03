@@ -129,7 +129,7 @@ class MultitaskPointCloudCompressionRunner(BaseRunner):
         out_net = out_infer["out_net"]
 
         out_criterion = self.criterion(out_net, batch)
-        out_metrics = compute_metrics(out_net, batch, self._metrics)
+        out_metrics = compute_metrics(batch, out_net, self._metrics)
         out_metrics["bpp"] = out_infer["bpp"]
 
         loss = {}
