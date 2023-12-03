@@ -11,6 +11,7 @@ from compressai.models.base import CompressionModel
 from compressai.typing import TCriterion
 from compressai_trainer.registry import register_runner
 from compressai_trainer.runners.base import BaseRunner
+from compressai_trainer.utils.utils import flatten_values
 from src.utils.metrics import compute_metrics
 
 from .utils import (
@@ -264,7 +265,7 @@ def inference(
 
     # Compute bpp.
     if not skip_compress:
-        num_bits = sum(sum(map(len, s)) for s in out_enc["strings"]) * 8.0
+        num_bits = sum(len(s) for s in flatten_values(out_enc["strings"], bytes)) * 8.0
         num_points = N * P
         bpp = num_bits / num_points
     else:
