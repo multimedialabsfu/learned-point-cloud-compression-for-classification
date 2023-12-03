@@ -13,9 +13,14 @@ from .point_cloud import pc_error_parse_output, pc_error_run
 def compute_metrics(
     x: torch.Tensor, x_hat: torch.Tensor, metrics: list[str]
 ) -> dict[str, float]:
+    visited_funcs = set()
     out = {}
     for metric in metrics:
-        result = _M._METRICS[metric](x, x_hat)
+        func = _M._METRICS[metric]
+        if func in visited_funcs:
+            continue
+        visited_funcs.add(func)
+        result = func(x, x_hat)
         if isinstance(result, dict):
             out.update(result)
         else:
@@ -85,6 +90,12 @@ def _vectorize(a, b, f):
 
 _M._METRICS = {
     **_M._METRICS,
+    "acc_top1": pc_acc_topk,
+    "acc_top3": pc_acc_topk,
+    "d1-psnr": pc_error,
+    "d2-psnr": pc_error,
+    "d1-psnr-hausdorff": pc_error,
+    "d2-psnr-hausdorff": pc_error,
     "pc_error": pc_error,
     "pc_acc_topk": pc_acc_topk,
     # "pc_acc_top1": lambda *args: pc_acc_topk(*args, k=1),
