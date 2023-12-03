@@ -27,7 +27,7 @@ def run_eval_model(runner, batches, filenames, output_dir, metrics):
         batch = {k: v.to(runner.engine.device) for k, v in batch.items()}
         out_infer = runner.predict_batch(batch)
         out_criterion = runner.criterion(out_infer["out_net"], batch)
-        out_metrics = compute_metrics(batch, out_infer["out_dec"]["x_hat"], metrics)
+        out_metrics = compute_metrics(batch, out_infer["out_dec"], metrics)
 
         output = {
             "filename": filename,
