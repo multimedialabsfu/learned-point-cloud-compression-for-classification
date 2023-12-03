@@ -223,21 +223,17 @@ class PointNet2ClassMultitaskPccModel(CompressionModel):
         y_out_, _, _ = self._compress(xyz, norm, mode="compress")
 
         return {
-            # "strings": {f"y_{i}": y_out_[i]["strings"] for i in range(self.levels)},
-            # Flatten nested structure into list[list[str]]:
-            "strings": [
-                ss for level in range(self.levels) for ss in y_out_[level]["strings"]
-            ],
-            "shape": {f"y_{i}": y_out_[i]["shape"] for i in range(self.levels)},
+            "strings": {k: v["strings"] for k, v in y_out_.items()},
+            "shape": {k: v["shape"] for k, v in y_out_.items()},
         }
 
     def decompress(self, strings, shape):
         y_inputs_ = {
-            i: {
-                "strings": [strings[i]],
-                "shape": shape[f"y_{i}"],
+            k: {
+                "strings": strings[k],
+                "shape": shape[k],
             }
-            for i in range(self.levels)
+            for k in strings
         }
 
         x_hat, t_hat, _, _ = self._decompress(y_inputs_, mode="decompress")
