@@ -81,7 +81,7 @@ def _results_dict(conf, outputs):
             "model.name": conf.model.get("name"),
             "model.metric": conf.model.get("metric"),
             "model.quality": conf.model.get("quality"),
-            **{f"criterion.lmbda.{k}": v for k, v in conf.criterion.lmbda.items()},
+            **_flatten_dict_to_pathstr_dict(conf.criterion.lmbda, "criterion.lmbda"),
             "paths.model_checkpoint": conf.paths.get("model_checkpoint"),
         },
         "results_averaged": {
@@ -90,6 +90,23 @@ def _results_dict(conf, outputs):
         "results_by_sample": {
             **{k: [out[k] for out in outputs] for k in result_keys},
         },
+    }
+
+
+def _flatten_dict_to_pathstr_dict(d, prefix="", sep="."):
+    """
+    Examples:
+        >>> _flatten_dict_to_pathstr_dict({"cls": 1, "fm": {"a": 2}})
+        {'cls': 1, 'fm.a': 2}
+    """
+    if not hasattr(d, "items"):
+        return {prefix: d}
+    return {
+        k: v
+        for kk, vv in d.items()
+        for k, v in _flatten_dict_to_pathstr_dict(
+            vv, prefix=f"{prefix}{sep}{kk}" if prefix else kk, sep=sep
+        ).items()
     }
 
 
