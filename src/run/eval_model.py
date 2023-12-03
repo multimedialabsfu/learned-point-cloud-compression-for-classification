@@ -46,7 +46,16 @@ def run_eval_model(runner, batches, filenames, output_dir, metrics):
 
         output_filename = (output_dir / filename).with_suffix("")
         os.makedirs(output_filename.parent, exist_ok=True)
-        _write_bitstreams(out_infer["out_enc"]["strings"], output_filename)
+        if isinstance(out_infer["out_enc"]["strings"], list):
+            _write_bitstreams(out_infer["out_enc"]["strings"], output_filename)
+        elif isinstance(out_infer["out_enc"]["strings"], dict):
+            # HACK: very ad-hoc
+            # [[[a1, a2], [b1, b2]], [[c1, c2], [d1, d2], [e1, e2]]]
+            #   -> [[a1, a2], [b1, b2], [c1, c2], [d1, d2], [e1, e2]]
+            _write_bitstreams(
+                [xs for xss in out_infer["out_enc"]["strings"].values() for xs in xss],
+                output_filename,
+            )
         if "x_hat" in out_infer["out_dec"]:
             _write_pointcloud(out_infer["out_dec"]["x_hat"], output_filename)
         if "t_hat" in out_infer["out_dec"]:
