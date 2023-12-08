@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
+import pytorch3d.loss
 import torch
 from torch.utils.data.dataloader import default_collate
 
@@ -30,6 +31,13 @@ def compute_metrics(
 
 # Monkey patch:
 _M.compute_metrics = compute_metrics
+
+
+def chamfer_distance(a, b, **kwargs):
+    a = a["points"]
+    b = b["x_hat"]
+    loss, _ = pytorch3d.loss.chamfer_distance(a, b, **kwargs)
+    return loss.item()
 
 
 def pc_error(
@@ -89,6 +97,7 @@ _M._METRICS = {
     **_M._METRICS,
     "acc_top1": pc_acc_topk,
     "acc_top3": pc_acc_topk,
+    "chamfer": chamfer_distance,
     "d1-psnr": pc_error,
     "d2-psnr": pc_error,
     "d1-psnr-hausdorff": pc_error,
