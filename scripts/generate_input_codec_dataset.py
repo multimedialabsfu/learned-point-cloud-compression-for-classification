@@ -6,6 +6,11 @@ import re
 import subprocess
 from pathlib import Path
 
+import torch
+
+from src.utils.metrics import compute_metrics
+from src.utils.point_cloud import pc_read
+
 OCT_ATTENTION_VIRTUALENV_DIR = (
     "/home/mulhaq/.cache/pypoetry/virtualenvs/octattention-4URgkG2e-py3.11"
 )
@@ -160,6 +165,7 @@ def parse_args(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--codec", required=True)
     parser.add_argument("--out_results_tsv", default="input_codec_dataset.tsv")
+    parser.add_argument("--ref_dir", required=True)
     parser.add_argument("--in_dir", required=True)
     parser.add_argument("--out_dir", required=True)
     parser.add_argument("--scale", type=float)
@@ -173,11 +179,20 @@ def main(argv=None):
     Path(args.out_dir).mkdir(parents=True, exist_ok=True)
 
     if not Path(args.out_results_tsv).exists():
-        row = ["codec", "in_file", "bin_file", "rec_file", "num_bits"]
+        row = [
+            "codec",
+            "in_file",
+            "bin_file",
+            "rec_file",
+            "num_bits",
+            "rec_loss",
+            "d1-psnr",
+        ]
         write_row_tsv(row, args.out_results_tsv, "w")
 
     for in_file in sorted(Path(args.in_dir).rglob("*.ply")):
         relative_path = in_file.relative_to(args.in_dir)
+        ref_file = Path(args.ref_dir) / relative_path.with_suffix(".ply")
         bin_file = Path(args.out_dir) / relative_path.with_suffix(".bin")
         rec_file = Path(args.out_dir) / relative_path.with_suffix(".rec.ply")
         rec_file.parent.mkdir(parents=True, exist_ok=True)
@@ -189,7 +204,19 @@ def main(argv=None):
             else out["out_dec"]["num_bits"]
         )
 
-        row = [args.codec, in_file, bin_file, rec_file, num_bits]
+        x = {"points": torch.from_numpy(pc_read(ref_file))[None, ...]}
+        x_hat = {"x_hat": torch.from_numpy(pc_read(rec_file))[None, ...]}
+        metrics = compute_metrics(x, x_hat, ["chamfer", "d1-psnr"])
+
+        row = [
+            args.codec,
+            in_file,
+            bin_file,
+            rec_file,
+            num_bits,
+            metrics["chamfer"],
+            metrics["d1-psnr"],
+        ]
         write_row_tsv(row, args.out_results_tsv, "a")
 
         print(in_file)

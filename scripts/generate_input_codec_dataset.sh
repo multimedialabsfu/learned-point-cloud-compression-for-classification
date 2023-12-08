@@ -1,6 +1,7 @@
 #!/bin/bash
 
 codec_name="tmc3"
+ref_dir_root="/mnt/data/datasets/modelnet/by_n_ply/1024"
 in_dir_root="/mnt/data/datasets/modelnet/by_n_ply"
 out_dir_root="/mnt/data/datasets/modelnet/by_n_scale_ply_${codec_name}"
 # TODO supply format string instead of hardcoding...
@@ -17,6 +18,7 @@ for num_points in "${NUM_POINTSES[@]}"; do
     python scripts/generate_input_codec_dataset.py \
       --codec="${codec_name}" \
       --out_results_tsv="input_codec_dataset_${codec_name}.tsv" \
+      --ref_dir="${ref_dir_root}" \
       --in_dir="${in_dir_root}/${num_points_str}" \
       --out_dir="${out_dir_root}/${num_points_str}/${scale_str}" \
       --scale="${scale}"
