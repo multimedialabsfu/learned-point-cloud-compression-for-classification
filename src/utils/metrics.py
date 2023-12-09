@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 
 import pytorch3d.loss
@@ -87,8 +88,13 @@ def pc_acc_topk(target, output):
     }
 
 
-def _vectorize(a, b, f):
-    ds = [f(a[i], b[i]) for i in range(a.shape[0])]
+def _vectorize(a, b, f, num_workers=4):
+    num_workers = min(num_workers, len(a))
+    if num_workers == 1:
+        ds = [f(a[i], b[i]) for i in range(len(a))]
+    else:
+        with ThreadPoolExecutor(max_workers=num_workers) as executor:
+            ds = list(executor.map(f, a, b))
     d = default_collate(ds)
     return {k: v.mean().item() for k, v in d.items()}
 
