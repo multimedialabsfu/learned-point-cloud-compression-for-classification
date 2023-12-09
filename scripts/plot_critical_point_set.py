@@ -119,7 +119,7 @@ def main(conf: DictConfig):
     # Compute metrics.
     out_infer = runner.predict_batch(batch, **runner._inference_kwargs)
     out_metrics = compute_metrics(
-        out_infer["out_net"], batch, ["pc_error", "pc_acc_topk"]
+        batch, out_infer["out_net"], ["chamfer", "pc_error", "pc_acc_topk"]
     )
     correct = out_metrics["acc_top1"]
     final_metrics = {
