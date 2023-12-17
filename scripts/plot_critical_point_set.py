@@ -77,19 +77,6 @@ def main(conf: DictConfig):
     model = runner.model
     batches = runner.loaders["infer"]
 
-    # Split g_a into pre- and post-pool.
-    g_a_1 = model.g_a[:-2]
-    g_a_2 = model.g_a[-2:]
-    print(g_a_1)
-    print(g_a_2)
-    assert (
-        isinstance(g_a_2[0], torch.nn.AdaptiveMaxPool1d) and g_a_2[0].output_size == 1
-    )
-
-    # Verify g_a_1(S) = g_a_1(S'), where S' is a critical point subset of S.
-    x = 2 * torch.rand((1, 1024, 3), device=device) - 1
-    test_critical_point_set(g_a_1, g_a_2, x)
-
     # Force re-seed to ensure consistent dataset.
     catalyst.utils.set_global_seed(conf.misc.seed)
 
@@ -98,17 +85,37 @@ def main(conf: DictConfig):
     batch = {k: v[None, 3].to(device) for k, v in batch.items()}
     x = batch["points"]
 
-    # Compute critical point set indices.
-    assert x.shape[0] == 1
-    ga1_x = g_a_1(x.transpose(-1, -2))
-    idx_max = ga1_x.argmax(axis=-1)
-    # x_max = x[0, idx_max]
+    is_pointnet = conf.model.name.endswith("pointnet")
+
+    if is_pointnet:
+        # Split g_a into pre- and post-pool.
+        g_a_1 = model.g_a[:-2]
+        g_a_2 = model.g_a[-2:]
+        print(g_a_1)
+        print(g_a_2)
+        assert (
+            isinstance(g_a_2[0], torch.nn.AdaptiveMaxPool1d)
+            and g_a_2[0].output_size == 1
+        )
+
+        # Verify g_a_1(S) = g_a_1(S'), where S' is a critical point subset of S.
+        x = 2 * torch.rand((1, 1024, 3), device=device) - 1
+        test_critical_point_set(g_a_1, g_a_2, x)
+
+        # Compute critical point set indices.
+        assert x.shape[0] == 1
+        ga1_x = g_a_1(x.transpose(-1, -2))
+        idx_max = ga1_x.argmax(axis=-1)
+        # x_max = x[0, idx_max]
 
     # Write critical point set figure.
     df = pd.DataFrame(x[0].cpu().numpy(), columns=["x", "y", "z"])
-    critical = np.zeros_like(df["x"], dtype=bool)
-    critical[idx_max[0].cpu().numpy()] = True
-    df["critical"] = critical
+    if is_pointnet:
+        critical = np.zeros_like(df["x"], dtype=bool)
+        critical[idx_max[0].cpu().numpy()] = True
+        df["critical"] = critical
+    else:
+        df["critical"] = False
     write_mpl_figure(conf.misc.out_path.critical, df)
 
     # Write reconstruction figure.
