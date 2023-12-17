@@ -228,6 +228,8 @@ def main(argv=None):
         print(bin_file)
         print(rec_file)
         print(f"num_bits: {num_bits}")
+        print(f"rec_loss: {metrics['chamfer']}")
+        print(f"d1-psnr: {metrics['d1-psnr']}")
         print("-" * 80)
 
 
