@@ -88,7 +88,7 @@ def read_dataframe():
         [
             compressai_dataframe(
                 codec_name=name,
-                dataset="point-cloud-classification/modelnet40",
+                dataset="point-cloud/classification/modelnet40",
                 filename_format="{codec_name}",
             )
             for name in CODECS

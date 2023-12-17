@@ -16,7 +16,7 @@ from src.utils.compressai.results import compressai_dataframe
 
 from compressai_trainer.plot import plot_rd
 
-_M.DATASET = "point-cloud-classification/modelnet40"
+_M.DATASET = "point-cloud/classification/modelnet40"
 _M.TITLE = "Performance evaluation on ModelNet40 - Top-1 Accuracy"
 
 # _M.METRIC = "acc_top1"

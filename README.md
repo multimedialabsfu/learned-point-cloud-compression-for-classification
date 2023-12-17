@@ -232,7 +232,7 @@ Please see [`scripts/run.sh`](./scripts/run.sh) for more examples, including how
 To save the results to JSON, modify [`scripts/save_json_from_aim_query.py`](./scripts/save_json_from_aim_query.py) to query your specific models. (By default, it is currently set up to generate all the trained codec curves shown in our paper.) Then, run:
 
 ```bash
-python scripts/save_json_from_aim_query.py --aim-repo-path="/path/to/aim/repo" --output-dir="results/point-cloud-classification/modelnet40"
+python scripts/save_json_from_aim_query.py --aim-repo-path="/path/to/aim/repo" --output-dir="results/point-cloud/classification/modelnet40"
 ```
 
 
