@@ -182,6 +182,7 @@ def main(argv=None):
         row = [
             "codec",
             "in_file",
+            "ref_file",
             "bin_file",
             "rec_file",
             "num_bits",
@@ -213,6 +214,7 @@ def main(argv=None):
         row = [
             args.codec,
             in_file,
+            ref_file,
             bin_file,
             rec_file,
             num_bits,
@@ -222,6 +224,7 @@ def main(argv=None):
         write_row_tsv(row, args.out_results_tsv, "a")
 
         print(in_file)
+        print(ref_file)
         print(bin_file)
         print(rec_file)
         print(f"num_bits: {num_bits}")
