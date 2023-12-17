@@ -139,12 +139,6 @@ def main(conf: DictConfig):
         f"% {final_metrics['bits']:.0f} bits, {final_metrics['d1-psnr']:.2f} D1-PSNR, {correct}"
     )
 
-    # x = 2 * torch.rand((1, 1024, 3), device=device) - 1
-    # ga1_x = g_a_1(x.transpose(-1, -2))
-    # idx = ga1_x.argsort(axis=-1)
-    # TODO plot intensity=ga1_x, color=x[idx][..., 2, :]  # z axis...?
-    # df = ...
-
 
 if __name__ == "__main__":
     main()
