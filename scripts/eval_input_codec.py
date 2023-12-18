@@ -104,7 +104,7 @@ def run(runner, args, df_results):
         df_results_row = df_results.iloc[df_results_row_idx].to_dict()
 
         out_infer = runner.predict_batch(batch)
-        out_metrics = compute_metrics(out_infer["out_net"], batch, metrics_keys)
+        out_metrics = compute_metrics(batch, out_infer["out_net"], metrics_keys)
         out_metrics["num_bits"] = df_results_row["num_bits"]
         label_hat_idx = out_infer["out_net"]["t_hat"].argmax(-1).item()
 
