@@ -41,16 +41,17 @@ _M.PLOT_RD_SETTINGS = {
 
 _M.COMPRESSAI_CODECS = [
     # Point-cloud codecs:
-    "full_points=1024",
-    "lite_points=1024",
-    "lite_points=512",
-    "lite_points=256",
-    "lite_points=128",
-    "lite_points=64",
-    "lite_points=32",
-    "lite_points=16",
-    "lite_points=8",
-    "input-compression-tmc13",
+    "theoretical-optimum",
+    "um-pcc-cls-only-pointnet-mmsp2023_size=full_points=1024",
+    "um-pcc-cls-only-pointnet-mmsp2023_size=lite_points=1024",
+    "um-pcc-cls-only-pointnet-mmsp2023_size=lite_points=512",
+    "um-pcc-cls-only-pointnet-mmsp2023_size=lite_points=256",
+    "um-pcc-cls-only-pointnet-mmsp2023_size=lite_points=128",
+    "um-pcc-cls-only-pointnet-mmsp2023_size=lite_points=64",
+    "um-pcc-cls-only-pointnet-mmsp2023_size=lite_points=32",
+    "um-pcc-cls-only-pointnet-mmsp2023_size=lite_points=16",
+    "um-pcc-cls-only-pointnet-mmsp2023_size=lite_points=8",
+    "input-compression-pointnet-tmc13",
 ]
 
 
@@ -108,7 +109,8 @@ def _reference_dataframes():
 
 
 # For compressai_trainer <= 0.3.9:
-_M.REFERENCE_DF = pd.concat(_reference_dataframes())
+__ref_dfs = _reference_dataframes()
+_M.REFERENCE_DF = pd.concat(__ref_dfs) if __ref_dfs else None
 
 
 def plot_dataframe(df: pd.DataFrame, args):
