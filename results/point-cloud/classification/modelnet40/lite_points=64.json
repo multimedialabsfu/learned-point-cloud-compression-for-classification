@@ -1,5 +1,5 @@
 {
-  "name": "Proposed codec [lite, P=64]",
+  "name": "Ulhaq2023 PointNet [lite, P=64]",
   "description": "",
   "meta": {
     "model.name": "um-pcc-cls-only-pointnet-mmsp2023",
