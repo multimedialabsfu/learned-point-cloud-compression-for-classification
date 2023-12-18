@@ -7,7 +7,6 @@ out/
 outputs/
 
 *.jpg
-*.json
 *.log
 *.npy
 *.patch
