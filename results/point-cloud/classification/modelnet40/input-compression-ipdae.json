@@ -1,5 +1,5 @@
 {
-  "name": "Input compression codec [ipdae, P=*]",
+  "name": "Input compression codec PointNet [ipdae, P=*]",
   "description": "",
   "results": {
     "bit_loss": [

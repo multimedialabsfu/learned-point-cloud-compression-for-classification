@@ -1,5 +1,5 @@
 {
-  "name": "Input compression codec [draco, P=*]",
+  "name": "Input compression codec PointNet [draco, P=*]",
   "description": "",
   "results": {
     "bit_loss": [

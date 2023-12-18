@@ -1,5 +1,5 @@
 {
-  "name": "Input compression codec [tmc13, P=*]",
+  "name": "Input compression codec PointNet [tmc13, P=*]",
   "description": "",
   "results": {
     "bit_loss": [
