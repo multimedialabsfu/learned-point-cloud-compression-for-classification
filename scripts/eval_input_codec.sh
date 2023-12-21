@@ -20,6 +20,20 @@ RUN_HASHES=(
   # "e3eeddad2cc64348b4f03c89"  # 2048
 )
 
+# PointNet++ varying num_points models.
+RUN_HASHES=(
+  "9f6eacf568bc4ba382dc0dc0"  # 16
+  "5fb74416eac946bfbb4a2b0e"  # 32
+  "2127e9d1fdbe4b56ba4810d6"  # 64
+  "65a60fd323e747f99524ce2c"  # 128
+  "8c204568630041488dc73c1c"  # 256
+  "12cf93616a094c349a99e167"  # 512
+  "792d24083f5f4cef893e8d2a"  # 1024
+  # "3a022c5df91745c48c219aae"  # 2048
+  # "bbd9be0a3b584813b01b87d7"  # 4096
+  # "9970ba7cbc994da883e66609"  # 8192
+)
+
 
 for ((i = 0; i < "${#NUM_POINTSES[@]}"; i += 1)); do
   num_points="${NUM_POINTSES[$i]}"
