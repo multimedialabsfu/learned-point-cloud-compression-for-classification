@@ -35,8 +35,9 @@ from src.layers.layers import Reshape
 from src.layers.pc_pointnet2 import PointNetSetAbstraction
 
 
+@register_model("um-pc-cls-pointnet2-ssg")
 @register_model("um-pc-cls-pointnet2")
-class PointNet2ClassPcModel(nn.Module):
+class PointNet2SsgClassPcModel(nn.Module):
     def __init__(
         self,
         num_points=1024,

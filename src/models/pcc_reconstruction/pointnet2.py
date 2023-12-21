@@ -13,8 +13,9 @@ from src.layers.pcc import GAIN
 from src.layers.pcc_reconstruction.pointnet2 import UpsampleBlock
 
 
+@register_model("um-pcc-rec-pointnet2-ssg")
 @register_model("um-pcc-rec-pointnet2")
-class PointNet2ReconstructionPccModel(CompressionModel):
+class PointNet2SsgReconstructionPccModel(CompressionModel):
     def __init__(
         self,
         num_points=1024,
