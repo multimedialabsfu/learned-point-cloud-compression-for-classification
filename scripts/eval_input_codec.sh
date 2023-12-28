@@ -1,7 +1,7 @@
 #!/bin/bash
 
 codec_name="tmc3"
-in_dir_root="/mnt/data/datasets/modelnet/by_n_scale_ply_${codec_name}"
+in_dir_root="$HOME/data/datasets/modelnet/by_n_scale_ply_${codec_name}"
 runs_root="$HOME/data/runs/pc-mordor"
 
 NUM_POINTSES=(8 16 32 64 128 256 512 1024)
