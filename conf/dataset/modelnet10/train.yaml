@@ -1,16 +1,28 @@
-type: "ModelNetSimple"
+type: "WrapperDataset"
 config:
-  root: "${paths.datasets}/modelnet/dataset=modelnet${.name},format=pt"
+  root: "${paths.datasets}/modelnet/dataset=modelnet${.name},format=off"
+  cache_root: "${paths.datasets}/modelnet/dataset=modelnet${.name},format=npy"
   split: "train"
+  split_name: "train"
   name: "10"
-  num_points: "${hp.num_points}"
-  # cache_path: "${.root}/cache.pkl"
+  pre_transform:
+    - ToDict: {wrapper: "torch_geometric.data.Data"}
+    - SamplePointsV2: {num: 8192, remove_faces: True, include_normals: True, static_seed: 1234}
+    - NormalizeScaleV2: {center: True, scale_method: "l2"}
+    - ToDict: {wrapper: "dict"}
+  _wrapper:
+    type: "ModelNetDataset"
+    transform_keys: ["pre_transform"]
 loader:
   shuffle: True
   batch_size: 32
   num_workers: 4
 settings:
-transforms: []
+transforms:
+  # transform:
+  - ToDict: {wrapper: "torch_geometric.data.Data"}
+  - RandomSample: {num: "${hp.num_points}", attrs: ["pos", "normal"]}
+  - ToDict: {wrapper: "dict"}
 meta:
   name: "ModelNet10"
   identifier: null
