@@ -20,12 +20,12 @@ class PointNet2SsgReconstructionPccModel(CompressionModel):
         self,
         num_points=1024,
         num_classes=40,
-        D=(0, 128, 256, 512),
+        D=(0, 128, 192, 256),
         P=(1024, 256, 64, 1),
         S=(None, 4, 4, 64),
         R=(None, 0.2, 0.4, None),
-        E=(3, 32, 32, 32, 0),
-        M=(64, 64, 64, 64),
+        E=(3, 64, 32, 16, 0),
+        M=(0, 0, 64, 64),
         normal_channel=False,
     ):
         """
