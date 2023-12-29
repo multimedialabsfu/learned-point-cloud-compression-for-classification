@@ -30,7 +30,7 @@ class PcChannelwiseBppMeter(ChannelwiseBppMeter):
     """Log channel-wise rates (bpp)."""
 
     def update(self, out_net, input):
-        _, P, _ = input["points"].shape
+        _, P, _ = input["pos"].shape
         chan_rate = {
             k: lh.detach().log2().sum(dim=tuple(range(2, len(lh.shape)))) / -P
             for k, lh in out_net["likelihoods"].items()

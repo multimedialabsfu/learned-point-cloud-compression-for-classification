@@ -83,7 +83,7 @@ def main(conf: DictConfig):
     # Pick sample from dataset.
     batch = next(iter(batches))
     batch = {k: v[None, 3].to(device) for k, v in batch.items()}
-    x = batch["points"]
+    x = batch["pos"]
 
     is_pointnet = conf.model.name.endswith("pointnet")
 
@@ -119,7 +119,7 @@ def main(conf: DictConfig):
     write_mpl_figure(conf.misc.out_path.critical, df)
 
     # Write reconstruction figure.
-    out_net = model({"points": x})
+    out_net = model({"pos": x})
     df = pd.DataFrame(out_net["x_hat"][0].cpu().numpy(), columns=["x", "y", "z"])
     write_mpl_figure(conf.misc.out_path.reconstruction, df)
 

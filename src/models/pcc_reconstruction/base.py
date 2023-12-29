@@ -8,7 +8,7 @@ class BaseReconstructionPccModel(CompressionModel):
     latent_codec: LatentCodec
 
     def forward(self, input):
-        x = input["points"]
+        x = input["pos"]
         x_t = x.transpose(-2, -1)
         y = self.g_a(x_t)
         y_out = self.latent_codec(y)
@@ -30,7 +30,7 @@ class BaseReconstructionPccModel(CompressionModel):
         }
 
     def compress(self, input):
-        x = input["points"]
+        x = input["pos"]
         x_t = x.transpose(-2, -1)
         y = self.g_a(x_t)
         y_out = self.latent_codec.compress(y)

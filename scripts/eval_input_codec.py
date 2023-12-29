@@ -96,7 +96,7 @@ def run(runner, args, df_results):
         batch_size = len(batch["index"])
         assert batch_size == 1
         batch = {k: v.to(runner.engine.device) for k, v in batch.items()}
-        num_points_sample = batch["points"].shape[1]
+        num_points_sample = batch["pos"].shape[1]
         rec_file = loader.dataset.paths[batch["index"].item()]
         print(rec_file)
 

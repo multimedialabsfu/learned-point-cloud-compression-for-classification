@@ -72,7 +72,7 @@ def enc_dec_accuracy(runner):
     lengths = np.array(
         [len(s) for out_enc in out_encs for ss in out_enc["strings"] for s in ss]
     )
-    num_points = batch["points"].shape[1]
+    num_points = batch["pos"].shape[1]
     bpp = lengths.mean() * 8 / num_points
 
     print(f"Num points: {num_points}")

@@ -23,7 +23,7 @@ class BaseMultitaskPccModel(CompressionModel):
 
     def forward(self, input):
         self.outputs = {}
-        x = input["points"]
+        x = input["pos"]
         x_t = x.transpose(-2, -1)
         y = self.g_a(x_t)
         y1, y2 = self.split(y)
@@ -62,7 +62,7 @@ class BaseMultitaskPccModel(CompressionModel):
 
     def compress(self, input):
         self.outputs = {}
-        x = input["points"]
+        x = input["pos"]
         x_t = x.transpose(-2, -1)
         y = self.g_a(x_t)
         y1, y2 = self.split(y)

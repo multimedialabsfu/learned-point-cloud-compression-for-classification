@@ -49,7 +49,7 @@ class PlyFolderDataset(Dataset):
         points = self.transform(points)
         return {
             "index": index,
-            "points": points,
+            "pos": points,
             "labels": label_idx,
             # "path": str(path),
         }

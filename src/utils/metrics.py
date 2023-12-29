@@ -35,7 +35,7 @@ _M.compute_metrics = compute_metrics
 
 
 def chamfer_distance(a, b, **kwargs):
-    a = a["points"]
+    a = a["pos"]
     b = b["x_hat"]
     loss, _ = pytorch3d.loss.chamfer_distance(a, b, **kwargs)
     return loss.item()
@@ -54,7 +54,7 @@ def pc_error(
     single_pass: bool = False,
 ):
     """Point cloud error metrics using MPEG's pc_error tool."""
-    a = a["points"]
+    a = a["pos"]
     b = b["x_hat"]
 
     a = a.detach().cpu().numpy()

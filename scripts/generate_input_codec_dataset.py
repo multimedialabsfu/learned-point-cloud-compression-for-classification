@@ -206,7 +206,7 @@ def main(argv=None):
         )
 
         scale_factor = args.scale if args.codec == "tmc3" else 1.0
-        x = {"points": torch.from_numpy(pc_read(ref_file))[None, ...]}
+        x = {"pos": torch.from_numpy(pc_read(ref_file))[None, ...]}
         x_hat = {"x_hat": torch.from_numpy(pc_read(rec_file))[None, ...] / scale_factor}
         assert x_hat["x_hat"].abs().max() <= 2.0
         metrics = compute_metrics(x, x_hat, ["chamfer", "d1-psnr"])

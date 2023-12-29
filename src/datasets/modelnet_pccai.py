@@ -209,7 +209,7 @@ class ModelNetSimple(ModelNetBase):
             )
             return {
                 "index": index,
-                "points": torch.tensor(points),
+                "pos": torch.tensor(points),
                 "labels": item.y.item(),
             }
 

@@ -27,7 +27,7 @@ class ChamferPccRateDistortionLoss(nn.Module):
         return out
 
     def compute_bpp_loss(self, output, target):
-        N, P, C = target["points"].shape
+        N, P, C = target["pos"].shape
         assert C == 3
         out_bit = {
             f"bit_{name}_loss": lh.log2().sum() / -N
@@ -43,7 +43,7 @@ class ChamferPccRateDistortionLoss(nn.Module):
         return out
 
     def compute_rec_loss(self, output, target):
-        loss_chamfer, _ = chamfer_distance(output["x_hat"], target["points"])
+        loss_chamfer, _ = chamfer_distance(output["x_hat"], target["pos"])
         return {"rec_loss": loss_chamfer}
 
 
@@ -97,7 +97,7 @@ class MultitaskPccRateDistortionLoss(nn.Module):
     def compute_bpp_loss(self, output, target):
         if "likelihoods" not in output:
             return {}
-        N, P, C = target["points"].shape
+        N, P, C = target["pos"].shape
         assert C == 3
         out_bit = {
             f"bit_{name}_loss": lh.log2().sum() / -N
@@ -115,7 +115,7 @@ class MultitaskPccRateDistortionLoss(nn.Module):
     def compute_rec_loss(self, output, target):
         if "x_hat" not in output:
             return {}
-        return {"rec_loss": self.rec_metric(output["x_hat"], target["points"])}
+        return {"rec_loss": self.rec_metric(output["x_hat"], target["pos"])}
         # return {"rec_loss": self.rec_metric(output["x_hat"], target["x"])}
 
     def compute_cls_loss(self, output, target):

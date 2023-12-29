@@ -124,7 +124,7 @@ class MultitaskPointCloudCompressionRunner(BaseRunner):
         self._update_batch_metrics(batch_metrics)
 
     def _handle_batch_infer(self, batch):
-        x = batch["points"]
+        x = batch["pos"]
         out_infer = self.predict_batch(batch, **self._inference_kwargs)
         out_net = out_infer["out_net"]
 
@@ -262,7 +262,7 @@ def inference(
     criterion: Optional[TCriterion] = None,
 ) -> dict[str, Any]:
     """Run compression model on image batch."""
-    x = input["points"]
+    x = input["pos"]
     N, P, C = x.shape
     assert C == 3
 

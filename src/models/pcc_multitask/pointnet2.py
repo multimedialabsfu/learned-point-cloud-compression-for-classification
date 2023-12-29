@@ -245,7 +245,7 @@ class PointNet2SsgClassMultitaskPccModel(CompressionModel):
         }
 
     def _get_inputs(self, input):
-        points = input["points"].transpose(-2, -1)
+        points = input["pos"].transpose(-2, -1)
         if self.normal_channel:
             xyz = points[:, :3, :]
             norm = points[:, 3:, :]

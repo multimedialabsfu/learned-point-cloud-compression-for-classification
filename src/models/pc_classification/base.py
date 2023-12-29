@@ -17,7 +17,7 @@ class BaseClassificationPcModel(nn.Module):
 
     def forward(self, input):
         self.outputs = {}
-        x = input["points"]
+        x = input["pos"]
         x_t = x.transpose(-2, -1)
         y = self.g_a(x_t)
         t_hat = self.task_backend(y)

@@ -21,7 +21,7 @@ class BaseClassificationPccModel(CompressionModel):
 
     def forward(self, input):
         self.outputs = {}
-        x = input["points"]
+        x = input["pos"]
         x_t = x.transpose(-2, -1)
         y = self.g_a(x_t)
         y_out = self.latent_codec["y"](y)
@@ -44,7 +44,7 @@ class BaseClassificationPccModel(CompressionModel):
 
     def compress(self, input):
         self.outputs = {}
-        x = input["points"]
+        x = input["pos"]
         x_t = x.transpose(-2, -1)
         y = self.g_a(x_t)
         y_out = self.latent_codec["y"].compress(y)
