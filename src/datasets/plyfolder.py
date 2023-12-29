@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 from compressai.registry import register_dataset
 from src.utils.point_cloud import pc_read
 
-from .modelnet import PointCloudPreprocessor
+from .modelnet_pccai import PointCloudPreprocessor
 
 
 @register_dataset("PlyFolderDataset")
