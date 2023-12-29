@@ -1,0 +1,60 @@
+defaults:
+  - /paths: default
+  - /env: default
+  - /engine: default
+  - /runner: MultitaskPointCloudCompressionRunner
+  - /criterion: MultitaskPccRateDistortionLoss
+  - /optimizer: net_aux
+  - /scheduler: ReduceLROnPlateau
+  - /misc: default
+  - /dataset@dataset.train: modelnet40/train
+  - /dataset@dataset.valid: modelnet40/valid
+  - /dataset@dataset.infer: modelnet40/infer  # TODO same as valid/test?
+  - _self_
+
+paths:
+  _aim_repo: "pcc"
+
+exp:
+  name: "${model.name}-${exp.description}"
+  description:
+
+model:
+  name: "um-pcc-multitask-cls-pointnet2-ssg"
+
+hp:
+  normal_channel: False
+  detach_y1_hat: True
+  num_points: 1024
+  num_classes: 40
+  split_ratios: [1.0, 1.0, 1.0, 0.75]
+  R: [null, 0.2, 0.4, null]
+  P: [1024, 256, 64, 1]
+  S: [null, 4, 4, 64]
+  D: [0, 128, 192, 256]
+  E: [3, 64, 32, 16, 0]
+  M: [0, 0, 64, 64]
+
+criterion:
+  rate_key: "bpp"
+
+optimizer:
+  net:
+    lr: 0.001
+  aux:
+    lr: 0.05
+
+dataset:
+  train:
+    loader:
+      batch_size: 16
+      drop_last: True
+
+runner:
+  meters:
+    infer: [
+      "loss",
+      "bit_loss", "bit_y_0_loss", "bit_y_1_loss", "bit_y_2_loss", "bit_y_3_loss", "bit_y_3_1_loss", "bit_y_3_2_loss",
+      "bpp_loss", "bpp_y_0_loss", "bpp_y_1_loss", "bpp_y_2_loss", "bpp_y_3_loss", "bpp_y_3_1_loss", "bpp_y_3_2_loss",
+      "cls_loss", "rec_loss", "bpp", "acc_top1", "acc_top3"
+      ]
