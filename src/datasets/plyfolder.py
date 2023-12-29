@@ -50,7 +50,7 @@ class PlyFolderDataset(Dataset):
         return {
             "index": index,
             "pos": points,
-            "labels": label_idx,
+            "label": label_idx,
             # "path": str(path),
         }
 

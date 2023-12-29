@@ -78,7 +78,7 @@ def pc_error(
 
 def pc_acc_topk(target, output):
     outputs = output["t_hat"]
-    labels = target["labels"]
+    labels = target["label"]
     n = labels.shape[0]
     _, predicted = torch.max(outputs, dim=1)
     _, predicted_top3 = torch.topk(outputs, k=3, dim=1)

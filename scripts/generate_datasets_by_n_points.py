@@ -26,7 +26,7 @@ def main(conf: DictConfig):
     os.makedirs(root, exist_ok=True)
 
     for batch in loaders["infer"]:
-        for label, points in zip(batch["labels"], batch["pos"]):
+        for label, points in zip(batch["label"], batch["pos"]):
             if prev_label != label:
                 prev_label = label
                 idx = 0

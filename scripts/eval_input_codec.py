@@ -119,7 +119,7 @@ def run(runner, args, df_results):
             num_points,
             num_points_sample,
             args.scale,
-            batch["labels"].item(),
+            batch["label"].item(),
             batch["index"].item(),
             label_hat_idx,
             *[df_results_row[k] for k in RESULTS_HEADERS],

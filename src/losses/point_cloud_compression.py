@@ -121,7 +121,7 @@ class MultitaskPccRateDistortionLoss(nn.Module):
     def compute_cls_loss(self, output, target):
         if "t_hat" not in output:
             return {}
-        return {"cls_loss": self.cls_metric(output["t_hat"], target["labels"])}
+        return {"cls_loss": self.cls_metric(output["t_hat"], target["label"])}
         # return {"cls_loss": self.cls_metric(output["t_hat"], target["t"])}
 
     def compute_fm_loss(self, output, target):

@@ -66,7 +66,7 @@ def enc_dec_accuracy(runner):
     for batch, out_enc in zip(runner.loaders["infer"], out_encs):
         out_dec = runner.model.decompress(out_enc["strings"], out_enc["shape"])
         pred_labels = out_dec["t_hat"].argmax(axis=-1).detach().cpu()
-        correct.extend((batch["labels"] == pred_labels).numpy().tolist())
+        correct.extend((batch["label"] == pred_labels).numpy().tolist())
 
     correct = np.array(correct)
     lengths = np.array(

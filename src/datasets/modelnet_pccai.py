@@ -210,7 +210,7 @@ class ModelNetSimple(ModelNetBase):
             return {
                 "index": index,
                 "pos": torch.tensor(points),
-                "labels": item.y.item(),
+                "label": item.y.item(),
             }
 
     def _load_cache(self, path):
