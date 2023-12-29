@@ -5,6 +5,7 @@ from .cache import CacheDataset
 from .modelnet_pccai import ModelNetSimple
 from .ndarray import NdArrayDataset
 from .plyfolder import PlyFolderDataset
+from .shapenet import ShapeNetCorePartDataset
 from .stack import StackDataset
 from .wrapper import WrapperDataset
 
@@ -14,6 +15,7 @@ __all__ = [
     "ModelNetSimple",
     "NdArrayDataset",
     "PlyFolderDataset",
+    "ShapeNetCorePartDataset",
     "StackDataset",
     "WrapperDataset",
 ]
