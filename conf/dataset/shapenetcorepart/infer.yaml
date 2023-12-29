@@ -1,0 +1,30 @@
+type: "WrapperDataset"
+config:
+  root: "${paths.datasets}/shapenet/dataset=${.name},format=orig"
+  cache_root: "${paths.datasets}/shapenet/dataset=${.name},format=npy"
+  split: "test"
+  split_name: "infer"
+  name: "shapenetcore_partanno_segmentation_benchmark_v0_normal"
+  pre_transform:
+    - ToDict: {wrapper: "torch_geometric.data.Data"}
+    - NormalizeScaleV2: {center: True, scale_method: "l2"}
+    - RandomSample: {num: 3072, attrs: ["pos", "normal", "semantic_index", "part_index"], static_seed: 1234}
+    - ToDict: {wrapper: "dict"}
+  _wrapper:
+    type: "ShapeNetCorePartDataset"
+    transform_keys: ["pre_transform"]
+loader:
+  shuffle: False
+  batch_size: 32
+  num_workers: 4
+settings:
+transforms:
+  # transform:
+  - ToDict: {wrapper: "torch_geometric.data.Data"}
+  - RandomSample: {num: "${hp.num_points}", attrs: ["pos", "normal", "semantic_index", "part_index"], static_seed: 1234}
+  - ToDict: {wrapper: "dict"}
+meta:
+  name: "ShapeNet-Part"
+  identifier: null
+  num_samples: 2874
+  steps_per_epoch:
