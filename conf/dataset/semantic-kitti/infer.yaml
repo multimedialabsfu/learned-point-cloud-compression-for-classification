@@ -1,0 +1,28 @@
+type: "WrapperDataset"
+config:
+  root: "${paths.datasets}/semantic-kitti/dataset=semantic-kitti,format=orig"
+  cache_root: "${paths.datasets}/semantic-kitti/dataset=semantic-kitti,format=npy"
+  split: "infer"
+  sequences: [8]  # [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+  pre_transform:
+    - ToDict: {wrapper: "torch_geometric.data.Data"}
+    - RandomSample: {num: 65536, attrs: ["pos", "remission", "raw_semantic_index", "semantic_index", "instance_index"], static_seed: 1234}
+    - ToDict: {wrapper: "dict"}
+  _wrapper:
+    type: "SemanticKittiDataset"
+    transform_keys: ["pre_transform"]
+loader:
+  shuffle: False
+  batch_size: 32
+  num_workers: 4
+settings:
+transforms:
+  # transform:
+  - ToDict: {wrapper: "torch_geometric.data.Data"}
+  - RandomSample: {num: "${hp.num_points}", attrs: ["pos", "remission", "raw_semantic_index", "semantic_index", "instance_index"]}
+  - ToDict: {wrapper: "dict"}
+meta:
+  name: "SemanticKITTI"
+  identifier: null
+  num_samples: 4071  # 20351
+  steps_per_epoch:
