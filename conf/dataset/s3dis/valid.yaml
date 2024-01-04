@@ -1,0 +1,27 @@
+type: "WrapperDataset"
+config:
+  root: "${paths.datasets}/s3dis/dataset=s3dis,format=orig"
+  cache_root: "${paths.datasets}/s3dis/dataset=s3dis,format=npy"
+  split: "valid"
+  areas: [5]
+  pre_transform:
+    - ToDict: {wrapper: "torch_geometric.data.Data"}
+    - ToDict: {wrapper: "dict"}
+  _wrapper:
+    type: "S3disDataset"
+    transform_keys: ["pre_transform"]
+loader:
+  shuffle: False
+  batch_size: 32
+  num_workers: 4
+settings:
+transforms:
+  # transform:
+  - ToDict: {wrapper: "torch_geometric.data.Data"}
+  - RandomSample: {num: "${hp.num_points}", attrs: ["pos", "pos_normalized", "color", "semantic_index"]}
+  - ToDict: {wrapper: "dict"}
+meta:
+  name: "S3DIS"
+  identifier: null
+  num_samples: 6852
+  steps_per_epoch:
