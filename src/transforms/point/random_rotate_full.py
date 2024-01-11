@@ -14,17 +14,18 @@ class RandomRotateFull(BaseTransform):
     """
 
     def __call__(self, data: Data) -> Data:
-        rot = random_3x3_rotation_matrix(1).to(data.pos.device).squeeze(0)
+        _, ndim = data.pos.shape
+        rot = random_rotation_matrix(1, ndim).to(data.pos.device).squeeze(0)
         data.pos = data.pos @ rot.T
         return data
 
 
 # See https://math.stackexchange.com/questions/442418/random-generation-of-rotation-matrices/4832876#4832876
-def random_3x3_rotation_matrix(batch_size: int, generator=None) -> torch.Tensor:
-    z = torch.randn((batch_size, 3, 3), generator=generator)
-    z = z / torch.linalg.norm(z, axis=-1, keepdims=True)
-    z[:, 0] = torch.linalg.cross(z[:, 1], z[:, 2], axis=-1)
-    z[:, 0] = z[:, 0] / torch.linalg.norm(z[:, 0], axis=-1, keepdims=True)
-    z[:, 1] = torch.linalg.cross(z[:, 2], z[:, 0], axis=-1)
-    z[:, 1] = z[:, 1] / torch.linalg.norm(z[:, 1], axis=-1, keepdims=True)
-    return z
+def random_rotation_matrix(batch_size: int, ndim=3, generator=None) -> torch.Tensor:
+    z = torch.randn((batch_size, ndim, ndim), generator=generator)
+    q, r = torch.linalg.qr(z)
+    sign = 2 * (r.diagonal(dim1=-2, dim2=-1) >= 0) - 1
+    rot = q
+    rot *= sign[..., None, :]
+    rot[:, 0, :] *= torch.linalg.det(rot)[..., None]
+    return rot
