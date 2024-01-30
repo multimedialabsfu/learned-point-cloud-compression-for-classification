@@ -3,7 +3,7 @@ from __future__ import annotations
 import torch.nn as nn
 
 from compressai.registry import register_model
-from src.layers.pcc import pointnet_classification_backend
+from src.layers.pcc import conv1d_group_seq, pointnet_classification_backend
 
 from .base import BaseClassificationPcModel
 
@@ -21,21 +21,11 @@ class PointNetClassPcModel(BaseClassificationPcModel):
     ):
         super().__init__()
 
-        g_a_num_channels = num_channels["g_a"]
-
         assert num_channels["task_backend"][0] == num_channels["g_a"][-1]
         assert num_channels["task_backend"][-1] == num_classes
 
         self.g_a = nn.Sequential(
-            *[
-                x
-                for ch_in, ch_out in zip(g_a_num_channels[:-1], g_a_num_channels[1:])
-                for x in [
-                    nn.Conv1d(ch_in, ch_out, 1),
-                    nn.BatchNorm1d(ch_out),
-                    nn.ReLU(inplace=True),
-                ]
-            ],
+            *conv1d_group_seq(num_channels["g_a"]),
             nn.AdaptiveMaxPool1d(1),
         )
 
