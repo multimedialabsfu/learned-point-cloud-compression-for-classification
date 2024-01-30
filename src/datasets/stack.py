@@ -34,6 +34,7 @@ class StackDataset(Dataset[T_stack]):
         *args (Dataset): Datasets for stacking returned as tuple.
         **kwargs (Dataset): Datasets for stacking returned as dict.
     """
+
     datasets: Union[tuple, dict]
 
     def __init__(self, *args: Dataset[T_co], **kwargs: Dataset[T_co]) -> None:

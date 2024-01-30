@@ -15,6 +15,7 @@ class NdArrayDataset(Dataset[Union[np.ndarray, Tuple[np.ndarray, ...]]]):
     Args:
         *arrays (np.ndarray): arrays that have the same size of the first dimension.
     """
+
     arrays: Tuple[np.ndarray, ...]
 
     def __init__(self, *arrays: np.ndarray, single: bool = False) -> None:
