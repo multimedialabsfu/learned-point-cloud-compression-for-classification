@@ -40,18 +40,14 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
 
         self.detach_y1_hat = detach_y1_hat
 
-        num_channels_g_a = num_channels["g_a"]
-        num_channels_g_s = num_channels["g_s"]
-        num_channels_task_backend = num_channels["task_backend"]
-
         self.num_split_channels = [
-            num_channels_task_backend[0],
-            num_channels_g_a[-1] - num_channels_task_backend[0],
+            num_channels["task_backend"][0],
+            num_channels["g_a"][-1] - num_channels["task_backend"][0],
         ]
 
-        assert num_channels_task_backend[-1] == num_classes
-        assert num_channels_g_a[-1] == num_channels_g_s[0]
-        assert num_channels_g_s[-1] == num_points * 3
+        assert num_channels["task_backend"][-1] == num_classes
+        assert num_channels["g_a"][-1] == num_channels["g_s"][0]
+        assert num_channels["g_s"][-1] == num_points * 3
 
         self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
 
@@ -60,7 +56,7 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
         self.task_backend = nn.Sequential(
             *nn.Sequential(
                 nn.Identity(),  # For compatibility with previous checkpoints.
-                Gain((num_channels_task_backend[0], 1), factor=1.0),
+                Gain((num_channels["task_backend"][0], 1), factor=1.0),
             ),
             *pointnet_classification_backend(num_channels["task_backend"]),
         )

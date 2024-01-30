@@ -22,17 +22,14 @@ class PointNetReconstructionPccModel(BaseReconstructionPccModel):
     ):
         super().__init__()
 
-        num_channels_g_a = num_channels["g_a"]
-        num_channels_g_s = num_channels["g_s"]
-
-        assert num_channels_g_a[-1] == num_channels_g_s[0]
-        assert num_channels_g_s[-1] == num_points * 3
+        assert num_channels["g_a"][-1] == num_channels["g_s"][0]
+        assert num_channels["g_s"][-1] == num_points * 3
 
         self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
 
         self.g_s = pointnet_g_s_simple(num_channels["g_s"])
 
         self.latent_codec = EntropyBottleneckLatentCodec(
-            channels=num_channels_g_a[-1],
+            channels=num_channels["g_a"][-1],
             tail_mass=1e-4,
         )

@@ -31,9 +31,7 @@ class PointNetClassOnlyPccModel(BaseClassificationPccModel):
     ):
         super().__init__()
 
-        num_channels_g_a = num_channels["g_a"]
-
-        assert num_channels["task_backend"][0] == num_channels_g_a[-1]
+        assert num_channels["task_backend"][0] == num_channels["g_a"][-1]
         assert num_channels["task_backend"][-1] == num_classes
 
         self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
@@ -45,7 +43,7 @@ class PointNetClassOnlyPccModel(BaseClassificationPccModel):
         self.latent_codec = nn.ModuleDict(
             {
                 "y": EntropyBottleneckLatentCodec(
-                    channels=num_channels_g_a[-1],
+                    channels=num_channels["g_a"][-1],
                     tail_mass=1e-4,
                 ),
             }
@@ -74,18 +72,15 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
     ):
         super().__init__()
 
-        num_channels_g_a = num_channels["g_a"]
-        num_channels_task_backend = num_channels["task_backend"]
-
-        assert num_channels_task_backend[0] == num_channels_g_a[-1]
-        assert num_channels_task_backend[-1] == num_classes
+        assert num_channels["task_backend"][0] == num_channels["g_a"][-1]
+        assert num_channels["task_backend"][-1] == num_classes
 
         self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
 
         self.task_backend = nn.Sequential(
             nn.Sequential(
                 nn.Identity(),  # For compatibility with previous checkpoints.
-                Gain((num_channels_task_backend[0], 1), GAIN),
+                Gain((num_channels["task_backend"][0], 1), GAIN),
             ),
             pointnet_classification_backend(num_channels["task_backend"]),
         )
@@ -93,7 +88,7 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
         self.latent_codec = nn.ModuleDict(
             {
                 "y": EntropyBottleneckLatentCodec(
-                    channels=num_channels_g_a[-1],
+                    channels=num_channels["g_a"][-1],
                     tail_mass=1e-4,
                 ),
             }
