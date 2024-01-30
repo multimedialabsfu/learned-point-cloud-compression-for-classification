@@ -7,17 +7,22 @@ from .layers import Gain, Interleave, NamedLayer, Reshape
 GAIN = 10.0
 
 
-def conv1d_group_seq(num_channels, groups):
-    assert len(groups) == len(num_channels) - 1 or len(num_channels) == 0
+def conv1d_group_seq(
+    num_channels, groups, enabled=("bn", "act"), enabled_final=("bn", "act")
+):
+    assert len(num_channels) == 0 or len(groups) == len(num_channels) - 1
     xs = []
     for i in range(len(num_channels) - 1):
+        is_final = i + 1 == len(num_channels) - 1
         xs.append(nn.Conv1d(num_channels[i], num_channels[i + 1], 1, groups=groups[i]))
         # ChannelShuffle is only required between consecutive group convs.
-        if groups[i] > 1 and i + 1 < len(groups) and groups[i + 1] > 1:
+        if not is_final and groups[i] > 1 and groups[i + 1] > 1:
             xs.append(Interleave(groups[i]))
-        xs.append(nn.BatchNorm1d(num_channels[i + 1]))
-        xs.append(nn.ReLU(inplace=True))
-    return xs
+        if "bn" in enabled and (not is_final or "bn" in enabled_final):
+            xs.append(nn.BatchNorm1d(num_channels[i + 1]))
+        if "act" in enabled and (not is_final or "act" in enabled_final):
+            xs.append(nn.ReLU(inplace=True))
+    return nn.Sequential(*xs)
 
 
 def pointnet_g_a_simple(num_channels, groups=None, gain=GAIN):
