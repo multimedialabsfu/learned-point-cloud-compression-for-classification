@@ -3,7 +3,7 @@ from __future__ import annotations
 import torch.nn as nn
 
 from compressai.registry import register_model
-from src.layers.pcc import conv1d_group_seq, pointnet_classification_backend
+from src.layers.pcc.pointnet import conv1d_group_seq, pointnet_classification_backend
 
 from .base import BaseClassificationPcModel
 

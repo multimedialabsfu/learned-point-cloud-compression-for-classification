@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import torch.nn as nn
 
-from .layers import Gain, Interleave, Reshape
+from ..layers import Gain, Interleave, Reshape
 
 GAIN = 10.0
 

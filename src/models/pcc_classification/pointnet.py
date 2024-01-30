@@ -8,7 +8,11 @@ from compressai.latent_codecs import LatentCodec
 from compressai.latent_codecs.entropy_bottleneck import EntropyBottleneckLatentCodec
 from compressai.registry import register_model
 from src.layers import Gain
-from src.layers.pcc import GAIN, pointnet_classification_backend, pointnet_g_a_simple
+from src.layers.pcc.pointnet import (
+    GAIN,
+    pointnet_classification_backend,
+    pointnet_g_a_simple,
+)
 
 from .base import BaseClassificationPccModel
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from compressai.latent_codecs.entropy_bottleneck import EntropyBottleneckLatentCodec
 from compressai.registry import register_model
-from src.layers.pcc import pointnet_g_a_simple, pointnet_g_s_simple
+from src.layers.pcc.pointnet import pointnet_g_a_simple, pointnet_g_s_simple
 
 from .base import BaseReconstructionPccModel
 

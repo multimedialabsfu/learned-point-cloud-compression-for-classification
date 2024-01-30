@@ -8,8 +8,8 @@ from compressai.models import CompressionModel
 from compressai.registry import register_model
 from src.layers.layers import Gain, Interleave, Reshape, Transpose
 from src.layers.pc_pointnet2 import PointNetSetAbstraction
-from src.layers.pcc import GAIN
-from src.layers.pcc_reconstruction.pointnet2 import UpsampleBlock
+from src.layers.pcc.pointnet import GAIN
+from src.layers.pcc.pointnet2 import UpsampleBlock
 
 
 @register_model("um-pcc-rec-pointnet2-ssg")
