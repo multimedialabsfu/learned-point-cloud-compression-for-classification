@@ -22,11 +22,11 @@ def conv1d_group_seq(num_channels, groups):
 
 def pointnet_g_a_simple(num_channels, groups=None, gain=GAIN):
     if groups is None:
-        groups = {"pointwise": [1] * (len(num_channels["pointwise"]) - 1)}
+        groups = [1] * (len(num_channels) - 1)
     return nn.Sequential(
-        *conv1d_group_seq(num_channels["pointwise"], groups["pointwise"]),
+        *conv1d_group_seq(num_channels, groups),
         nn.AdaptiveMaxPool1d(1),
-        Gain((num_channels["pointwise"][-1], 1), gain),
+        Gain((num_channels[-1], 1), gain),
     )
 
 

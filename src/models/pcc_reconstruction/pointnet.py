@@ -39,7 +39,10 @@ class PointNetReconstructionPccModel(BaseReconstructionPccModel):
         assert num_channels_g_a[-1] == num_channels_g_s[0]
         assert num_channels_g_s[-1] == num_points * 3
 
-        self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups.get("g_a"))
+        self.g_a = pointnet_g_a_simple(
+            num_channels["g_a"]["pointwise"],
+            groups["g_a"]["pointwise"],
+        )
 
         self.g_s = pointnet_g_s_simple(num_channels["g_s"]["pointwise"])
 

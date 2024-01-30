@@ -42,7 +42,10 @@ class PointNetClassOnlyPccModel(BaseClassificationPccModel):
         assert num_channels["task_backend"][0] == num_channels_g_a[-1]
         assert num_channels["task_backend"][-1] == num_classes
 
-        self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
+        self.g_a = pointnet_g_a_simple(
+            num_channels["g_a"]["pointwise"],
+            groups["g_a"]["pointwise"],
+        )
 
         self.task_backend = pointnet_classification_backend(
             num_channels=num_channels["task_backend"],
@@ -96,7 +99,10 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
         assert num_channels_task_backend[0] == num_channels_g_a[-1]
         assert num_channels_task_backend[-1] == num_classes
 
-        self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
+        self.g_a = pointnet_g_a_simple(
+            num_channels["g_a"]["pointwise"],
+            groups["g_a"]["pointwise"],
+        )
 
         self.task_backend = nn.Sequential(
             nn.Sequential(
