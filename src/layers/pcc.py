@@ -36,8 +36,6 @@ def conv1d_group_seq(
 
 
 def pointnet_g_a_simple(num_channels, groups=None, gain=GAIN):
-    if groups is None:
-        groups = [1] * (len(num_channels) - 1)
     return nn.Sequential(
         *conv1d_group_seq(num_channels, groups),
         nn.AdaptiveMaxPool1d(1),
