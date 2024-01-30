@@ -18,7 +18,6 @@ from .base import BaseClassificationPccModel
 
 
 @register_model("um-pcc-cls-only-pointnet-mmsp2023")
-@register_model("um-pcc-cls-only-pointnet-mini-001")  # NOTE: Old name.
 class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
     latent_codec: Mapping[str, LatentCodec]
 
@@ -42,11 +41,8 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
         self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
 
         self.task_backend = nn.Sequential(
-            nn.Sequential(
-                nn.Identity(),  # For compatibility with previous checkpoints.
-                Gain((num_channels["task_backend"][0], 1), GAIN),
-            ),
-            pointnet_classification_backend(num_channels["task_backend"]),
+            Gain((num_channels["task_backend"][0], 1), GAIN),
+            *pointnet_classification_backend(num_channels["task_backend"]),
         )
 
         self.latent_codec = nn.ModuleDict(
