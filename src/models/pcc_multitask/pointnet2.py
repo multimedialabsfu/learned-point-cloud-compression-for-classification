@@ -15,6 +15,24 @@ from src.layers.pcc.pointnet2 import UpsampleBlock
 @register_model("um-pcc-multitask-cls-pointnet2-ssg")
 @register_model("um-pcc-multitask-cls-pointnet2")
 class PointNet2SsgClassMultitaskPccModel(CompressionModel):
+    """PointNet++-based PCC multitask classification/reconstruction model.
+
+    Model based on PointNet++ [Qi2017]_, and modified for compression by
+    [Ulhaq2024]_.
+    Uses single-scale grouping (SSG) for point set abstraction.
+
+    References:
+
+        .. [Qi2017] `"PointNet++: Deep Hierarchical Feature Learning on
+            Point Sets in a Metric Space"
+            <https://arxiv.org/abs/1706.02413>`_, by Charles R. Qi,
+            Li Yi, Hao Su, and Leonidas J. Guibas, NIPS 2017.
+
+        .. [Ulhaq2024] `"Scalable Human-Machine Point Cloud Compression"
+            <TODO>`_,
+            by Mateen Ulhaq and Ivan V. Bajić, PCS 2024.
+    """
+
     def __init__(
         self,
         num_points=1024,
