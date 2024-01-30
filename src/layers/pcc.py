@@ -20,30 +20,13 @@ def conv1d_group_seq(num_channels, groups):
     return xs
 
 
-def mixer_seq(num_channels):
-    return [
-        nn.Conv1d(ch_in, ch_out, 1)
-        for ch_in, ch_out in zip(num_channels[:-1], num_channels[1:])
-    ]
-
-
 def pointnet_g_a_simple(num_channels, groups=None, gain=GAIN):
     if groups is None:
         groups = {"pointwise": [1] * (len(num_channels["pointwise"]) - 1)}
-    num_channels = dict(num_channels)
-    if "mixer" not in num_channels:
-        num_channels["mixer"] = []
-    num_channels_g_a = [
-        *num_channels["pointwise"],
-        *num_channels["mixer"][1:],
-    ]
-    pointwise = conv1d_group_seq(num_channels["pointwise"], groups["pointwise"])
-    mixer = mixer_seq(list(num_channels["mixer"]))
     return nn.Sequential(
-        *pointwise,
+        *conv1d_group_seq(num_channels["pointwise"], groups["pointwise"]),
         nn.AdaptiveMaxPool1d(1),
-        *mixer,
-        Gain((num_channels_g_a[-1], 1), gain),
+        Gain((num_channels["pointwise"][-1], 1), gain),
     )
 
 
