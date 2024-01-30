@@ -38,6 +38,19 @@ from src.layers.pointnet2 import PointNetSetAbstraction
 @register_model("um-pc-cls-pointnet2-ssg")
 @register_model("um-pc-cls-pointnet2")
 class PointNet2SsgClassPcModel(nn.Module):
+    """PointNet++ classification model.
+
+    Model by [Qi2017]_.
+    Uses single-scale grouping (SSG) for point set abstraction.
+
+    References:
+
+        .. [Qi2017] `"PointNet++: Deep Hierarchical Feature Learning on
+            Point Sets in a Metric Space"
+            <https://arxiv.org/abs/1706.02413>`_, by Charles R. Qi,
+            Li Yi, Hao Su, and Leonidas J. Guibas, NIPS 2017.
+    """
+
     def __init__(
         self,
         num_points=1024,

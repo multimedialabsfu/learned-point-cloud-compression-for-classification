@@ -10,6 +10,25 @@ from .base import BaseClassificationPcModel
 
 @register_model("um-pc-cls-pointnet")
 class PointNetClassPcModel(BaseClassificationPcModel):
+    """PointNet classification model.
+
+    Model by [Qi2017]_.
+
+    .. note::
+
+        This simplified implementation does not use the "input
+        transform" and "feature transform" layers from the original
+        paper. In Table 5, the authors report that these layers may
+        improve the classification accuracy by 2.1%.
+
+    References:
+
+        .. [Qi2017] `"PointNet: Deep Learning on Point Sets for
+            3D Classification and Segmentation"
+            <https://arxiv.org/abs/1612.00593>`_, by Charles R. Qi,
+            Hao Su, Kaichun Mo, and Leonidas J. Guibas, CVPR 2017.
+    """
+
     def __init__(
         self,
         num_points=1024,
