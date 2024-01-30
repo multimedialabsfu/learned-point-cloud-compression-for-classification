@@ -35,7 +35,7 @@ HOVER_HPARAMS_LITE = [
 HOVER_HPARAMS_MICRO = [
     *HOVER_HPARAMS_COMMON,
     "hp.num_channels.g_a",
-    "hp.num_channels.task_backend.mlp",
+    "hp.num_channels.task_backend",
     "hp.groups.g_a",
 ]
 
@@ -177,7 +177,7 @@ def main():
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
             "hp.num_channels.g_a": [3, 16],
-            "hp.num_channels.task_backend.mlp": [16, 512, 256, 40],
+            "hp.num_channels.task_backend": [16, 512, 256, 40],
             "hp.groups.g_a": [1],
             "hp.num_points": num_points,
         }

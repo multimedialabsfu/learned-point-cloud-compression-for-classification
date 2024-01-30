@@ -19,19 +19,19 @@ train --config-name="example_pcc_singletask" ++criterion.lmbda.cls=100
 
 MICRO_HPARAMS=(
   ++hp.num_channels.g_a='[3,16]'
-  ++hp.num_channels.task_backend.mlp='[16,512,256,40]'
+  ++hp.num_channels.task_backend='[16,512,256,40]'
   ++hp.groups.g_a='[1]'
 )
 
 LITE_HPARAMS=(
   ++hp.num_channels.g_a='[3,8,8,16,16,32]'
-  ++hp.num_channels.task_backend.mlp='[32,512,256,40]'
+  ++hp.num_channels.task_backend='[32,512,256,40]'
   ++hp.groups.g_a='[1,1,1,2,4]'
 )
 
 FULL_HPARAMS=(
   ++hp.num_channels.g_a='[3,64,64,64,128,1024]'
-  ++hp.num_channels.task_backend.mlp='[1024,512,256,40]'
+  ++hp.num_channels.task_backend='[1024,512,256,40]'
   ++hp.groups.g_a='[1,1,1,1,1]'
 )
 

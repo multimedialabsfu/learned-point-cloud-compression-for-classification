@@ -71,7 +71,7 @@ _M.HOVER_HPARAMS = [
     #
     # Mini:
     "hp.num_channels.g_a",
-    "hp.num_channels.task_backend.mlp",
+    "hp.num_channels.task_backend",
     "hp.groups.g_a",
     #
 ]

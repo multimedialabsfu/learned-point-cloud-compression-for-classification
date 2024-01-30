@@ -15,7 +15,7 @@
       16
     ],
     "hp.num_channels.task_backend.transform.mixer": [],
-    "hp.num_channels.task_backend.mlp": [
+    "hp.num_channels.task_backend": [
       16,
       512,
       256,
