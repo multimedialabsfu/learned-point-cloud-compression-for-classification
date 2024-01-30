@@ -26,20 +26,14 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
         num_points=1024,
         num_classes=40,
         num_channels={
-            "g_a": {
-                "pointwise": [3, 64, 64, 64, 128, 1024],
-            },
-            "g_s": {
-                "pointwise": [1024, 256, 512, 1024 * 3],
-            },
+            "g_a": [3, 64, 64, 64, 128, 1024],
+            "g_s": [1024, 256, 512, 1024 * 3],
             "task_backend": {
                 "mlp": [1024, 512, 256, 40],
             },
         },
         groups={
-            "g_a": {
-                "pointwise": [1, 1, 1, 1, 1],
-            },
+            "g_a": [1, 1, 1, 1, 1],
             "task_backend": {},
         },
         detach_y1_hat=True,
@@ -48,8 +42,8 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
 
         self.detach_y1_hat = detach_y1_hat
 
-        num_channels_g_a = num_channels["g_a"]["pointwise"]
-        num_channels_g_s = num_channels["g_s"]["pointwise"]
+        num_channels_g_a = num_channels["g_a"]
+        num_channels_g_s = num_channels["g_s"]
         num_channels_task_backend = num_channels["task_backend"]["mlp"]
 
         self.num_split_channels = [
@@ -61,12 +55,9 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
         assert num_channels_g_a[-1] == num_channels_g_s[0]
         assert num_channels_g_s[-1] == num_points * 3
 
-        self.g_a = pointnet_g_a_simple(
-            num_channels["g_a"]["pointwise"],
-            groups["g_a"]["pointwise"],
-        )
+        self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
 
-        self.g_s = pointnet_g_s_simple(num_channels["g_s"]["pointwise"])
+        self.g_s = pointnet_g_s_simple(num_channels["g_s"])
 
         self.task_backend = nn.Sequential(
             *nn.Sequential(

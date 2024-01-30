@@ -22,28 +22,21 @@ class PointNetClassOnlyPccModel(BaseClassificationPccModel):
         num_points=1024,
         num_classes=40,
         num_channels={
-            "g_a": {
-                "pointwise": [3, 64, 64, 64, 128, 1024],
-            },
+            "g_a": [3, 64, 64, 64, 128, 1024],
             "task_backend": [1024, 512, 256, 40],
         },
         groups={
-            "g_a": {
-                "pointwise": [1, 1, 1, 1, 1],
-            },
+            "g_a": [1, 1, 1, 1, 1],
         },
     ):
         super().__init__()
 
-        num_channels_g_a = num_channels["g_a"]["pointwise"]
+        num_channels_g_a = num_channels["g_a"]
 
         assert num_channels["task_backend"][0] == num_channels_g_a[-1]
         assert num_channels["task_backend"][-1] == num_classes
 
-        self.g_a = pointnet_g_a_simple(
-            num_channels["g_a"]["pointwise"],
-            groups["g_a"]["pointwise"],
-        )
+        self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
 
         self.task_backend = pointnet_classification_backend(
             num_channels=num_channels["task_backend"],
@@ -72,31 +65,24 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
         num_points=1024,
         num_classes=40,
         num_channels={
-            "g_a": {
-                "pointwise": [3, 64, 64, 64, 128, 1024],
-            },
+            "g_a": [3, 64, 64, 64, 128, 1024],
             "task_backend": {
                 "mlp": [1024, 512, 256, 40],
             },
         },
         groups={
-            "g_a": {
-                "pointwise": [1, 1, 1, 1, 1],
-            },
+            "g_a": [1, 1, 1, 1, 1],
         },
     ):
         super().__init__()
 
-        num_channels_g_a = num_channels["g_a"]["pointwise"]
+        num_channels_g_a = num_channels["g_a"]
         num_channels_task_backend = num_channels["task_backend"]["mlp"]
 
         assert num_channels_task_backend[0] == num_channels_g_a[-1]
         assert num_channels_task_backend[-1] == num_classes
 
-        self.g_a = pointnet_g_a_simple(
-            num_channels["g_a"]["pointwise"],
-            groups["g_a"]["pointwise"],
-        )
+        self.g_a = pointnet_g_a_simple(num_channels["g_a"], groups["g_a"])
 
         self.task_backend = nn.Sequential(
             nn.Sequential(
