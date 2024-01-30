@@ -28,13 +28,8 @@ class PointNetReconstructionPccModel(BaseReconstructionPccModel):
     ):
         super().__init__()
 
-        num_channels_g_a = [
-            *num_channels["g_a"]["pointwise"],
-        ]
-
-        num_channels_g_s = [
-            *num_channels["g_s"]["pointwise"],
-        ]
+        num_channels_g_a = num_channels["g_a"]["pointwise"]
+        num_channels_g_s = num_channels["g_s"]["pointwise"]
 
         assert num_channels_g_a[-1] == num_channels_g_s[0]
         assert num_channels_g_s[-1] == num_points * 3

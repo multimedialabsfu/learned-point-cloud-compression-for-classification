@@ -48,17 +48,9 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
 
         self.detach_y1_hat = detach_y1_hat
 
-        num_channels_g_a = [
-            *num_channels["g_a"]["pointwise"],
-        ]
-
-        num_channels_task_backend = [
-            *num_channels["task_backend"]["mlp"],
-        ]
-
-        num_channels_g_s = [
-            *num_channels["g_s"]["pointwise"],
-        ]
+        num_channels_g_a = num_channels["g_a"]["pointwise"]
+        num_channels_g_s = num_channels["g_s"]["pointwise"]
+        num_channels_task_backend = num_channels["task_backend"]["mlp"]
 
         self.num_split_channels = [
             num_channels_task_backend[0],

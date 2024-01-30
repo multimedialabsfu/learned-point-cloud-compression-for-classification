@@ -35,9 +35,7 @@ class PointNetClassOnlyPccModel(BaseClassificationPccModel):
     ):
         super().__init__()
 
-        num_channels_g_a = [
-            *num_channels["g_a"]["pointwise"],
-        ]
+        num_channels_g_a = num_channels["g_a"]["pointwise"]
 
         assert num_channels["task_backend"][0] == num_channels_g_a[-1]
         assert num_channels["task_backend"][-1] == num_classes
@@ -89,12 +87,8 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
     ):
         super().__init__()
 
-        num_channels_g_a = [
-            *num_channels["g_a"]["pointwise"],
-        ]
-        num_channels_task_backend = [
-            *num_channels["task_backend"]["mlp"],
-        ]
+        num_channels_g_a = num_channels["g_a"]["pointwise"]
+        num_channels_task_backend = num_channels["task_backend"]["mlp"]
 
         assert num_channels_task_backend[0] == num_channels_g_a[-1]
         assert num_channels_task_backend[-1] == num_classes
