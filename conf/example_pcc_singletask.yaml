@@ -20,7 +20,7 @@ exp:
   description:
 
 model:
-  name: "um-pcc-cls-only-pointnet-mmsp2023"
+  name: "um-pcc-cls-only-pointnet"
 
 hp:
   num_points: 1024

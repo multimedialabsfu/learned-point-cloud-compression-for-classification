@@ -61,9 +61,9 @@ train_ra_curves() {
 NUM_POINTS=(1024 512 256 128 64 32 16 8)
 LMBDAS=(16000 8000 4000 1000 320 160 80 40 28 20 14 10)
 
-train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet-mmsp2023" "${MICRO_HPARAMS[@]}"
-train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet-mmsp2023" "${LITE_HPARAMS[@]}"
-train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet-mmsp2023" "${FULL_HPARAMS[@]}"
+train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet" "${MICRO_HPARAMS[@]}"
+train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet" "${LITE_HPARAMS[@]}"
+train_ra_curves --config-name="example_pcc_singletask" ++model.name="um-pcc-cls-only-pointnet" "${FULL_HPARAMS[@]}"
 
 
 ################################################################################

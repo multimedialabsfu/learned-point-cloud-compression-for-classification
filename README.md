@@ -187,7 +187,7 @@ To train a single-task classification compression model, use:
 python -m src.run.train \
   --config-path="$PWD/conf/" \
   --config-name="example_pcc_singletask" \
-  ++model.name="um-pcc-cls-only-pointnet-mmsp2023" \
+  ++model.name="um-pcc-cls-only-pointnet" \
   ++paths.datasets="$HOME/data/datasets" \
   ++hp.num_points=1024 \
   ++criterion.lmbda.cls=100

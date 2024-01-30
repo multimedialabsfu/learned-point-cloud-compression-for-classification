@@ -17,8 +17,9 @@ from src.layers.pcc.pointnet import (
 from .base import BaseClassificationPccModel
 
 
+@register_model("um-pcc-cls-only-pointnet")
 @register_model("um-pcc-cls-only-pointnet-mmsp2023")
-class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
+class PointNetClassOnlyPccModel(BaseClassificationPccModel):
     """PointNet-based PCC classification model.
 
     Model based on PointNet [Qi2017]_, modified for compression for
