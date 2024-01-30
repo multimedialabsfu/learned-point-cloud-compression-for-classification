@@ -66,9 +66,7 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
         num_classes=40,
         num_channels={
             "g_a": [3, 64, 64, 64, 128, 1024],
-            "task_backend": {
-                "mlp": [1024, 512, 256, 40],
-            },
+            "task_backend": [1024, 512, 256, 40],
         },
         groups={
             "g_a": [1, 1, 1, 1, 1],
@@ -77,7 +75,7 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
         super().__init__()
 
         num_channels_g_a = num_channels["g_a"]
-        num_channels_task_backend = num_channels["task_backend"]["mlp"]
+        num_channels_task_backend = num_channels["task_backend"]
 
         assert num_channels_task_backend[0] == num_channels_g_a[-1]
         assert num_channels_task_backend[-1] == num_classes
@@ -89,9 +87,7 @@ class PointNetClassOnlyPccModelMmsp2023(BaseClassificationPccModel):
                 nn.Identity(),  # For compatibility with previous checkpoints.
                 Gain((num_channels_task_backend[0], 1), GAIN),
             ),
-            pointnet_classification_backend(
-                num_channels=num_channels["task_backend"]["mlp"],
-            ),
+            pointnet_classification_backend(num_channels["task_backend"]),
         )
 
         self.latent_codec = nn.ModuleDict(

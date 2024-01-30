@@ -28,9 +28,7 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
         num_channels={
             "g_a": [3, 64, 64, 64, 128, 1024],
             "g_s": [1024, 256, 512, 1024 * 3],
-            "task_backend": {
-                "mlp": [1024, 512, 256, 40],
-            },
+            "task_backend": [1024, 512, 256, 40],
         },
         groups={
             "g_a": [1, 1, 1, 1, 1],
@@ -44,7 +42,7 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
 
         num_channels_g_a = num_channels["g_a"]
         num_channels_g_s = num_channels["g_s"]
-        num_channels_task_backend = num_channels["task_backend"]["mlp"]
+        num_channels_task_backend = num_channels["task_backend"]
 
         self.num_split_channels = [
             num_channels_task_backend[0],
@@ -64,9 +62,7 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
                 nn.Identity(),  # For compatibility with previous checkpoints.
                 Gain((num_channels_task_backend[0], 1), factor=1.0),
             ),
-            *pointnet_classification_backend(
-                num_channels=num_channels["task_backend"]["mlp"],
-            ),
+            *pointnet_classification_backend(num_channels["task_backend"]),
         )
 
         self.latent_codec = nn.ModuleDict(
