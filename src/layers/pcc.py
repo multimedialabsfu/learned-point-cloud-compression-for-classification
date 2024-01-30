@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import torch.nn as nn
 
-from .layers import Gain, Interleave, NamedLayer, Reshape
+from .layers import Gain, Interleave, Reshape
 
 GAIN = 10.0
 
@@ -52,23 +52,9 @@ def pointnet_g_s_simple(num_channels, gain=GAIN):
 
 
 def pointnet_classification_backend(num_channels):
-    num_classes = num_channels[-1]
     return nn.Sequential(
-        *[
-            x
-            for i, ch_in, ch_out in zip(
-                range(len(num_channels) - 2),
-                num_channels[:-2],
-                num_channels[1:-1],
-            )
-            for x in [
-                nn.Conv1d(ch_in, ch_out, 1),
-                nn.BatchNorm1d(ch_out),
-                nn.ReLU(inplace=True),
-                NamedLayer(f"s_{i + 1}_hat"),
-            ]
-        ],
+        *conv1d_group_seq(num_channels[:-1], enabled_final=[]),
         nn.Dropout(0.3),
         nn.Conv1d(num_channels[-2], num_channels[-1], 1),
-        Reshape((num_classes,)),
+        Reshape((num_channels[-1],)),
     )
