@@ -32,7 +32,7 @@ import torch.nn as nn
 
 from compressai.registry import register_model
 from src.layers.layers import Reshape
-from src.layers.pc_pointnet2 import PointNetSetAbstraction
+from src.layers.pointnet2 import PointNetSetAbstraction
 
 
 @register_model("um-pc-cls-pointnet2-ssg")
