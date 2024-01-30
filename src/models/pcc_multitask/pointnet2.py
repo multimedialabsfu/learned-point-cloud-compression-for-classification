@@ -7,9 +7,9 @@ from compressai.latent_codecs import EntropyBottleneckLatentCodec
 from compressai.models import CompressionModel
 from compressai.registry import register_model
 from src.layers.layers import Gain, Interleave, Reshape, Transpose
-from src.layers.pointnet2 import PointNetSetAbstraction
 from src.layers.pcc.pointnet import GAIN
 from src.layers.pcc.pointnet2 import UpsampleBlock
+from src.layers.pointnet2 import PointNetSetAbstraction
 
 
 @register_model("sfu-pcc-multitask-cls-pointnet2-ssg")
