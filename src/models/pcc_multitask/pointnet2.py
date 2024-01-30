@@ -3,7 +3,6 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 
-from compressai.entropy_models import EntropyBottleneck
 from compressai.latent_codecs import EntropyBottleneckLatentCodec
 from compressai.models import CompressionModel
 from compressai.registry import register_model
@@ -183,16 +182,19 @@ class PointNet2SsgClassMultitaskPccModel(CompressionModel):
             {
                 **{
                     f"_{i}": EntropyBottleneckLatentCodec(
-                        entropy_bottleneck=EntropyBottleneck(M[i], tail_mass=1e-4),
+                        channels=M[i],
+                        tail_mass=1e-4,
                     )
                     for i in range(self.levels - 1)
                     if M[i] > 0
                 },
                 f"_{i_final}_1": EntropyBottleneckLatentCodec(
-                    entropy_bottleneck=EntropyBottleneck(M_L_1, tail_mass=1e-4),
+                    channels=M_L_1,
+                    tail_mass=1e-4,
                 ),
                 f"_{i_final}_2": EntropyBottleneckLatentCodec(
-                    entropy_bottleneck=EntropyBottleneck(M_L_2, tail_mass=1e-4),
+                    channels=M_L_2,
+                    tail_mass=1e-4,
                 ),
             }
         )

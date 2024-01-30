@@ -3,7 +3,6 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 
-from compressai.entropy_models import EntropyBottleneck
 from compressai.latent_codecs import EntropyBottleneckLatentCodec
 from compressai.models import CompressionModel
 from compressai.registry import register_model
@@ -155,9 +154,7 @@ class PointNet2SsgReconstructionPccModel(CompressionModel):
 
         self.latent_codec = nn.ModuleDict(
             {
-                f"_{i}": EntropyBottleneckLatentCodec(
-                    entropy_bottleneck=EntropyBottleneck(M[i], tail_mass=1e-4),
-                )
+                f"_{i}": EntropyBottleneckLatentCodec(channels=M[i], tail_mass=1e-4)
                 for i in range(self.levels)
                 if M[i] > 0
             }

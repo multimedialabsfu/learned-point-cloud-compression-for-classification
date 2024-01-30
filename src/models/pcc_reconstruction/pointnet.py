@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from compressai.entropy_models import EntropyBottleneck
 from compressai.latent_codecs.entropy_bottleneck import EntropyBottleneckLatentCodec
 from compressai.registry import register_model
 from src.layers.pcc import pointnet_g_a_simple, pointnet_g_s_simple
@@ -45,9 +44,6 @@ class PointNetReconstructionPccModel(BaseReconstructionPccModel):
         self.g_s = pointnet_g_s_simple(num_channels["g_s"]["pointwise"])
 
         self.latent_codec = EntropyBottleneckLatentCodec(
-            N=num_channels_g_a[-1],
-            entropy_bottleneck=EntropyBottleneck(
-                num_channels_g_a[-1],
-                tail_mass=1e-4,
-            ),
+            channels=num_channels_g_a[-1],
+            tail_mass=1e-4,
         )

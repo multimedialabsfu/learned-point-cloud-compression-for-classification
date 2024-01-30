@@ -4,7 +4,6 @@ from typing import Mapping
 
 import torch.nn as nn
 
-from compressai.entropy_models import EntropyBottleneck
 from compressai.latent_codecs import LatentCodec
 from compressai.latent_codecs.entropy_bottleneck import EntropyBottleneckLatentCodec
 from compressai.registry import register_model
@@ -87,16 +86,12 @@ class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
         self.latent_codec = nn.ModuleDict(
             {
                 "y1": EntropyBottleneckLatentCodec(
-                    N=self.num_split_channels[0],
-                    entropy_bottleneck=EntropyBottleneck(
-                        self.num_split_channels[0], tail_mass=1e-4
-                    ),
+                    channels=self.num_split_channels[0],
+                    tail_mass=1e-4,
                 ),
                 "y2": EntropyBottleneckLatentCodec(
-                    N=self.num_split_channels[1],
-                    entropy_bottleneck=EntropyBottleneck(
-                        self.num_split_channels[1], tail_mass=1e-4
-                    ),
+                    channels=self.num_split_channels[1],
+                    tail_mass=1e-4,
                 ),
             }
         )
