@@ -9,11 +9,13 @@ GAIN = 10.0
 
 def conv1d_group_seq(
     num_channels,
-    groups,
+    groups=None,
     kernel_size=1,
     enabled=("bn", "act"),
     enabled_final=("bn", "act"),
 ):
+    if groups is None:
+        groups = [1] * (len(num_channels) - 1)
     assert len(num_channels) == 0 or len(groups) == len(num_channels) - 1
     xs = []
     for i in range(len(num_channels) - 1):
