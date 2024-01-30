@@ -2,7 +2,7 @@
   "name": "Ulhaq2023 PointNet [lite, P=1024]",
   "description": "",
   "meta": {
-    "model.name": "um-pcc-cls-only-pointnet",
+    "model.name": "sfu-pcc-cls-only-pointnet",
     "dataset.train.meta.name": "ModelNet40",
     "hp.num_classes": 40,
     "hp.num_points": 1024,

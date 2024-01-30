@@ -135,7 +135,7 @@ def main():
 
     for num_points in [1024, 512, 256, 128, 64, 32, 16, 8]:
         meta = {
-            "model.name": "um-pcc-cls-only-pointnet",
+            "model.name": "sfu-pcc-cls-only-pointnet",
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
             "hp.num_channels.g_a": [3, 64, 64, 64, 128, 1024],
@@ -154,7 +154,7 @@ def main():
 
     for num_points in [1024, 512, 256, 128, 64, 32, 16, 8]:
         meta = {
-            "model.name": "um-pcc-cls-only-pointnet",
+            "model.name": "sfu-pcc-cls-only-pointnet",
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
             "hp.num_channels.g_a": [3, 8, 8, 16, 16, 32],
@@ -173,7 +173,7 @@ def main():
 
     for num_points in [1024, 512, 256, 128, 64, 32, 16, 8]:
         meta = {
-            "model.name": "um-pcc-cls-only-pointnet",
+            "model.name": "sfu-pcc-cls-only-pointnet",
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
             "hp.num_channels.g_a": [3, 16],

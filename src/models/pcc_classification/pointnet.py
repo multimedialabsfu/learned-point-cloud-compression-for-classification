@@ -17,6 +17,7 @@ from src.layers.pcc.pointnet import (
 from .base import BaseClassificationPccModel
 
 
+@register_model("sfu-pcc-cls-only-pointnet")
 @register_model("um-pcc-cls-only-pointnet")
 @register_model("um-pcc-cls-only-pointnet-mmsp2023")
 class PointNetClassOnlyPccModel(BaseClassificationPccModel):

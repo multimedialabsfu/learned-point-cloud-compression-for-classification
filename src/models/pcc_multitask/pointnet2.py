@@ -12,6 +12,7 @@ from src.layers.pcc.pointnet import GAIN
 from src.layers.pcc.pointnet2 import UpsampleBlock
 
 
+@register_model("sfu-pcc-multitask-cls-pointnet2-ssg")
 @register_model("um-pcc-multitask-cls-pointnet2-ssg")
 @register_model("um-pcc-multitask-cls-pointnet2")
 class PointNet2SsgClassMultitaskPccModel(CompressionModel):

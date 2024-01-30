@@ -17,6 +17,7 @@ from src.layers.pcc.pointnet import (
 from .base import BaseMultitaskPccModel
 
 
+@register_model("sfu-pcc-multitask-cls-pointnet")
 @register_model("um-pcc-multitask-cls-pointnet")
 class PointNetClassMultitaskPccModel(BaseMultitaskPccModel):
     """PointNet-based PCC multitask classification/reconstruction model.

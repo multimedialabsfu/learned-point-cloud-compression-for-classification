@@ -42,15 +42,15 @@ _M.PLOT_RD_SETTINGS = {
 _M.COMPRESSAI_CODECS = [
     # Point-cloud codecs:
     "theoretical-optimum",
-    "um-pcc-cls-only-pointnet_size=full_points=1024",
-    "um-pcc-cls-only-pointnet_size=lite_points=1024",
-    "um-pcc-cls-only-pointnet_size=lite_points=512",
-    "um-pcc-cls-only-pointnet_size=lite_points=256",
-    "um-pcc-cls-only-pointnet_size=lite_points=128",
-    "um-pcc-cls-only-pointnet_size=lite_points=64",
-    "um-pcc-cls-only-pointnet_size=lite_points=32",
-    "um-pcc-cls-only-pointnet_size=lite_points=16",
-    "um-pcc-cls-only-pointnet_size=lite_points=8",
+    "sfu-pcc-cls-only-pointnet_size=full_points=1024",
+    "sfu-pcc-cls-only-pointnet_size=lite_points=1024",
+    "sfu-pcc-cls-only-pointnet_size=lite_points=512",
+    "sfu-pcc-cls-only-pointnet_size=lite_points=256",
+    "sfu-pcc-cls-only-pointnet_size=lite_points=128",
+    "sfu-pcc-cls-only-pointnet_size=lite_points=64",
+    "sfu-pcc-cls-only-pointnet_size=lite_points=32",
+    "sfu-pcc-cls-only-pointnet_size=lite_points=16",
+    "sfu-pcc-cls-only-pointnet_size=lite_points=8",
     "input-compression-pointnet-tmc13",
 ]
 

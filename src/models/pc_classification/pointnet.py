@@ -8,6 +8,7 @@ from src.layers.pcc.pointnet import conv1d_group_seq, pointnet_classification_ba
 from .base import BaseClassificationPcModel
 
 
+@register_model("sfu-pc-cls-pointnet")
 @register_model("um-pc-cls-pointnet")
 class PointNetClassPcModel(BaseClassificationPcModel):
     """PointNet classification model.

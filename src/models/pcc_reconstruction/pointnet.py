@@ -7,6 +7,7 @@ from src.layers.pcc.pointnet import pointnet_g_a_simple, pointnet_g_s_simple
 from .base import BaseReconstructionPccModel
 
 
+@register_model("sfu-pcc-rec-pointnet")
 @register_model("um-pcc-rec-pointnet")
 class PointNetReconstructionPccModel(BaseReconstructionPccModel):
     """PointNet-based PCC reconstruction model.
