@@ -65,14 +65,14 @@ _M.HOVER_HPARAMS = [
     "hp.num_points",
     #
     # Full:
-    # "hp.num_channels.g_a.pointwise",
+    # "hp.num_channels.g_a",
     # "hp.num_channels.task_backend",
-    # "hp.groups.g_a.pointwise",
+    # "hp.groups.g_a",
     #
     # Mini:
-    "hp.num_channels.g_a.pointwise",
+    "hp.num_channels.g_a",
     "hp.num_channels.task_backend.mlp",
-    "hp.groups.g_a.pointwise",
+    "hp.groups.g_a",
     #
 ]
 

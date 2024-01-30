@@ -23,9 +23,9 @@ HOVER_HPARAMS_COMMON = [
 
 HOVER_HPARAMS_FULL = [
     *HOVER_HPARAMS_COMMON,
-    "hp.num_channels.g_a.pointwise",
+    "hp.num_channels.g_a",
     "hp.num_channels.task_backend",
-    "hp.groups.g_a.pointwise",
+    "hp.groups.g_a",
 ]
 
 HOVER_HPARAMS_LITE = [
@@ -34,9 +34,9 @@ HOVER_HPARAMS_LITE = [
 
 HOVER_HPARAMS_MICRO = [
     *HOVER_HPARAMS_COMMON,
-    "hp.num_channels.g_a.pointwise",
+    "hp.num_channels.g_a",
     "hp.num_channels.task_backend.mlp",
-    "hp.groups.g_a.pointwise",
+    "hp.groups.g_a",
 ]
 
 VARYING_HPARAMS = [
@@ -87,7 +87,7 @@ def write_json(df, path, hover_hparams):
 def run_writer(output_dir, repo, meta, name, hover_hparams):
     query = " and ".join(f"run.{k} == {repr(v)}" for k, v in meta.items())
 
-    stem_keys = ["model.name", "hp.num_channels.g_a.pointwise", "hp.num_points"]
+    stem_keys = ["model.name", "hp.num_channels.g_a", "hp.num_points"]
     stem = ";".join(f"{k}={meta[k]}" for k in stem_keys)
     out_path = f"{output_dir}/{stem}.json"
 
@@ -138,9 +138,9 @@ def main():
             "model.name": "um-pcc-cls-only-pointnet-mmsp2023",
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
-            "hp.num_channels.g_a.pointwise": [3, 64, 64, 64, 128, 1024],
+            "hp.num_channels.g_a": [3, 64, 64, 64, 128, 1024],
             "hp.num_channels.task_backend": [1024, 512, 256, 40],
-            "hp.groups.g_a.pointwise": [1, 1, 1, 1, 1],
+            "hp.groups.g_a": [1, 1, 1, 1, 1],
             "hp.num_points": num_points,
         }
 
@@ -157,9 +157,9 @@ def main():
             "model.name": "um-pcc-cls-only-pointnet-mmsp2023",
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
-            "hp.num_channels.g_a.pointwise": [3, 8, 8, 16, 16, 32],
+            "hp.num_channels.g_a": [3, 8, 8, 16, 16, 32],
             "hp.num_channels.task_backend": [32, 512, 256, 40],
-            "hp.groups.g_a.pointwise": [1, 1, 1, 2, 4],
+            "hp.groups.g_a": [1, 1, 1, 2, 4],
             "hp.num_points": num_points,
         }
 
@@ -176,9 +176,9 @@ def main():
             "model.name": "um-pcc-cls-only-pointnet-mmsp2023",
             "dataset.train.meta.name": "ModelNet40",
             "hp.num_classes": 40,
-            "hp.num_channels.g_a.pointwise": [3, 16],
+            "hp.num_channels.g_a": [3, 16],
             "hp.num_channels.task_backend.mlp": [16, 512, 256, 40],
-            "hp.groups.g_a.pointwise": [1],
+            "hp.groups.g_a": [1],
             "hp.num_points": num_points,
         }
 

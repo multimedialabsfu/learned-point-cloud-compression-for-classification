@@ -18,21 +18,21 @@ train --config-name="example_pcc_singletask" ++criterion.lmbda.cls=100
 
 
 MICRO_HPARAMS=(
-  ++hp.num_channels.g_a.pointwise='[3,16]'
+  ++hp.num_channels.g_a='[3,16]'
   ++hp.num_channels.task_backend.mlp='[16,512,256,40]'
-  ++hp.groups.g_a.pointwise='[1]'
+  ++hp.groups.g_a='[1]'
 )
 
 LITE_HPARAMS=(
-  ++hp.num_channels.g_a.pointwise='[3,8,8,16,16,32]'
+  ++hp.num_channels.g_a='[3,8,8,16,16,32]'
   ++hp.num_channels.task_backend.mlp='[32,512,256,40]'
-  ++hp.groups.g_a.pointwise='[1,1,1,2,4]'
+  ++hp.groups.g_a='[1,1,1,2,4]'
 )
 
 FULL_HPARAMS=(
-  ++hp.num_channels.g_a.pointwise='[3,64,64,64,128,1024]'
+  ++hp.num_channels.g_a='[3,64,64,64,128,1024]'
   ++hp.num_channels.task_backend.mlp='[1024,512,256,40]'
-  ++hp.groups.g_a.pointwise='[1,1,1,1,1]'
+  ++hp.groups.g_a='[1,1,1,1,1]'
 )
 
 
@@ -83,9 +83,9 @@ COMMON_MULTI_TASK_ARGS=(
 NUM_POINTS=(1024)
 LMBDAS=(1000 160 40 28 14)
 
-train_ra_curves "${COMMON_MULTI_TASK_ARGS[@]}" "${MICRO_HPARAMS[@]}" ++hp.num_channels.g_s.pointwise='[16,64,64,256,3072]'
-train_ra_curves "${COMMON_MULTI_TASK_ARGS[@]}" "${LITE_HPARAMS[@]}"  ++hp.num_channels.g_s.pointwise='[32,64,64,256,3072]'
-train_ra_curves "${COMMON_MULTI_TASK_ARGS[@]}" "${FULL_HPARAMS[@]}"  ++hp.num_channels.g_s.pointwise='[1024,256,256,512,3072]'
+train_ra_curves "${COMMON_MULTI_TASK_ARGS[@]}" "${MICRO_HPARAMS[@]}" ++hp.num_channels.g_s='[16,64,64,256,3072]'
+train_ra_curves "${COMMON_MULTI_TASK_ARGS[@]}" "${LITE_HPARAMS[@]}"  ++hp.num_channels.g_s='[32,64,64,256,3072]'
+train_ra_curves "${COMMON_MULTI_TASK_ARGS[@]}" "${FULL_HPARAMS[@]}"  ++hp.num_channels.g_s='[1024,256,256,512,3072]'
 
 
 ################################################################################

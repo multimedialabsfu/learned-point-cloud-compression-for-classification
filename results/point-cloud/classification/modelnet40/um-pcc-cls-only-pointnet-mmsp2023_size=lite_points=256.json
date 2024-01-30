@@ -6,7 +6,7 @@
     "dataset.train.meta.name": "ModelNet40",
     "hp.num_classes": 40,
     "hp.num_points": 256,
-    "hp.num_channels.g_a.pointwise": [
+    "hp.num_channels.g_a": [
       3,
       8,
       8,
@@ -21,7 +21,7 @@
       256,
       40
     ],
-    "hp.groups.g_a.pointwise": [
+    "hp.groups.g_a": [
       1,
       1,
       1,
