@@ -44,19 +44,10 @@ def pointnet_g_a_simple(num_channels, groups=None, gain=GAIN):
 
 
 def pointnet_g_s_simple(num_channels, gain=GAIN):
-    num_points = num_channels[-1] // 3
     return nn.Sequential(
         Gain((num_channels[0], 1), 1 / gain),
-        *[
-            x
-            for ch_in, ch_out in zip(num_channels[:-2], num_channels[1:-1])
-            for x in [
-                nn.Conv1d(ch_in, ch_out, 1),
-                nn.ReLU(inplace=True),
-            ]
-        ],
-        nn.Conv1d(num_channels[-2], num_channels[-1], 1),
-        Reshape((num_points, 3)),
+        *conv1d_group_seq(num_channels, enabled=["act"], enabled_final=[]),
+        Reshape((num_channels[-1] // 3, 3)),
     )
 
 
