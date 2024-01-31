@@ -15,17 +15,28 @@ class ChamferPccRateDistortionLoss(nn.Module):
     For compression models that reconstruct the input point cloud.
     """
 
+    LMBDA_DEFAULT = {
+        # "bpp": 1.0,
+        "rec": 1.0,
+    }
+
     def __init__(self, lmbda=None, rate_key="bpp"):
         super().__init__()
-        self.lmbda = lmbda if isinstance(lmbda, dict) else {"rec": lmbda}
-        self.rate_key = rate_key
+        self.lmbda = lmbda or dict(self.LMBDA_DEFAULT)
+        self.lmbda.setdefault(rate_key, 1.0)
 
     def forward(self, output, target):
         out = {
             **self.compute_rate_loss(output, target),
             **self.compute_rec_loss(output, target),
         }
-        out["loss"] = out[f"{self.rate_key}_loss"] + self.lmbda["rec"] * out["rec_loss"]
+
+        out["loss"] = sum(
+            self.lmbda[k] * out[f"{k}_loss"]
+            for k in self.lmbda.keys()
+            if f"{k}_loss" in out
+        )
+
         return out
 
     def compute_rate_loss(self, output, target):
@@ -46,25 +57,18 @@ class MultitaskPccRateDistortionLoss(nn.Module):
     - rec = reconstruction
     - cls = classification
     - fm  = feature-matching
-
-    Example config:
-
-    .. code-block:: python
-
-        lmbda = {
-            "rec": 1.0,
-            "cls": 1.0,
-            "fm": {
-                "1": 1.0,
-                "2": 1.0,
-            },
-        }
     """
 
-    def __init__(self, lmbda={}, rate_key="bpp"):
+    LMBDA_DEFAULT = {
+        # "bpp": 1.0,
+        "rec": 1.0,
+        "cls": 1.0,
+    }
+
+    def __init__(self, lmbda=None, rate_key="bpp"):
         super().__init__()
-        self.lmbda = lmbda
-        self.rate_key = rate_key
+        self.lmbda = lmbda or dict(self.LMBDA_DEFAULT)
+        self.lmbda.setdefault(rate_key, 1.0)
         self.rec_metric = lambda *args, **kwargs: chamfer_distance(*args, **kwargs)[0]
         self.cls_metric = nn.CrossEntropyLoss()
         self.fm_metric = nn.MSELoss()
@@ -77,10 +81,10 @@ class MultitaskPccRateDistortionLoss(nn.Module):
             **self.compute_fm_loss(output, target),
         }
 
-        out["loss"] = (
-            out.get(f"{self.rate_key}_loss", 0)
-            + self.lmbda.get("rec", 0) * out.get("rec_loss", 0)
-            + self.lmbda.get("cls", 0) * out.get("cls_loss", 0)
+        out["loss"] = sum(
+            self.lmbda[k] * out[f"{k}_loss"]
+            for k in self.lmbda.keys()
+            if f"{k}_loss" in out
         )
 
         return out
