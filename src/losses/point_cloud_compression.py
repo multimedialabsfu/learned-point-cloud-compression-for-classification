@@ -5,6 +5,8 @@ from pytorch3d.loss import chamfer_distance
 
 from compressai.registry import register_criterion
 
+from .utils import compute_rate_loss
+
 
 @register_criterion("ChamferPccRateDistortionLoss")
 class ChamferPccRateDistortionLoss(nn.Module):
@@ -20,27 +22,16 @@ class ChamferPccRateDistortionLoss(nn.Module):
 
     def forward(self, output, target):
         out = {
-            **self.compute_bpp_loss(output, target),
+            **self.compute_rate_loss(output, target),
             **self.compute_rec_loss(output, target),
         }
         out["loss"] = out[f"{self.rate_key}_loss"] + self.lmbda["rec"] * out["rec_loss"]
         return out
 
-    def compute_bpp_loss(self, output, target):
+    def compute_rate_loss(self, output, target):
         N, P, C = target["pos"].shape
         assert C == 3
-        out_bit = {
-            f"bit_{name}_loss": lh.log2().sum() / -N
-            for name, lh in output["likelihoods"].items()
-        }
-        out_bpp = {
-            f"bpp_{name}_loss": out_bit[f"bit_{name}_loss"] / P
-            for name in output["likelihoods"].keys()
-        }
-        out = {**out_bit, **out_bpp}
-        out["bit_loss"] = sum(out_bit.values())
-        out["bpp_loss"] = out["bit_loss"] / P
-        return out
+        return compute_rate_loss(output["likelihoods"], N, P)
 
     def compute_rec_loss(self, output, target):
         loss_chamfer, _ = chamfer_distance(output["x_hat"], target["pos"])
@@ -79,7 +70,7 @@ class MultitaskPccRateDistortionLoss(nn.Module):
 
     def forward(self, output, target):
         out = {
-            **self.compute_bpp_loss(output, target),
+            **self.compute_rate_loss(output, target),
             **self.compute_rec_loss(output, target),
             **self.compute_cls_loss(output, target),
             **self.compute_fm_loss(output, target),
@@ -94,23 +85,12 @@ class MultitaskPccRateDistortionLoss(nn.Module):
 
         return out
 
-    def compute_bpp_loss(self, output, target):
+    def compute_rate_loss(self, output, target):
         if "likelihoods" not in output:
             return {}
         N, P, C = target["pos"].shape
         assert C == 3
-        out_bit = {
-            f"bit_{name}_loss": lh.log2().sum() / -N
-            for name, lh in output["likelihoods"].items()
-        }
-        out_bpp = {
-            f"bpp_{name}_loss": out_bit[f"bit_{name}_loss"] / P
-            for name in output["likelihoods"].keys()
-        }
-        out = {**out_bit, **out_bpp}
-        out["bit_loss"] = sum(out_bit.values())
-        out["bpp_loss"] = out["bit_loss"] / P
-        return out
+        return compute_rate_loss(output["likelihoods"], N, P)
 
     def compute_rec_loss(self, output, target):
         if "x_hat" not in output:
