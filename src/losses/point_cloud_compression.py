@@ -80,7 +80,6 @@ class MultitaskPccRateDistortionLoss(nn.Module):
             out.get(f"{self.rate_key}_loss", 0)
             + self.lmbda.get("rec", 0) * out.get("rec_loss", 0)
             + self.lmbda.get("cls", 0) * out.get("cls_loss", 0)
-            # + sum(lmbda * out[f"fm_{k}_loss"] for k, lmbda in self.lmbda["fm"].items())
         )
 
         return out
@@ -96,7 +95,6 @@ class MultitaskPccRateDistortionLoss(nn.Module):
         if "x_hat" not in output:
             return {}
         return {"rec_loss": self.rec_metric(output["x_hat"], target["pos"])}
-        # return {"rec_loss": self.rec_metric(output["x_hat"], target["x"])}
 
     def compute_cls_loss(self, output, target):
         if "t_hat" not in output:
@@ -104,12 +102,6 @@ class MultitaskPccRateDistortionLoss(nn.Module):
         return {
             "cls_loss": self.cls_metric(output["t_hat"], target["label"].squeeze(1))
         }
-        # return {"cls_loss": self.cls_metric(output["t_hat"], target["t"])}
 
     def compute_fm_loss(self, output, target):
         return {}
-        return {
-            f"fm_{k}_loss": self.fm_metric(output[f"s_{k}_hat"], output[f"s_{k}"])
-            # f"fm_{k}_loss": self.fm_metric(output[f"s_{k}_hat"], target[f"s_{k}"])
-            for k in self.lmbda["fm"]
-        }
