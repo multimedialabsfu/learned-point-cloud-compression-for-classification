@@ -29,8 +29,9 @@ class ChamferPccRateDistortionLoss(nn.Module):
         return out
 
     def compute_rate_loss(self, output, target):
-        N, P, C = target["pos"].shape
-        assert C == 3
+        if "likelihoods" not in output:
+            return {}
+        N, P, _ = target["pos"].shape
         return compute_rate_loss(output["likelihoods"], N, P)
 
     def compute_rec_loss(self, output, target):
@@ -87,8 +88,7 @@ class MultitaskPccRateDistortionLoss(nn.Module):
     def compute_rate_loss(self, output, target):
         if "likelihoods" not in output:
             return {}
-        N, P, C = target["pos"].shape
-        assert C == 3
+        N, P, _ = target["pos"].shape
         return compute_rate_loss(output["likelihoods"], N, P)
 
     def compute_rec_loss(self, output, target):
