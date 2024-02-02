@@ -2019,13 +2019,11 @@ plugins = ["importlib-metadata"]
 [[package]]
 name = "pyntcloud"
 version = "0.3.1"
-description = "Python library for working with 3D point clouds."
+description = ""
 optional = false
 python-versions = ">3.7"
-files = [
-    {file = "pyntcloud-0.3.1-py2.py3-none-any.whl", hash = "sha256:2c064f53ae75175e8a9b8fe9f59d430b02b203a4e7ef8620af01d5e247d4df88"},
-    {file = "pyntcloud-0.3.1.tar.gz", hash = "sha256:628b45967e1c97a947df0637267197a6b38a36cb04173f9837f05bc3180348b8"},
-]
+files = []
+develop = false
 
 [package.dependencies]
 numpy = "*"
@@ -2036,6 +2034,12 @@ scipy = ">=1.6.0"
 las = ["laspy", "lazrs"]
 numba = ["numba"]
 plot = ["ipython", "matplotlib", "pyvista (>=0.32.0)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/YodaEmbedding/pyntcloud.git"
+reference = "12ee9f2208f4207844be80ac5fdbafaf9f0652fa"
+resolved_reference = "12ee9f2208f4207844be80ac5fdbafaf9f0652fa"
 
 [[package]]
 name = "pyparsing"
@@ -2986,4 +2990,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.0,<3.11"
-content-hash = "008b7fff3fb5d680d4e9f29d5870b6556638ffd16ec1b302c57e1ecd2c986233"
+content-hash = "0c5e3dd499d107ec6f27ca90d07d663a8646162b5eb3f7a0967f3926cd17b691"

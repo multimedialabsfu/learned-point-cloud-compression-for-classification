@@ -29,7 +29,7 @@ pandas = "^1.4.3"
 Pillow = "^9.0.0"
 plotly = "^5.0.0"
 plyfile = "^0.9"
-pyntcloud = "^0.3.1"
+pyntcloud = {git = "https://github.com/YodaEmbedding/pyntcloud.git", rev = "12ee9f2208f4207844be80ac5fdbafaf9f0652fa"}
 pytest = "^7.0.0"
 pytorch-msssim = "^0.2.1"
 PyYAML = "^6.0.0"
