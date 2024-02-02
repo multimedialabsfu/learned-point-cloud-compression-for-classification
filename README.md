@@ -114,33 +114,16 @@ echo "$PATH" | sed 's/:/\n/g' | grep -q "$HOME/.local/bin" || (
 
 ## Datasets
 
-Download and *repair* the [ModelNet40] dataset (it has incorrect OFF headers!) by running:
-
-```bash
-# Navigate to your desired root dataset directory.
-cd "${paths.datasets}/modelnet"
-
-# Download and extract the dataset.
-wget 'http://modelnet.cs.princeton.edu/ModelNet40.zip'
-unzip 'ModelNet40.zip'
-python scripts/repair_modelnet.py --input_dir=ModelNet40
-mv ModelNet40 dataset=modelnet40,format=off
-
-# Another reasonable alternative:
-# wget 'https://shapenet.cs.stanford.edu/media/modelnet40_normal_resampled.zip'
-```
-
-During *training*, the `torch_geometric.datasets.modelnet.ModelNet` dataset class also downloads and processes its own format of the ModelNet40 dataset into the directory `${paths.datasets}/modelnet/dataset=modelnet40,format=pt`. For compatibility with our scripts, we recommend that you also follow the same directory structure.
-
+During training, the datasets are automatically downloaded to the specified directory. Then, preprocessing is applied and cached.
 
 <details>
 
-<summary>Our directory structure</summary>
+<summary>Default directory structure</summary>
 
 ```
 ${paths.datasets}/modelnet/
 ├── dataset=modelnet40,format=off  <-- original dataset
-├── dataset=modelnet40,format=pt   <-- torch_geometric compatible dataset
+├── dataset=modelnet40,format=npy  <-- preprocessed and cached dataset
 ├── by_n_ply
 │   ├── 1024                <-- format=.ply, points=1024, flat
 │   ├── 0512
@@ -151,7 +134,7 @@ ${paths.datasets}/modelnet/
 │   │   ├── 0128
 │   │   └── ...
 │   └── ...
-└── ModelNet40.zip
+└── ...
 ```
 
 </details>
