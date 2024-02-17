@@ -65,13 +65,14 @@ class MultitaskPccRateDistortionLoss(nn.Module):
         "cls": 1.0,
     }
 
-    def __init__(self, lmbda=None, rate_key="bpp"):
+    def __init__(self, lmbda=None, rate_key="bpp", target_label_key="label"):
         super().__init__()
         self.lmbda = lmbda or dict(self.LMBDA_DEFAULT)
         self.lmbda.setdefault(rate_key, 1.0)
         self.rec_metric = lambda *args, **kwargs: chamfer_distance(*args, **kwargs)[0]
         self.cls_metric = nn.CrossEntropyLoss()
         self.fm_metric = nn.MSELoss()
+        self.target_label_key = target_label_key
 
     def forward(self, output, target):
         out = {
@@ -104,7 +105,10 @@ class MultitaskPccRateDistortionLoss(nn.Module):
         if "t_hat" not in output:
             return {}
         return {
-            "cls_loss": self.cls_metric(output["t_hat"], target["label"].squeeze(1))
+            "cls_loss": self.cls_metric(
+                output["t_hat"],
+                target[self.target_label_key].squeeze(1),
+            )
         }
 
     def compute_fm_loss(self, output, target):
