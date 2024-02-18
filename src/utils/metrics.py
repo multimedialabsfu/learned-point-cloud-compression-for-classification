@@ -82,6 +82,7 @@ def pc_acc_topk(target, output):
     n = labels.shape[0]
     _, predicted = torch.max(outputs, dim=1)
     _, predicted_top3 = torch.topk(outputs, k=3, dim=1)
+    assert predicted.shape == labels.shape
     return {
         "acc_top1": (predicted == labels).sum().item() / n,
         "acc_top3": (predicted_top3 == labels[..., None]).sum().item() / n,
