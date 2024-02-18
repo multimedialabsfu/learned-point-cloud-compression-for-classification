@@ -16,7 +16,8 @@ _M.config_path = _M.thisdir.joinpath("../../conf")
 
 
 def run_eval_model(runner, batches, filenames, output_dir, metrics):
-    runner.model_module.update(force=True)
+    if hasattr(runner.model_module, "update"):
+        runner.model_module.update(force=True)
 
     output_dir = Path(output_dir)
     os.makedirs(output_dir, exist_ok=True)
@@ -27,26 +28,31 @@ def run_eval_model(runner, batches, filenames, output_dir, metrics):
         batch = {k: v.to(runner.engine.device) for k, v in batch.items()}
         out_infer = runner.predict_batch(batch)
         out_criterion = runner.criterion(out_infer["out_net"], batch)
-        out_metrics = compute_metrics(batch, out_infer["out_dec"], metrics)
+        out_hat = {**out_infer["out_net"], **out_infer.get("out_dec", {})}
+        out_metrics = compute_metrics(batch, out_hat, metrics)
 
         output = {
             "filename": filename,
-            "bpp": out_infer["bpp"],
+            "bpp": out_infer.get("bpp", np.nan),
             **{
                 k: v.item()
                 for k, v in out_criterion.items()
                 if k in runner.hparams["runner"]["meters"]["infer"]
             },
             **out_metrics,
-            "encoding_time": out_infer["encoding_time"],
-            "decoding_time": out_infer["decoding_time"],
+            "encoding_time": out_infer.get("encoding_time", np.nan),
+            "decoding_time": out_infer.get("decoding_time", np.nan),
         }
         outputs.append(output)
         print(json.dumps(output, indent=2))
 
         output_filename = (output_dir / filename).with_suffix("")
         os.makedirs(output_filename.parent, exist_ok=True)
-        if isinstance(out_infer["out_enc"]["strings"], list):
+
+        # Write bitstreams.
+        if "out_enc" not in out_infer:
+            pass
+        elif isinstance(out_infer["out_enc"]["strings"], list):
             _write_bitstreams(out_infer["out_enc"]["strings"], output_filename)
         elif isinstance(out_infer["out_enc"]["strings"], dict):
             # HACK: very ad-hoc
@@ -56,6 +62,9 @@ def run_eval_model(runner, batches, filenames, output_dir, metrics):
                 [xs for xss in out_infer["out_enc"]["strings"].values() for xs in xss],
                 output_filename,
             )
+
+        if "out_dec" not in out_infer:
+            continue
         if "x_hat" in out_infer["out_dec"]:
             _write_pointcloud(out_infer["out_dec"]["x_hat"], output_filename)
         if "t_hat" in out_infer["out_dec"]:

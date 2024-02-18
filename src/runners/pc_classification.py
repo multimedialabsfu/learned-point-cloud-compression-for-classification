@@ -103,6 +103,10 @@ class PointCloudClassificationRunner(BaseRunner):
         }
         return pd.DataFrame.from_dict([d])
 
+    # NOTE: For compatibility with eval_model.
+    def _log_rd_curves(self, **kwargs):
+        pass
+
     def _setup_meters(self):
         self.batch_meters = {
             key: metrics.AdditiveMetric(compute_on_call=False)
