@@ -112,15 +112,18 @@ class PointNet2SsgClassPcModel(nn.Module):
             # where nn.NLLLoss doesn't acutally contain a log, despite its name.
         )
 
-    def forward(self, input):
+    def _get_inputs(self, input):
         points = input["pos"].transpose(-2, -1)
-
         if self.normal_channel:
             xyz = points[:, :3, :]
             norm = points[:, 3:, :]
         else:
             xyz = points
             norm = None
+        return xyz, norm
+
+    def forward(self, input):
+        xyz, norm = self._get_inputs(input)
 
         xyz_ = {0: xyz}
         u_ = {0: norm}
