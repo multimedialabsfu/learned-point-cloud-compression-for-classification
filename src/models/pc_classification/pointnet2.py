@@ -59,44 +59,69 @@ class PointNet2SsgClassPcModel(nn.Module):
         num_channels={
             # NOTE: Ignored for now.
         },
+        D=(0, 128, 256, 1024),
+        P=(None, 512, 128, 1),
+        S=(None, 32, 64, 128),
+        R=(None, 0.2, 0.4, None),
         normal_channel=False,
     ):
         super().__init__()
 
-        in_channel = 6 if normal_channel else 3
-        self.normal_channel = normal_channel
+        self.num_points = num_points
+        self.num_classes = num_classes
+        self.D = D
+        self.P = P
+        self.S = S
+        self.R = R
+        self.normal_channel = bool(normal_channel)
+
+        # Original PointNet++ architecture:
+        # D = [3 * self.normal_channel, 128, 256, 1024]
+        # P = [None, 512, 128, 1]
+        # S = [None, 32, 64, 128]
+        # R = [None, 0.2, 0.4, None]
+
+        # NOTE: P[0] is only used to determine the number of output points.
+        # assert P[0] == num_points
+
+        # Disable asserts which are only needed by proposed rec model:
+        # assert P[0] == P[1] * S[1]
+        # assert P[1] == P[2] * S[2]
+        # assert P[2] == P[3] * S[3]
+
+        self.levels = 4
 
         self.down = nn.ModuleDict(
             {
                 "_1": PointNetSetAbstraction(
-                    npoint=512,
-                    radius=0.2,
-                    nsample=32,
-                    in_channel=in_channel,
-                    mlp=[64, 64, 128],
+                    npoint=P[1],
+                    radius=R[1],
+                    nsample=S[1],
+                    in_channel=D[0] + 3,
+                    mlp=[D[1] // 2, D[1] // 2, D[1]],
                     group_all=False,
                 ),
                 "_2": PointNetSetAbstraction(
-                    npoint=128,
-                    radius=0.4,
-                    nsample=64,
-                    in_channel=128 + 3,
-                    mlp=[128, 128, 256],
+                    npoint=P[2],
+                    radius=R[2],
+                    nsample=S[2],
+                    in_channel=D[1] + 3,
+                    mlp=[D[1], D[1], D[2]],
                     group_all=False,
                 ),
                 "_3": PointNetSetAbstraction(
                     npoint=None,
                     radius=None,
                     nsample=None,
-                    in_channel=256 + 3,
-                    mlp=[256, 512, 1024],
+                    in_channel=D[2] + 3,
+                    mlp=[D[2], D[3], D[3]],
                     group_all=True,
                 ),
             }
         )
 
         self.task_backend = nn.Sequential(
-            nn.Conv1d(1024, 512, 1),
+            nn.Conv1d(D[3], 512, 1),
             nn.BatchNorm1d(512),
             nn.ReLU(inplace=True),
             nn.Dropout(0.4),
